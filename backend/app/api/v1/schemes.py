@@ -64,33 +64,7 @@ async def list_schemes(
     )
 
 
-@router.get("/{scheme_id}", response_model=APIResponse[SchemeDetailResponse], summary="Get Scheme Details")
-async def get_scheme_details(
-    scheme_id: str,
-    db: AsyncSession = Depends(get_db),
-):
-    """Retrieve comprehensive details of a scheme including rules and official sources."""
-    query = (
-        select(Scheme)
-        .options(selectinload(Scheme.rules), selectinload(Scheme.sources))
-        .where(Scheme.id == scheme_id)
-    )
-    result = await db.execute(query)
-    scheme = result.scalar_one_or_none()
-
-    if not scheme:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Scheme with ID '{scheme_id}' not found.",
-        )
-
-    return APIResponse(
-        success=True,
-        message="Scheme details retrieved successfully",
-        data=SchemeDetailResponse.model_validate(scheme),
-    )
-
-
+@router.get("/recommendations", response_model=APIResponse[RecommendationResponse], summary="Calculate Recommendations")
 @router.post("/recommendations", response_model=APIResponse[RecommendationResponse], summary="Calculate Recommendations")
 async def get_recommendations(
     current_user: User = Depends(get_current_user),
@@ -126,4 +100,31 @@ async def get_recommendations(
         success=True,
         message="Scheme recommendations calculated successfully",
         data=resp_data,
+    )
+
+
+@router.get("/{scheme_id}", response_model=APIResponse[SchemeDetailResponse], summary="Get Scheme Details")
+async def get_scheme_details(
+    scheme_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Retrieve comprehensive details of a scheme including rules and official sources."""
+    query = (
+        select(Scheme)
+        .options(selectinload(Scheme.rules), selectinload(Scheme.sources))
+        .where(Scheme.id == scheme_id)
+    )
+    result = await db.execute(query)
+    scheme = result.scalar_one_or_none()
+
+    if not scheme:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Scheme with ID '{scheme_id}' not found.",
+        )
+
+    return APIResponse(
+        success=True,
+        message="Scheme details retrieved successfully",
+        data=SchemeDetailResponse.model_validate(scheme),
     )

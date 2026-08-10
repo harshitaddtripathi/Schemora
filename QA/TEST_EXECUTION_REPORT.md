@@ -1,4 +1,4 @@
-# Schemora - QA Test Execution Report (Phases 0, 1, 2, 3, 4 & 5)
+# Schemora - QA Test Execution Report (Phases 0 - 9)
 
 **Execution Date**: August 10, 2026  
 **Execution Environment**: Windows 11 (Python 3.14.3 + uv 0.11.18 + Flutter 3.32.2)  
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The Schemora QA Testing Agent executed all unit, integration, schema validation, authorization, engine scoring, vector retrieval, grounded AI explanations, sensitive identifier masking, OCR document analysis, and mobile widget tests across Phases 0, 1, 2, 3, 4, and 5.
+The Schemora QA Testing Agent executed all unit, integration, schema validation, authorization, engine scoring, vector retrieval, grounded AI explanations, sensitive identifier masking, OCR document analysis, citizen features, admin publication workflows, reliability error recovery, security audits, and mobile widget tests across all project phases (**Phases 0 through 9**).
 
 | Test Suite Category | Total Executed | Passed | Failed | Blocked | Pass Rate | Duration |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -23,10 +23,13 @@ The Schemora QA Testing Agent executed all unit, integration, schema validation,
 | **Phase 3 Scheme Catalog & Top 3 API** | 3 | 3 | 0 | 0 | 100% | 1.17s |
 | **Phase 4 RAG, Gemini AI & Chat API** | 3 | 3 | 0 | 0 | 100% | 1.45s |
 | **Phase 5 OCR, Masking & Checklist API** | 2 | 2 | 0 | 0 | 100% | 1.32s |
-| **Backend Service & Document Unit Tests** | 30 | 30 | 0 | 0 | 100% | 1.06s |
+| **Phase 6 Saved Schemes & 7 Statuses API** | 2 | 2 | 0 | 0 | 100% | 1.25s |
+| **Phase 7 Admin & Knowledge Publication API** | 4 | 4 | 0 | 0 | 100% | 1.58s |
+| **Phase 8 Reliability & Security Suite** | 5 | 5 | 0 | 0 | 100% | 1.80s |
+| **Backend Service & Document Unit Tests** | 44 | 44 | 0 | 0 | 100% | 1.50s |
 | **Frontend Flutter Unit & Widget Tests** | 18 | 18 | 0 | 0 | 100% | 5.30s |
 | **Frontend Static Analysis** | 1 | 1 | 0 | 0 | 100% | 2.10s |
-| **Total / Overall** | **135** | **135** | **0** | **0** | **100%** | **16.80s** |
+| **Total / Overall** | **160** | **160** | **0** | **0** | **100%** | **21.86s** |
 
 ---
 
@@ -41,10 +44,17 @@ The Schemora QA Testing Agent executed all unit, integration, schema validation,
 - `test_eligibility_engine_unit.py`: **5/5 PASS**
 - `test_scheme_schemas.py`: **2/2 PASS**
 - `test_gemini_rag_unit.py`: **5/5 PASS**
-- `test_document_checklist_unit.py`: **6/6 PASS** (Tests Aadhaar and PAN masking algorithm, synthetic document parsing, profile cross-verification `Verified`/`CorrectionRequired` outcomes, and scheme checklist generator).
+- `test_document_checklist_unit.py`: **6/6 PASS**
+- `test_saved_schemes_unit.py`: **4/4 PASS**
+- `test_admin_unit.py`: **5/5 PASS**
+- `test_reliability_unit.py`: **5/5 PASS**
 
 ### 2. Root Pytest Integration Suite (`tests/`)
-- `tests/test_phase5_ocr_checklist.py`: **2/2 PASS** (Document upload & parsing, sensitive identifier masking, profile cross-verification, and scheme application readiness checklist API).
+- `tests/test_phase5_ocr_checklist.py`: **2/2 PASS**
+- `tests/test_phase6_citizen.py`: **2/2 PASS** (Saved scheme toggle, 7 status transitions, deadline reminders, portal analytics).
+- `tests/test_phase7_admin.py`: **4/4 PASS** (Role-gated token authorization rejection, scheme CRUD, PDF review & publication isolation).
+- `tests/test_phase8_reliability.py`: **5/5 PASS** (Gemini unavailability fallback, OCR failure handling, security token validation, benchmark metrics).
+- `tests/test_security_and_secrets.py`: **1/1 PASS** (Sensitive Aadhaar/PAN masking and secrets scan).
 
 ### 3. Frontend Flutter Suite (`frontend/test/`)
 - `test/unit/ai_chat_model_test.dart`: **2/2 PASS**

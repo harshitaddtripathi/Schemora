@@ -202,7 +202,8 @@ async def test_p0812_top3_recommendation_accuracy():
             headers={"Authorization": f"Bearer {benchmark_tokens[0][0]}"},
         )
         if res_a.status_code == 200:
-            top3_ids = [r["scheme_id"] for r in res_a.json()["data"][:3]]
+            top3_list = res_a.json()["data"].get("top3_recommendations", [])
+            top3_ids = [r["scheme_id"] for r in top3_list]
             if benchmark_tokens[0][1] in top3_ids:
                 hits += 1
 
@@ -226,7 +227,8 @@ async def test_p0812_top3_recommendation_accuracy():
             headers={"Authorization": f"Bearer {benchmark_tokens[1][0]}"},
         )
         if res_b.status_code == 200:
-            top3_ids = [r["scheme_id"] for r in res_b.json()["data"][:3]]
+            top3_list = res_b.json()["data"].get("top3_recommendations", [])
+            top3_ids = [r["scheme_id"] for r in top3_list]
             if benchmark_tokens[1][1] in top3_ids:
                 hits += 1
 
