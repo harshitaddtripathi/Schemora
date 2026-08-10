@@ -1,7 +1,12 @@
 {
   "dataset_version": "v1",
+<<<<<<< HEAD
   "generated_at": "2026-08-07T10:49:42Z",
   "frozen_at": "2026-08-07T10:49:42Z",
+=======
+  "generated_at": "2026-08-10T05:36:38Z",
+  "frozen_at": "2026-08-10T05:36:38Z",
+>>>>>>> 53bb072 (Initial project setup)
   "status": "Frozen",
   "counts": {
     "implemented_schemes": 3,
@@ -14,7 +19,11 @@
   "files": [
     {
       "path": ".env.example",
+<<<<<<< HEAD
       "sha256": "090c780c7f51233b3f30b3483835544774c3ab20e2669929a96206970b0b5256",
+=======
+      "sha256": "a3b1ad8d47bffca2bbb48460723cc4abeb5ef3a9bd8dc2146eadac3a2235e37d",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "infrastructure"
     },
     {
@@ -129,7 +138,11 @@
     },
     {
       "path": "data/synthetic_documents/aadhaar/aadhaar_blurred.json",
+<<<<<<< HEAD
       "sha256": "00d97658b8b9ca37b4178224bd9603457f96ab1ea1f530bc8f46cbdb4a52b082",
+=======
+      "sha256": "8f47ca6ad8b00982b69874255a2d849635c6cde37cc3ef579f0e5abda7ad696e",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -139,7 +152,11 @@
     },
     {
       "path": "data/synthetic_documents/aadhaar/aadhaar_incomplete.json",
+<<<<<<< HEAD
       "sha256": "eeb4f99441fb104b5ac5301fe8161d6d9926d308ef161ed9dd295a81ba875e5a",
+=======
+      "sha256": "13fd0648b86bdafba3ebb5c49bbd349e8b25fd67ae5472ec9fd711383f4b9670",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -149,7 +166,11 @@
     },
     {
       "path": "data/synthetic_documents/aadhaar/aadhaar_profile_mismatch.json",
+<<<<<<< HEAD
       "sha256": "c3687040fdcfe590f1d984dd4afc4e195e89d6df9599accb8bfe9c6774476e10",
+=======
+      "sha256": "baa94a519b7f3c5c6547f6ef5dc4dcafd4edff0d2ed71895f30ce4cd46e65ce8",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -159,7 +180,11 @@
     },
     {
       "path": "data/synthetic_documents/aadhaar/aadhaar_valid.json",
+<<<<<<< HEAD
       "sha256": "71cfbc851eecc7b96375c76f39f7f346d1dc6704e0b9c1a4953712ada24c122c",
+=======
+      "sha256": "b8fc95314a1c49f7b5155c2811599fb4a6541f59a223cfcb64f830967df8759d",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -169,7 +194,11 @@
     },
     {
       "path": "data/synthetic_documents/income_certificate/income_certificate_blurred.json",
+<<<<<<< HEAD
       "sha256": "eab3d632c12d4040e256e8d82dbff7ecaada5d3e244c11c55dc99dcb054d6103",
+=======
+      "sha256": "eb9decc7d6b8efaa31a9d89b953dd1d6129c0cecee13b2a1acf1bc6d20190766",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -179,7 +208,11 @@
     },
     {
       "path": "data/synthetic_documents/income_certificate/income_certificate_expired.json",
+<<<<<<< HEAD
       "sha256": "ccfdc8b6be5bcd37ac6238d0e7ee71a60c31e483940f1daca00d447160b067e1",
+=======
+      "sha256": "362b50427d4d238284f49509487dcb94159c24e64051ed36f480fb337d5a657d",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -189,7 +222,11 @@
     },
     {
       "path": "data/synthetic_documents/income_certificate/income_certificate_incomplete.json",
+<<<<<<< HEAD
       "sha256": "81940473b6ab4e5d89157a3fba2d6bbad2759904746ebdd7fb779c8ee4077d12",
+=======
+      "sha256": "fffdaf0a9e4927cd2edbd6d65ab8d69f6df1b35c052dad18f8e953db7f3df8aa",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -199,7 +236,11 @@
     },
     {
       "path": "data/synthetic_documents/income_certificate/income_certificate_profile_mismatch.json",
+<<<<<<< HEAD
       "sha256": "9a61179a2618e98d8d2d1bd735baed82a93cb683aebb4d85e26ad0772f8d45ba",
+=======
+      "sha256": "4fc95a60f9a80c84ee627d8116003ab1ba9023847f0472934788d2f1951f1c1a",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -209,7 +250,11 @@
     },
     {
       "path": "data/synthetic_documents/income_certificate/income_certificate_valid.json",
+<<<<<<< HEAD
       "sha256": "4c679b39a03399c6b43b6493e60dbfad44dffa54470b82fdddf344fdfb84ac66",
+=======
+      "sha256": "bfb601339632c53232f37d3d5e8b9902ccbc7f90031addc25e5269778ce4acca",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -219,7 +264,11 @@
     },
     {
       "path": "data/synthetic_documents/pan/pan_blurred.json",
+<<<<<<< HEAD
       "sha256": "1582e9d0c7cef2d8982497fc9b10175c7218174d14ca9d54e85eb97a622890cc",
+=======
+      "sha256": "2c04e21700cfa0f0b05329b15e2c44188238a0b595d40b60bba201eed03e55c1",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -229,7 +278,11 @@
     },
     {
       "path": "data/synthetic_documents/pan/pan_incomplete.json",
+<<<<<<< HEAD
       "sha256": "47057e573bf3686b5cb3c8e44697e77d2850b2caafadd2e4f6f1b0f00f9664f5",
+=======
+      "sha256": "e7ad43f16bbde9ac2c7c39066bfd27a5b8d9bec3ce869dc88336eb59bad8e9e7",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -239,7 +292,11 @@
     },
     {
       "path": "data/synthetic_documents/pan/pan_profile_mismatch.json",
+<<<<<<< HEAD
       "sha256": "e11c3f200f4541c5bba595b2c789ddeb3e9923d64f49f78954965dc611182504",
+=======
+      "sha256": "deaa357b856de70bbedc6d4a678a54d45ad6af5cdbbfb1777e8981b91e8b8de6",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -249,7 +306,11 @@
     },
     {
       "path": "data/synthetic_documents/pan/pan_valid.json",
+<<<<<<< HEAD
       "sha256": "033e22b09c40d73c5877aa80226435bd858cc945f39e5cb905b1177812440045",
+=======
+      "sha256": "8dad1027cd11f157c2bdde5097a231c6f35b793fd2943c80e80daa68faca72a5",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "synthetic_document"
     },
     {
@@ -274,7 +335,11 @@
     },
     {
       "path": "requirements-phase0.txt",
+<<<<<<< HEAD
       "sha256": "1a98b9819331b7b154871633d4fe406431c5ba1885b8a6eb0670f6242e423bbc",
+=======
+      "sha256": "2f478098a0f7fcfbfed4d39dc8822715e6f4ff4d21359811e8785bf244e31f37",
+>>>>>>> 53bb072 (Initial project setup)
       "category": "infrastructure"
     },
     {
@@ -295,7 +360,11 @@
   ],
   "validation": {
     "validator_version": "v1",
+<<<<<<< HEAD
     "last_run_at": "2026-08-07T10:49:42Z",
+=======
+    "last_run_at": "2026-08-10T05:36:38Z",
+>>>>>>> 53bb072 (Initial project setup)
     "status": "Passed"
   }
 }

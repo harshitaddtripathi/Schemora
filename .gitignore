@@ -2,18 +2,51 @@
 .env
 .env.*
 !.env.example
+<<<<<<< HEAD
+=======
+*.pem
+*.key
+>>>>>>> 53bb072 (Initial project setup)
 
 # Python
 .venv/
 __pycache__/
 *.py[cod]
+<<<<<<< HEAD
 .pytest_cache/
+=======
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+>>>>>>> 53bb072 (Initial project setup)
 
 # Validation output
 .phase0-validation-cache/
 
+<<<<<<< HEAD
+=======
+# Flutter & Dart
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/.pub-cache/
+frontend/.pub/
+frontend/build/
+frontend/ios/
+frontend/android/app/key.properties
+frontend/google-services.json
+frontend/GoogleService-Info.plist
+
+>>>>>>> 53bb072 (Initial project setup)
 # Operating system and editor files
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
+<<<<<<< HEAD
+=======
+*.swp
+>>>>>>> 53bb072 (Initial project setup)

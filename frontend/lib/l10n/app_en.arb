@@ -1,0 +1,8 @@
+{
+  "appName": "Schemora",
+  "welcomeTitle": "Find Government Schemes You Qualify For",
+  "healthCheckTitle": "System Status",
+  "loadingText": "Loading...",
+  "retryButton": "Retry",
+  "errorTitle": "Something went wrong"
+}
