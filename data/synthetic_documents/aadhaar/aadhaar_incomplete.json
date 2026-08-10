@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-aadhaar-incomplete",
+  "document_type": "Aadhaar",
+  "variant": "incomplete",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "aadhaar_incomplete.png",
+  "image_sha256": "55099f2f7c91ba1967cd1831ca9e4b06167e74a33faf156363704ac7597afefc",
+  "expected_readability": "Readable",
+  "expected_completeness": "Incomplete",
+  "expected_profile_consistency": "NotEvaluated",
+  "expected_fields": {
+    "name": "Aarav Kulkarni",
+    "date_of_birth": "14/11/2005",
+    "gender": "Male",
+    "address": null,
+    "masked_aadhaar": null
+  }
+}

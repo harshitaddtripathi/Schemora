@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/benchmark-profile.schema.json",
+  "title": "Schemora Benchmark Profiles",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dataset_version",
+    "profiles"
+  ],
+  "properties": {
+    "dataset_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://schemora.local/schemas/student-profile.schema.json#/$defs/profile"
+      }
+    }
+  }
+}

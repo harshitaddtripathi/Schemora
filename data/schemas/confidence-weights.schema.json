@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/confidence-weights.schema.json",
+  "title": "Schemora Confidence Weights",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model_version",
+    "hard_gate",
+    "components",
+    "total",
+    "notes"
+  ],
+  "properties": {
+    "model_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "hard_gate": {
+      "const": true
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_completeness",
+        "document_completeness",
+        "source_completeness"
+      ],
+      "properties": {
+        "profile_completeness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "document_completeness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "source_completeness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "total": {
+      "const": 100
+    },
+    "notes": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+    }
+  }
+}

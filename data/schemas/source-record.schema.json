@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/source-record.schema.json",
+  "title": "Schemora Source Register Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "scheme_id",
+    "source_title",
+    "source_type",
+    "source_language",
+    "source_hash",
+    "official_information_url",
+    "publication_date",
+    "retrieved_at",
+    "verified_at",
+    "verified_by",
+    "effective_from",
+    "effective_to",
+    "application_cycle",
+    "source_status",
+    "notes"
+  ],
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "pattern": "^src-[a-z0-9-]+$"
+    },
+    "scheme_id": {
+      "type": "string",
+      "pattern": "^sch-[a-z0-9-]+$"
+    },
+    "source_title": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+    },
+    "source_type": {
+      "enum": [
+        "WebPage",
+        "Portal",
+        "Guideline",
+        "Notification",
+        "PressRelease",
+        "FAQ"
+      ]
+    },
+    "source_language": {
+      "enum": [
+        "English",
+        "Hindi",
+        "Marathi"
+      ]
+    },
+    "source_hash": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/hashOrVerificationRequired"
+    },
+    "official_information_url": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/uriOrVerificationRequired"
+    },
+    "publication_date": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+    },
+    "retrieved_at": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateTime"
+    },
+    "verified_at": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateTime"
+    },
+    "verified_by": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+    },
+    "effective_from": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+    },
+    "effective_to": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+    },
+    "application_cycle": {
+      "oneOf": [
+        {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_status": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/sourceStatus"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

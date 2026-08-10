@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-aadhaar-blurred",
+  "document_type": "Aadhaar",
+  "variant": "blurred",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "aadhaar_blurred.png",
+  "image_sha256": "04f704e9760f347fd82522698f4d19ad3dadd0136ff5c802a30b7ca6e8bcd8b7",
+  "expected_readability": "Unreadable",
+  "expected_completeness": "Complete",
+  "expected_profile_consistency": "NotEvaluated",
+  "expected_fields": {
+    "name": null,
+    "date_of_birth": null,
+    "gender": null,
+    "address": null,
+    "masked_aadhaar": null
+  }
+}

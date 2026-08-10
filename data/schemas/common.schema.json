@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/common.schema.json",
+  "title": "Schemora Common Definitions",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "dateOrNull": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/date"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dateTimeOrNull": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/dateTime"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "uriOrVerificationRequired": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        {
+          "const": "verification_required"
+        }
+      ]
+    },
+    "hashOrVerificationRequired": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "const": "verification_required"
+        }
+      ]
+    },
+    "jurisdiction": {
+      "enum": [
+        "Central",
+        "State"
+      ]
+    },
+    "state": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "enum": [
+            "Maharashtra",
+            "Gujarat",
+            "Karnataka",
+            "Tamil Nadu",
+            "Rajasthan",
+            "Madhya Pradesh",
+            "Uttar Pradesh",
+            "Delhi"
+          ]
+        }
+      ]
+    },
+    "profileState": {
+      "enum": [
+        "Maharashtra",
+        "Gujarat",
+        "Karnataka",
+        "Tamil Nadu",
+        "Rajasthan",
+        "Madhya Pradesh",
+        "Uttar Pradesh",
+        "Delhi"
+      ]
+    },
+    "educationLevel": {
+      "enum": [
+        "Class10",
+        "Class12",
+        "Diploma",
+        "ITI",
+        "Undergraduate",
+        "Postgraduate",
+        "PhD"
+      ]
+    },
+    "socialCategory": {
+      "enum": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "EWS"
+      ]
+    },
+    "triState": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "const": "unknown"
+        }
+      ]
+    },
+    "schemeCategory": {
+      "enum": [
+        "Scholarship",
+        "Education",
+        "SkillDevelopment",
+        "Employment",
+        "Entrepreneurship",
+        "FinancialAssistance",
+        "SocialWelfare"
+      ]
+    },
+    "deadlineType": {
+      "enum": [
+        "Fixed",
+        "Recurring",
+        "Continuous",
+        "Upcoming",
+        "NotAnnounced",
+        "Expired"
+      ]
+    },
+    "schemeStatus": {
+      "enum": [
+        "Active",
+        "Upcoming",
+        "Expired",
+        "Draft"
+      ]
+    },
+    "eligibilityStatus": {
+      "enum": [
+        "RuleMatched",
+        "NeedsInformation",
+        "NotMatched"
+      ]
+    },
+    "verificationStatus": {
+      "enum": [
+        "Verified",
+        "VerificationRequired",
+        "Superseded"
+      ]
+    },
+    "sourceStatus": {
+      "enum": [
+        "PendingResearch",
+        "Collected",
+        "Verified",
+        "VerificationRequired",
+        "Superseded"
+      ]
+    },
+    "implementationStatus": {
+      "enum": [
+        "Implemented",
+        "PlannedResearch"
+      ]
+    },
+    "documentType": {
+      "enum": [
+        "Aadhaar",
+        "PAN",
+        "IncomeCertificate",
+        "DomicileCertificate",
+        "CasteCertificate",
+        "Marksheet",
+        "AdmissionProof",
+        "BankAccountProof",
+        "RationCard",
+        "LeavingCertificate",
+        "GapDeclaration",
+        "ParentDeclaration",
+        "DisabilityCertificate",
+        "Other"
+      ]
+    }
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/student-profile.schema.json",
+  "title": "Schemora Student Profile Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "synthetic",
+        "full_name",
+        "date_of_birth",
+        "age_as_of",
+        "age",
+        "gender",
+        "citizenship",
+        "state",
+        "district",
+        "education_level",
+        "institution_type",
+        "course_name",
+        "course_type",
+        "class12_percentile",
+        "academic_percentage",
+        "annual_family_income",
+        "social_category",
+        "minority_status",
+        "disability_status",
+        "attendance_percentage",
+        "education_gap_years",
+        "admission_through_cap",
+        "family_male_beneficiaries_count",
+        "is_full_time_student",
+        "employment_status",
+        "receiving_other_scholarship",
+        "pmis_exclusion_clearance",
+        "available_documents"
+      ],
+      "properties": {
+        "profile_id": {
+          "type": "string",
+          "pattern": "^profile-[0-9]{3}$"
+        },
+        "synthetic": {
+          "const": true
+        },
+        "full_name": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "date_of_birth": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/date"
+        },
+        "age_as_of": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/date"
+        },
+        "age": {
+          "type": "integer",
+          "minimum": 14,
+          "maximum": 80
+        },
+        "gender": {
+          "enum": [
+            "Male",
+            "Female",
+            "Other",
+            "Unknown"
+          ]
+        },
+        "citizenship": {
+          "enum": [
+            "Indian",
+            "Other",
+            "Unknown"
+          ]
+        },
+        "state": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/profileState"
+        },
+        "district": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "education_level": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/educationLevel"
+        },
+        "institution_type": {
+          "enum": [
+            "Regular",
+            "Distance",
+            "Online",
+            "Open",
+            "Unknown"
+          ]
+        },
+        "course_name": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "course_type": {
+          "enum": [
+            "Professional",
+            "NonProfessional",
+            "Vocational",
+            "Unknown"
+          ]
+        },
+        "class12_percentile": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "academic_percentage": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "annual_family_income": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "social_category": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/socialCategory"
+        },
+        "minority_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/triState"
+        },
+        "disability_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/triState"
+        },
+        "attendance_percentage": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "education_gap_years": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "admission_through_cap": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/triState"
+        },
+        "family_male_beneficiaries_count": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "is_full_time_student": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/triState"
+        },
+        "employment_status": {
+          "enum": [
+            "Unemployed",
+            "PartTime",
+            "FullTime",
+            "SelfEmployed",
+            "Unknown"
+          ]
+        },
+        "receiving_other_scholarship": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/triState"
+        },
+        "pmis_exclusion_clearance": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/triState"
+        },
+        "available_documents": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/documentType"
+          }
+        }
+      }
+    }
+  }
+}

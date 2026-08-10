@@ -1,0 +1,380 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/scheme.schema.json",
+  "title": "Schemora Scheme Dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dataset_version",
+    "schemes"
+  ],
+  "properties": {
+    "dataset_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "schemes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scheme"
+      }
+    }
+  },
+  "$defs": {
+    "benefit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "benefit_id",
+        "description",
+        "amount",
+        "currency",
+        "frequency",
+        "verification_status",
+        "source_ids"
+      ],
+      "properties": {
+        "benefit_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "description": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "amount": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency": {
+          "oneOf": [
+            {
+              "const": "INR"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "frequency": {
+          "enum": [
+            "OneTime",
+            "Monthly",
+            "Annual",
+            "CourseStage",
+            "Variable",
+            "NotSpecified"
+          ]
+        },
+        "verification_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/verificationStatus"
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        }
+      }
+    },
+    "requiredDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "document_type",
+        "name",
+        "required",
+        "verification_status",
+        "source_ids"
+      ],
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "document_type": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/documentType"
+        },
+        "name": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "verification_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/verificationStatus"
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        }
+      }
+    },
+    "applicationStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_number",
+        "description",
+        "channel",
+        "verification_status",
+        "source_ids"
+      ],
+      "properties": {
+        "step_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "channel": {
+          "enum": [
+            "Online",
+            "Offline",
+            "Hybrid"
+          ]
+        },
+        "verification_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/verificationStatus"
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        }
+      }
+    },
+    "applicationWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_id",
+        "deadline_type",
+        "opens_on",
+        "closes_on",
+        "application_cycle",
+        "verification_status",
+        "source_ids"
+      ],
+      "properties": {
+        "window_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "deadline_type": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/deadlineType"
+        },
+        "opens_on": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+        },
+        "closes_on": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+        },
+        "application_cycle": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "verification_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/verificationStatus"
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        }
+      }
+    },
+    "verificationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "overall_status",
+        "verified_fields",
+        "verification_required_fields",
+        "notes"
+      ],
+      "properties": {
+        "overall_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/verificationStatus"
+        },
+        "verified_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "verification_required_fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "scheme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scheme_id",
+        "scheme_name",
+        "scheme_version",
+        "short_description",
+        "description",
+        "benefits",
+        "jurisdiction",
+        "state",
+        "department",
+        "scheme_category",
+        "eligibility_rules",
+        "required_documents",
+        "application_process",
+        "official_information_url",
+        "official_application_url",
+        "application_windows",
+        "source_documents",
+        "publication_date",
+        "effective_from",
+        "effective_to",
+        "application_cycle",
+        "retrieved_at",
+        "verified_at",
+        "verified_by",
+        "status",
+        "verification"
+      ],
+      "properties": {
+        "scheme_id": {
+          "type": "string",
+          "pattern": "^sch-[a-z0-9-]+$"
+        },
+        "scheme_name": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "scheme_version": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}-v[0-9]+$"
+        },
+        "short_description": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "description": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "benefits": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/benefit"
+          }
+        },
+        "jurisdiction": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/jurisdiction"
+        },
+        "state": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/state"
+        },
+        "department": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "scheme_category": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/schemeCategory"
+        },
+        "eligibility_rules": {
+          "$ref": "https://schemora.local/schemas/eligibility-rule.schema.json#/$defs/ruleSet"
+        },
+        "required_documents": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/requiredDocument"
+          }
+        },
+        "application_process": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/applicationStep"
+          }
+        },
+        "official_information_url": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/uriOrVerificationRequired"
+        },
+        "official_application_url": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/uriOrVerificationRequired"
+        },
+        "application_windows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/applicationWindow"
+          }
+        },
+        "source_documents": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        },
+        "publication_date": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+        },
+        "effective_from": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+        },
+        "effective_to": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateOrNull"
+        },
+        "application_cycle": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "retrieved_at": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateTime"
+        },
+        "verified_at": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateTime"
+        },
+        "verified_by": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/schemeStatus"
+        },
+        "verification": {
+          "$ref": "#/$defs/verificationSummary"
+        }
+      }
+    }
+  }
+}

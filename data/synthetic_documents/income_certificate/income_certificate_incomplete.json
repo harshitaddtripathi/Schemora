@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-income-certificate-incomplete",
+  "document_type": "IncomeCertificate",
+  "variant": "incomplete",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "income_certificate_incomplete.png",
+  "image_sha256": "a1a275a2afb1a65289bfdfc916c0a5ea712bcc975494613467ff0672d2bd8e02",
+  "expected_readability": "Readable",
+  "expected_completeness": "Incomplete",
+  "expected_profile_consistency": "NotEvaluated",
+  "expected_fields": {
+    "applicant_name": "Aarav Kulkarni",
+    "annual_income": 180000,
+    "issuing_authority": null,
+    "issue_date": "2026-04-01",
+    "validity_date": null
+  }
+}

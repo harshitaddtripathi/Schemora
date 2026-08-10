@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/scheme-inventory.schema.json",
+  "title": "Schemora Scheme Inventory Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scheme_id",
+    "scheme_name",
+    "scheme_category",
+    "jurisdiction",
+    "state",
+    "official_information_url",
+    "official_application_url",
+    "source_status",
+    "rule_status",
+    "checklist_status",
+    "reviewed_by",
+    "implementation_status",
+    "notes"
+  ],
+  "properties": {
+    "scheme_id": {
+      "type": "string",
+      "pattern": "^(sch|planned)-[a-z0-9-]+$"
+    },
+    "scheme_name": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+    },
+    "scheme_category": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/schemeCategory"
+    },
+    "jurisdiction": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/jurisdiction"
+    },
+    "state": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/state"
+    },
+    "official_information_url": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/uriOrVerificationRequired"
+    },
+    "official_application_url": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/uriOrVerificationRequired"
+    },
+    "source_status": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/sourceStatus"
+    },
+    "rule_status": {
+      "enum": [
+        "Pending",
+        "Drafted",
+        "Validated"
+      ]
+    },
+    "checklist_status": {
+      "enum": [
+        "Pending",
+        "Drafted",
+        "Validated"
+      ]
+    },
+    "reviewed_by": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+    },
+    "implementation_status": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/implementationStatus"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

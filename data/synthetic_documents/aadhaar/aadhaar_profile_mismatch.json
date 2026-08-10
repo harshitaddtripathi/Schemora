@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-aadhaar-profile-mismatch",
+  "document_type": "Aadhaar",
+  "variant": "profile_mismatch",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "aadhaar_profile_mismatch.png",
+  "image_sha256": "0617973ecdf0522e409755692f7086150b8e0843a26280f4fb43f47ca528cbd4",
+  "expected_readability": "Readable",
+  "expected_completeness": "Complete",
+  "expected_profile_consistency": "Mismatch",
+  "expected_fields": {
+    "name": "Riya Sen",
+    "date_of_birth": "09/04/2004",
+    "gender": "Female",
+    "address": "42 Sample Lane, Pune, Maharashtra 411001",
+    "masked_aadhaar": "XXXX XXXX 4821"
+  }
+}

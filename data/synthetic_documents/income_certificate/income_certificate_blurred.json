@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-income-certificate-blurred",
+  "document_type": "IncomeCertificate",
+  "variant": "blurred",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "income_certificate_blurred.png",
+  "image_sha256": "b6386ec356329a68da915af6e2f4fc915d53cfa4628a71d2ec8c83e27d1677fe",
+  "expected_readability": "Unreadable",
+  "expected_completeness": "Complete",
+  "expected_profile_consistency": "NotEvaluated",
+  "expected_fields": {
+    "applicant_name": null,
+    "annual_income": null,
+    "issuing_authority": null,
+    "issue_date": null,
+    "validity_date": null
+  }
+}

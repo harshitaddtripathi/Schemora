@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-income-certificate-profile-mismatch",
+  "document_type": "IncomeCertificate",
+  "variant": "profile_mismatch",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "income_certificate_profile_mismatch.png",
+  "image_sha256": "0c9d1635e7edd8c7f7b9af81a072278b8d4e75cb812fc497a6e88dcebcda5418",
+  "expected_readability": "Readable",
+  "expected_completeness": "Complete",
+  "expected_profile_consistency": "Mismatch",
+  "expected_fields": {
+    "applicant_name": "Riya Sen",
+    "annual_income": 450000,
+    "issuing_authority": "Sample Revenue Office, Pune",
+    "issue_date": "2026-04-01",
+    "validity_date": "2027-03-31"
+  }
+}

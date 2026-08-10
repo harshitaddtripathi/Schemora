@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-aadhaar-valid",
+  "document_type": "Aadhaar",
+  "variant": "valid",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "aadhaar_valid.png",
+  "image_sha256": "2e0dea734ecf3c91b90198de095dda2e886e9d4e9030cefcaed3be0d898c2ae6",
+  "expected_readability": "Readable",
+  "expected_completeness": "Complete",
+  "expected_profile_consistency": "Consistent",
+  "expected_fields": {
+    "name": "Aarav Kulkarni",
+    "date_of_birth": "14/11/2005",
+    "gender": "Male",
+    "address": "42 Sample Lane, Pune, Maharashtra 411001",
+    "masked_aadhaar": "XXXX XXXX 4821"
+  }
+}

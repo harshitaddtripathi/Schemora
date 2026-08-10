@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/dataset-manifest.schema.json",
+  "title": "Schemora Phase 0 Dataset Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dataset_version",
+    "generated_at",
+    "frozen_at",
+    "status",
+    "counts",
+    "files",
+    "validation"
+  ],
+  "properties": {
+    "dataset_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "generated_at": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateTime"
+    },
+    "frozen_at": {
+      "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateTimeOrNull"
+    },
+    "status": {
+      "enum": [
+        "Draft",
+        "Frozen"
+      ]
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implemented_schemes",
+        "inventory_slots",
+        "benchmark_profiles",
+        "expected_results",
+        "source_records",
+        "synthetic_documents"
+      ],
+      "properties": {
+        "implemented_schemes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inventory_slots": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "benchmark_profiles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expected_results": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "synthetic_documents": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256",
+          "category"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "category": {
+            "enum": [
+              "schema",
+              "scheme",
+              "inventory",
+              "source",
+              "benchmark",
+              "configuration",
+              "synthetic_document",
+              "infrastructure",
+              "documentation",
+              "validation"
+            ]
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validator_version",
+        "last_run_at",
+        "status"
+      ],
+      "properties": {
+        "validator_version": {
+          "type": "string",
+          "pattern": "^v[0-9]+$"
+        },
+        "last_run_at": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/dateTimeOrNull"
+        },
+        "status": {
+          "enum": [
+            "NotRun",
+            "Passed",
+            "Failed"
+          ]
+        }
+      }
+    }
+  }
+}

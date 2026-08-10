@@ -1,0 +1,17 @@
+{
+  "fixture_id": "fixture-pan-valid",
+  "document_type": "PAN",
+  "variant": "valid",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "pan_valid.png",
+  "image_sha256": "36d0562f312f8b01433a25258752b1bd3b0a886960f9e72623b3a4b4c325d398",
+  "expected_readability": "Readable",
+  "expected_completeness": "Complete",
+  "expected_profile_consistency": "Consistent",
+  "expected_fields": {
+    "name": "Aarav Kulkarni",
+    "date_of_birth": "14/11/2005",
+    "masked_pan": "ABCDE****F"
+  }
+}

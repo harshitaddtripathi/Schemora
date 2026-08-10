@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/eligibility-rule.schema.json",
+  "title": "Schemora Eligibility Rule Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "ruleValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "type",
+        "description",
+        "field",
+        "operator",
+        "value",
+        "mandatory",
+        "missing_behavior",
+        "verification_status",
+        "source_ids"
+      ],
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "type": {
+          "const": "condition"
+        },
+        "description": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "field": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "operator": {
+          "enum": [
+            "eq",
+            "neq",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "in",
+            "not_in",
+            "contains",
+            "exists"
+          ]
+        },
+        "value": {
+          "$ref": "#/$defs/ruleValue"
+        },
+        "mandatory": {
+          "type": "boolean"
+        },
+        "missing_behavior": {
+          "const": "Unresolved"
+        },
+        "verification_status": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/verificationStatus"
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "type",
+        "description",
+        "mandatory",
+        "conditions",
+        "source_ids"
+      ],
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "type": {
+          "enum": [
+            "and",
+            "or"
+          ]
+        },
+        "description": {
+          "$ref": "https://schemora.local/schemas/common.schema.json#/$defs/nonEmptyString"
+        },
+        "mandatory": {
+          "type": "boolean"
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^src-[a-z0-9-]+$"
+          }
+        }
+      }
+    },
+    "node": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/condition"
+        },
+        {
+          "$ref": "#/$defs/group"
+        }
+      ]
+    },
+    "ruleSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rules_version",
+        "root"
+      ],
+      "properties": {
+        "rules_version": {
+          "type": "string",
+          "pattern": "^v[0-9]+$"
+        },
+        "root": {
+          "$ref": "#/$defs/group"
+        }
+      }
+    }
+  }
+}

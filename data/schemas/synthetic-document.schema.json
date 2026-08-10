@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemora.local/schemas/synthetic-document.schema.json",
+  "title": "Schemora Synthetic Document Sidecar",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fixture_id",
+    "document_type",
+    "variant",
+    "synthetic",
+    "watermark_text",
+    "image_file",
+    "image_sha256",
+    "expected_readability",
+    "expected_completeness",
+    "expected_profile_consistency",
+    "expected_fields"
+  ],
+  "properties": {
+    "fixture_id": {
+      "type": "string",
+      "pattern": "^fixture-[a-z0-9-]+$"
+    },
+    "document_type": {
+      "enum": [
+        "Aadhaar",
+        "PAN",
+        "IncomeCertificate"
+      ]
+    },
+    "variant": {
+      "enum": [
+        "valid",
+        "blurred",
+        "incomplete",
+        "profile_mismatch",
+        "expired"
+      ]
+    },
+    "synthetic": {
+      "const": true
+    },
+    "watermark_text": {
+      "const": "SAMPLE - NOT VALID"
+    },
+    "image_file": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+\\.png$"
+    },
+    "image_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expected_readability": {
+      "enum": [
+        "Readable",
+        "Unreadable",
+        "Warning"
+      ]
+    },
+    "expected_completeness": {
+      "enum": [
+        "Complete",
+        "Incomplete"
+      ]
+    },
+    "expected_profile_consistency": {
+      "enum": [
+        "Consistent",
+        "Mismatch",
+        "NotEvaluated"
+      ]
+    },
+    "expected_fields": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    }
+  }
+}

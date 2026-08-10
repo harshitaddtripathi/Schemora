@@ -1,0 +1,19 @@
+{
+  "fixture_id": "fixture-income-certificate-valid",
+  "document_type": "IncomeCertificate",
+  "variant": "valid",
+  "synthetic": true,
+  "watermark_text": "SAMPLE - NOT VALID",
+  "image_file": "income_certificate_valid.png",
+  "image_sha256": "496ea61d51a571397d42cea6dc541bc5354d5ecfd8c7f7a4cafc087f1652af42",
+  "expected_readability": "Readable",
+  "expected_completeness": "Complete",
+  "expected_profile_consistency": "Consistent",
+  "expected_fields": {
+    "applicant_name": "Aarav Kulkarni",
+    "annual_income": 180000,
+    "issuing_authority": "Sample Revenue Office, Pune",
+    "issue_date": "2026-04-01",
+    "validity_date": "2027-03-31"
+  }
+}

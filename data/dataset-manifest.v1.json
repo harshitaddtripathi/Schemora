@@ -1,0 +1,301 @@
+{
+  "dataset_version": "v1",
+  "generated_at": "2026-08-07T10:49:42Z",
+  "frozen_at": "2026-08-07T10:49:42Z",
+  "status": "Frozen",
+  "counts": {
+    "implemented_schemes": 3,
+    "inventory_slots": 25,
+    "benchmark_profiles": 15,
+    "expected_results": 45,
+    "source_records": 7,
+    "synthetic_documents": 13
+  },
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "090c780c7f51233b3f30b3483835544774c3ab20e2669929a96206970b0b5256",
+      "category": "infrastructure"
+    },
+    {
+      "path": "data/benchmark_profiles/expected-results.v1.json",
+      "sha256": "f766d5a306291d4392aea686abc440174e6d3f64cb772075ff29da842fd439c1",
+      "category": "benchmark"
+    },
+    {
+      "path": "data/benchmark_profiles/profiles.v1.json",
+      "sha256": "e3b8525b01d4ab13c5fc9480bedadb539d27cae604f28e6ec5e28f144c2ffa36",
+      "category": "benchmark"
+    },
+    {
+      "path": "data/config/confidence-weights.json",
+      "sha256": "ea8a5ccb3a6ba94bf5c7082bf187cac1b7cbce9406c1e7c28108f7e7c93635b5",
+      "category": "configuration"
+    },
+    {
+      "path": "data/config/ranking-weights.json",
+      "sha256": "263f5f04be7ed6d7fce192afd5ba9e6a5eeb9a6c456d2b45d2634b3e2c72866c",
+      "category": "configuration"
+    },
+    {
+      "path": "data/README.md",
+      "sha256": "efa8c525d8bd10c90b3103907bfd9ee84c943d89dea1b2e5b6f672448ef01c28",
+      "category": "documentation"
+    },
+    {
+      "path": "data/schemas/benchmark-profile.schema.json",
+      "sha256": "550bf29a2a81b3d5c55be90d8aa2663451ac19bc381b793dcb1cc0074b9bae5e",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/common.schema.json",
+      "sha256": "78ed6a2b3b97297aa83d0599b021c5cfdc84e5cdda5667acd575500a93a13f57",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/confidence-weights.schema.json",
+      "sha256": "5394737dac90512d28c2d0487be7fe3ef3aa14c0791d54c36ee3c7576e696c11",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/dataset-manifest.schema.json",
+      "sha256": "0702ac5930e5fcd4a5dac3b24784b5ce9ee6daff0917c578d6a869c25032af09",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/eligibility-rule.schema.json",
+      "sha256": "b9bc1c047397e100404c9193bc110bd57b6ec4004519fe668947fe8f19fcbc6b",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/expected-result.schema.json",
+      "sha256": "3112506eb1845c1a5682f5228e318052a16e7316b26c6be300154548a5f6c551",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/ranking-weights.schema.json",
+      "sha256": "d022ea2a05b7ed841a38f5b76fa375d91f7911753048a58cae0935e33a6333b5",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/README.md",
+      "sha256": "812abdbbac788c78d2dd4ff1d2673c0ae570bc6587d3b648a8815826215d3baa",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/scheme-inventory.schema.json",
+      "sha256": "5281310872fe5a85b88f56d8a8ba30bc1801ba931cd66f9b4fe487a2140902c2",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/scheme.schema.json",
+      "sha256": "f11b66d3a1fc680783f196593ac5f25ef54a65423dcdb40cc8a791f2f74f5471",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/source-record.schema.json",
+      "sha256": "972bcf16815091f98f2d5a90a4fe165a2d31c9a2a5d3cfac4a6801ef8b1c18c3",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/student-profile.schema.json",
+      "sha256": "8896a7eb394c5c3568220102417bfbb580fd80f181ff995aa5cf9281d1843a0d",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemas/synthetic-document.schema.json",
+      "sha256": "5228f3caf3dcd3d232225b9b0c5c2905e735be0e96003bf25fddd324a6d2146c",
+      "category": "schema"
+    },
+    {
+      "path": "data/schemes/scheme-inventory.v1.csv",
+      "sha256": "2016d6efee574e6b3984f7a2a7e942209e477179e7305602ca129a82ab6a8d23",
+      "category": "inventory"
+    },
+    {
+      "path": "data/schemes/schemes.v1.json",
+      "sha256": "ac70a051761ae2b196ce919af431a04264713a4fbdfffb37e7b2c83b483409be",
+      "category": "scheme"
+    },
+    {
+      "path": "data/sources/README.md",
+      "sha256": "731e46b2a206e662e255078febc807d73c5f485c8b7dfd837e78e2cd917a4b35",
+      "category": "source"
+    },
+    {
+      "path": "data/sources/source-register.csv",
+      "sha256": "1bab0e167372fab5cfc071284315c7e242fd8d0c86d138e2299a321d9f423ea3",
+      "category": "source"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_blurred.json",
+      "sha256": "00d97658b8b9ca37b4178224bd9603457f96ab1ea1f530bc8f46cbdb4a52b082",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_blurred.png",
+      "sha256": "04f704e9760f347fd82522698f4d19ad3dadd0136ff5c802a30b7ca6e8bcd8b7",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_incomplete.json",
+      "sha256": "eeb4f99441fb104b5ac5301fe8161d6d9926d308ef161ed9dd295a81ba875e5a",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_incomplete.png",
+      "sha256": "55099f2f7c91ba1967cd1831ca9e4b06167e74a33faf156363704ac7597afefc",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_profile_mismatch.json",
+      "sha256": "c3687040fdcfe590f1d984dd4afc4e195e89d6df9599accb8bfe9c6774476e10",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_profile_mismatch.png",
+      "sha256": "0617973ecdf0522e409755692f7086150b8e0843a26280f4fb43f47ca528cbd4",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_valid.json",
+      "sha256": "71cfbc851eecc7b96375c76f39f7f346d1dc6704e0b9c1a4953712ada24c122c",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/aadhaar/aadhaar_valid.png",
+      "sha256": "2e0dea734ecf3c91b90198de095dda2e886e9d4e9030cefcaed3be0d898c2ae6",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_blurred.json",
+      "sha256": "eab3d632c12d4040e256e8d82dbff7ecaada5d3e244c11c55dc99dcb054d6103",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_blurred.png",
+      "sha256": "b6386ec356329a68da915af6e2f4fc915d53cfa4628a71d2ec8c83e27d1677fe",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_expired.json",
+      "sha256": "ccfdc8b6be5bcd37ac6238d0e7ee71a60c31e483940f1daca00d447160b067e1",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_expired.png",
+      "sha256": "9abc009524dc68c1efced01425eff3e85868254dac27c945da211835b3491a14",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_incomplete.json",
+      "sha256": "81940473b6ab4e5d89157a3fba2d6bbad2759904746ebdd7fb779c8ee4077d12",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_incomplete.png",
+      "sha256": "a1a275a2afb1a65289bfdfc916c0a5ea712bcc975494613467ff0672d2bd8e02",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_profile_mismatch.json",
+      "sha256": "9a61179a2618e98d8d2d1bd735baed82a93cb683aebb4d85e26ad0772f8d45ba",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_profile_mismatch.png",
+      "sha256": "0c9d1635e7edd8c7f7b9af81a072278b8d4e75cb812fc497a6e88dcebcda5418",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_valid.json",
+      "sha256": "4c679b39a03399c6b43b6493e60dbfad44dffa54470b82fdddf344fdfb84ac66",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/income_certificate/income_certificate_valid.png",
+      "sha256": "496ea61d51a571397d42cea6dc541bc5354d5ecfd8c7f7a4cafc087f1652af42",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_blurred.json",
+      "sha256": "1582e9d0c7cef2d8982497fc9b10175c7218174d14ca9d54e85eb97a622890cc",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_blurred.png",
+      "sha256": "8611ee106a2469c02d1c945a0d77d6b694492451272f324fe9ab6fbc788986a7",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_incomplete.json",
+      "sha256": "47057e573bf3686b5cb3c8e44697e77d2850b2caafadd2e4f6f1b0f00f9664f5",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_incomplete.png",
+      "sha256": "d64154b86fa4165bc85a09e38626389c3f1cfd78754470f0eccb15af8ce91e36",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_profile_mismatch.json",
+      "sha256": "e11c3f200f4541c5bba595b2c789ddeb3e9923d64f49f78954965dc611182504",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_profile_mismatch.png",
+      "sha256": "2e112f3e74afaae75ac5a1c7ec3593cdaf4c26448f24afd074b28e2b10bb4afc",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_valid.json",
+      "sha256": "033e22b09c40d73c5877aa80226435bd858cc945f39e5cb905b1177812440045",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/pan/pan_valid.png",
+      "sha256": "36d0562f312f8b01433a25258752b1bd3b0a886960f9e72623b3a4b4c325d398",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "data/synthetic_documents/README.md",
+      "sha256": "5dd9a3c1c43bd94cfd134948a534d28ff35128156b0f4a5d98b73b4d7a288887",
+      "category": "synthetic_document"
+    },
+    {
+      "path": "Phase0.1_Plan.md",
+      "sha256": "4afe39a24054b3b73c559889076b72cc9394a510fa2020a4a60fcf268c6cef9d",
+      "category": "documentation"
+    },
+    {
+      "path": "Phase0_Report.md",
+      "sha256": "8984241f0b697b878be3d513e3c2d37cd534120f9f6f408895b1b1b6d1b3f714",
+      "category": "documentation"
+    },
+    {
+      "path": "requirements-phase0.txt",
+      "sha256": "1a98b9819331b7b154871633d4fe406431c5ba1885b8a6eb0670f6242e423bbc",
+      "category": "infrastructure"
+    },
+    {
+      "path": "scripts/build_phase0_manifest.py",
+      "sha256": "6687a54434b0a1c0e522299c71955e885a3b4c76d077de3a501b637ab65da9d2",
+      "category": "validation"
+    },
+    {
+      "path": "scripts/generate_synthetic_documents.py",
+      "sha256": "b3e3f06597a14ae8a9a3ece21c1c9eb6b56664291bcb856d74df45cd0258ed80",
+      "category": "validation"
+    },
+    {
+      "path": "scripts/validate_phase0.py",
+      "sha256": "2b649132a776233d25361aa4d20ecf3771135cfd0b354db36b4d23332a30fb48",
+      "category": "validation"
+    }
+  ],
+  "validation": {
+    "validator_version": "v1",
+    "last_run_at": "2026-08-07T10:49:42Z",
+    "status": "Passed"
+  }
+}

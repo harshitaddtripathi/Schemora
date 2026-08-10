@@ -1,0 +1,11 @@
+{
+  "model_version": "v1",
+  "hard_gate": true,
+  "components": {
+    "profile_completeness": 40,
+    "document_completeness": 30,
+    "source_completeness": 30
+  },
+  "total": 100,
+  "notes": "Confidence measures information completeness only and never overrides a failed mandatory eligibility rule."
+}

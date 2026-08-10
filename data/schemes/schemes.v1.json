@@ -1,0 +1,768 @@
+{
+  "dataset_version": "v1",
+  "schemes": [
+    {
+      "scheme_id": "sch-central-csss-001",
+      "scheme_name": "Central Sector Scheme of Scholarship for College and University Students",
+      "scheme_version": "2026-08-07-v1",
+      "short_description": "Central scholarship support for eligible college and university students.",
+      "description": "A Ministry of Education scholarship implemented through the National Scholarship Portal. The current detailed guideline thresholds and document checklist require a fresh authoritative guideline snapshot before production use.",
+      "benefits": [
+        {
+          "benefit_id": "csss-benefit-financial-support",
+          "description": "Financial scholarship assistance for eligible college and university students; the current amount and course-stage schedule require verification.",
+          "amount": null,
+          "currency": "INR",
+          "frequency": "CourseStage",
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-csss-moe-overview-001"
+          ]
+        }
+      ],
+      "jurisdiction": "Central",
+      "state": null,
+      "department": "Department of Higher Education, Ministry of Education",
+      "scheme_category": "Scholarship",
+      "eligibility_rules": {
+        "rules_version": "v1",
+        "root": {
+          "rule_id": "csss-g001",
+          "type": "and",
+          "description": "Current CSSS mandatory eligibility conditions.",
+          "mandatory": true,
+          "conditions": [
+            {
+              "rule_id": "csss-r001-class12-percentile",
+              "type": "condition",
+              "description": "Applicant is above the 80th percentile among successful Class 12 candidates in the relevant stream and board.",
+              "field": "class12_percentile",
+              "operator": "gte",
+              "value": 80,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-csss-myscheme-rule-003"
+              ],
+              "notes": "The benchmark models the board percentile as a numeric profile field."
+            },
+            {
+              "rule_id": "csss-r002-income-threshold-current",
+              "type": "condition",
+              "description": "Applicant satisfies the current annual family income threshold.",
+              "field": "annual_family_income",
+              "operator": "lte",
+              "value": null,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "VerificationRequired",
+              "source_ids": [
+                "src-csss-moe-overview-001"
+              ],
+              "notes": "No current numeric threshold was exposed in the retrievable Ministry page content."
+            },
+            {
+              "rule_id": "csss-r003-regular-course-current",
+              "type": "condition",
+              "description": "Applicant is enrolled in a currently eligible regular course.",
+              "field": "institution_type",
+              "operator": "eq",
+              "value": "Regular",
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "VerificationRequired",
+              "source_ids": [
+                "src-csss-moe-overview-001"
+              ],
+              "notes": "Current course-mode wording requires a guideline snapshot."
+            },
+            {
+              "rule_id": "csss-r004-other-scholarship-current",
+              "type": "condition",
+              "description": "Applicant satisfies the current rule regarding other scholarships or fee reimbursement.",
+              "field": "receiving_other_scholarship",
+              "operator": "eq",
+              "value": false,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "VerificationRequired",
+              "source_ids": [
+                "src-csss-moe-overview-001"
+              ],
+              "notes": "Current exclusion wording requires a guideline snapshot."
+            }
+          ],
+          "source_ids": [
+            "src-csss-moe-overview-001",
+            "src-csss-myscheme-rule-003"
+          ]
+        }
+      },
+      "required_documents": [
+        {
+          "document_id": "csss-doc-current-checklist",
+          "document_type": "Other",
+          "name": "Current CSSS required-document checklist",
+          "required": true,
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-csss-moe-overview-001"
+          ]
+        }
+      ],
+      "application_process": [
+        {
+          "step_number": 1,
+          "description": "Open the National Scholarship Portal and complete the CSSS application when the current application cycle is available.",
+          "channel": "Online",
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-csss-nsp-portal-002"
+          ]
+        }
+      ],
+      "official_information_url": "https://www.education.gov.in/implementation-central-sector-scholarship-scheme-college-and-university-students-through-national-e",
+      "official_application_url": "https://scholarships.gov.in/",
+      "application_windows": [
+        {
+          "window_id": "csss-window-current",
+          "deadline_type": "NotAnnounced",
+          "opens_on": null,
+          "closes_on": null,
+          "application_cycle": "Current cycle not announced as of 2026-08-07",
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-csss-moe-overview-001",
+            "src-csss-nsp-portal-002"
+          ]
+        }
+      ],
+      "source_documents": [
+        "src-csss-moe-overview-001",
+        "src-csss-nsp-portal-002",
+        "src-csss-myscheme-rule-003"
+      ],
+      "publication_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "application_cycle": "Current cycle not announced",
+      "retrieved_at": "2026-08-07T00:00:00+05:30",
+      "verified_at": "2026-08-07T00:00:00+05:30",
+      "verified_by": "schemora-phase0-research",
+      "status": "Active",
+      "verification": {
+        "overall_status": "VerificationRequired",
+        "verified_fields": [
+          "scheme_name",
+          "jurisdiction",
+          "department",
+          "official_information_url",
+          "official_application_url",
+          "eligibility_rules.csss-r001-class12-percentile"
+        ],
+        "verification_required_fields": [
+          "benefits.amount",
+          "eligibility_rules.csss-r002-income-threshold-current",
+          "eligibility_rules.csss-r003-regular-course-current",
+          "eligibility_rules.csss-r004-other-scholarship-current",
+          "required_documents",
+          "application_windows"
+        ],
+        "notes": "The scheme remains a valid pilot architecture record, but unresolved fields intentionally produce NeedsInformation rather than a definitive match."
+      }
+    },
+    {
+      "scheme_id": "sch-maharashtra-obc-postmatric-002",
+      "scheme_name": "Post Matric Scholarship to OBC Students",
+      "scheme_version": "2026-08-07-v1",
+      "short_description": "Maharashtra post-matric scholarship support for eligible OBC students.",
+      "description": "A Maharashtra scheme administered through MahaDBT for eligible OBC students pursuing post-matric education, subject to domicile, income, attendance, course, gap, admission, and family-beneficiary conditions.",
+      "benefits": [
+        {
+          "benefit_id": "obc-benefit-fee-support",
+          "description": "Tuition fee, examination fee, and maintenance allowance support according to the applicable course group and official schedule.",
+          "amount": null,
+          "currency": "INR",
+          "frequency": "Variable",
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        }
+      ],
+      "jurisdiction": "State",
+      "state": "Maharashtra",
+      "department": "VJNT, OBC and SBC Welfare Department, Government of Maharashtra",
+      "scheme_category": "Scholarship",
+      "eligibility_rules": {
+        "rules_version": "v1",
+        "root": {
+          "rule_id": "obc-g001",
+          "type": "and",
+          "description": "Mandatory Post Matric Scholarship to OBC Students conditions.",
+          "mandatory": true,
+          "conditions": [
+            {
+              "rule_id": "obc-r001-state",
+              "type": "condition",
+              "description": "Applicant is a resident of Maharashtra.",
+              "field": "state",
+              "operator": "eq",
+              "value": "Maharashtra",
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            },
+            {
+              "rule_id": "obc-r002-category",
+              "type": "condition",
+              "description": "Applicant belongs to the OBC social category.",
+              "field": "social_category",
+              "operator": "eq",
+              "value": "OBC",
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            },
+            {
+              "rule_id": "obc-r003-income",
+              "type": "condition",
+              "description": "Annual family income is at or below INR 250000.",
+              "field": "annual_family_income",
+              "operator": "lte",
+              "value": 250000,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            },
+            {
+              "rule_id": "obc-r004-attendance",
+              "type": "condition",
+              "description": "Applicant has at least 75 percent attendance in the current year.",
+              "field": "attendance_percentage",
+              "operator": "gte",
+              "value": 75,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            },
+            {
+              "rule_id": "obc-r005-postmatric-level",
+              "type": "condition",
+              "description": "Applicant is pursuing post-matric education.",
+              "field": "education_level",
+              "operator": "in",
+              "value": [
+                "Class12",
+                "Diploma",
+                "ITI",
+                "Undergraduate",
+                "Postgraduate",
+                "PhD"
+              ],
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            },
+            {
+              "rule_id": "obc-r006-gap",
+              "type": "condition",
+              "description": "Education gap does not exceed two years.",
+              "field": "education_gap_years",
+              "operator": "lte",
+              "value": 2,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            },
+            {
+              "rule_id": "obc-g002-cap-requirement",
+              "type": "or",
+              "description": "Professional-course applicants must be admitted through CAP.",
+              "mandatory": true,
+              "conditions": [
+                {
+                  "rule_id": "obc-r007-course-not-professional",
+                  "type": "condition",
+                  "description": "Course is not professional.",
+                  "field": "course_type",
+                  "operator": "neq",
+                  "value": "Professional",
+                  "mandatory": true,
+                  "missing_behavior": "Unresolved",
+                  "verification_status": "Verified",
+                  "source_ids": [
+                    "src-maha-obc-details-004"
+                  ]
+                },
+                {
+                  "rule_id": "obc-r008-cap-admission",
+                  "type": "condition",
+                  "description": "Professional-course admission was obtained through CAP.",
+                  "field": "admission_through_cap",
+                  "operator": "eq",
+                  "value": true,
+                  "mandatory": true,
+                  "missing_behavior": "Unresolved",
+                  "verification_status": "Verified",
+                  "source_ids": [
+                    "src-maha-obc-details-004"
+                  ]
+                }
+              ],
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            },
+            {
+              "rule_id": "obc-g003-family-limit",
+              "type": "or",
+              "description": "The male-beneficiary limit does not disqualify the applicant.",
+              "mandatory": true,
+              "conditions": [
+                {
+                  "rule_id": "obc-r009-female-applicant",
+                  "type": "condition",
+                  "description": "Applicant is female and the male-child limit does not apply.",
+                  "field": "gender",
+                  "operator": "eq",
+                  "value": "Female",
+                  "mandatory": true,
+                  "missing_behavior": "Unresolved",
+                  "verification_status": "Verified",
+                  "source_ids": [
+                    "src-maha-obc-details-004"
+                  ]
+                },
+                {
+                  "rule_id": "obc-r010-family-male-limit",
+                  "type": "condition",
+                  "description": "No more than two male beneficiaries in the family receive the benefit.",
+                  "field": "family_male_beneficiaries_count",
+                  "operator": "lte",
+                  "value": 2,
+                  "mandatory": true,
+                  "missing_behavior": "Unresolved",
+                  "verification_status": "Verified",
+                  "source_ids": [
+                    "src-maha-obc-details-004"
+                  ]
+                }
+              ],
+              "source_ids": [
+                "src-maha-obc-details-004"
+              ]
+            }
+          ],
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        }
+      },
+      "required_documents": [
+        {
+          "document_id": "obc-doc-caste-certificate",
+          "document_type": "CasteCertificate",
+          "name": "Caste certificate",
+          "required": true,
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        },
+        {
+          "document_id": "obc-doc-income-certificate",
+          "document_type": "IncomeCertificate",
+          "name": "Income certificate or income declaration",
+          "required": true,
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        },
+        {
+          "document_id": "obc-doc-marksheet",
+          "document_type": "Marksheet",
+          "name": "Previous examination marksheet",
+          "required": true,
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        },
+        {
+          "document_id": "obc-doc-gap-declaration",
+          "document_type": "GapDeclaration",
+          "name": "Gap declaration when an education gap exists",
+          "required": true,
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        },
+        {
+          "document_id": "obc-doc-leaving-certificate",
+          "document_type": "LeavingCertificate",
+          "name": "Leaving certificate",
+          "required": true,
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        },
+        {
+          "document_id": "obc-doc-ration-card",
+          "document_type": "RationCard",
+          "name": "Ration card",
+          "required": true,
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        },
+        {
+          "document_id": "obc-doc-parent-declaration",
+          "document_type": "ParentDeclaration",
+          "name": "Parent or guardian declaration regarding beneficiary children",
+          "required": true,
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-maha-obc-details-004"
+          ]
+        }
+      ],
+      "application_process": [
+        {
+          "step_number": 1,
+          "description": "Register or sign in on the MahaDBT applicant portal.",
+          "channel": "Online",
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-maha-dbt-portal-005"
+          ]
+        },
+        {
+          "step_number": 2,
+          "description": "Complete the applicant profile, select Post Matric Scholarship to OBC Students, upload the current required documents, and submit.",
+          "channel": "Online",
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-maha-obc-details-004",
+            "src-maha-dbt-portal-005"
+          ]
+        }
+      ],
+      "official_information_url": "https://mahadbt.maharashtra.gov.in/SchemeData/SchemeData?str=E9DDFA703C38E51AB02E984835E89FEFDB316E301CE6A991F41C5D42B01A7D7E",
+      "official_application_url": "https://mahadbt.maharashtra.gov.in/Login/Login",
+      "application_windows": [
+        {
+          "window_id": "obc-window-current",
+          "deadline_type": "NotAnnounced",
+          "opens_on": null,
+          "closes_on": null,
+          "application_cycle": "Current cycle not verified as of 2026-08-07",
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-maha-obc-details-004",
+            "src-maha-dbt-portal-005"
+          ]
+        }
+      ],
+      "source_documents": [
+        "src-maha-obc-details-004",
+        "src-maha-dbt-portal-005"
+      ],
+      "publication_date": null,
+      "effective_from": null,
+      "effective_to": null,
+      "application_cycle": "Current cycle not verified",
+      "retrieved_at": "2026-08-07T00:00:00+05:30",
+      "verified_at": "2026-08-07T00:00:00+05:30",
+      "verified_by": "schemora-phase0-research",
+      "status": "Active",
+      "verification": {
+        "overall_status": "VerificationRequired",
+        "verified_fields": [
+          "scheme_name",
+          "jurisdiction",
+          "state",
+          "department",
+          "benefits",
+          "eligibility_rules",
+          "required_documents"
+        ],
+        "verification_required_fields": [
+          "source_hash",
+          "application_process",
+          "application_windows",
+          "official_application_url reachability"
+        ],
+        "notes": "The official indexed scheme content supports the pilot rules and checklist, but the dynamic MahaDBT pages require a manual browser snapshot before final release."
+      }
+    },
+    {
+      "scheme_id": "sch-central-pmis-003",
+      "scheme_name": "PM Internship Scheme",
+      "scheme_version": "2026-08-07-v1",
+      "short_description": "A MY Bharat internship initiative connecting eligible youth with structured industry experience.",
+      "description": "The latest official MY Bharat implementation provides eligible youth with a structured internship experience. This record intentionally uses the 2026 MY Bharat implementation rather than older MCA-era benefit values and portal assumptions.",
+      "benefits": [
+        {
+          "benefit_id": "pmis-benefit-monthly-assistance",
+          "description": "Monthly financial assistance during the internship period.",
+          "amount": 9000,
+          "currency": "INR",
+          "frequency": "Monthly",
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-pmis-mybharat-overview-006",
+            "src-pmis-mybharat-event-007"
+          ]
+        },
+        {
+          "benefit_id": "pmis-benefit-industry-experience",
+          "description": "Structured industry exposure and practical work experience for the published internship duration.",
+          "amount": null,
+          "currency": null,
+          "frequency": "NotSpecified",
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-pmis-mybharat-overview-006",
+            "src-pmis-mybharat-event-007"
+          ]
+        }
+      ],
+      "jurisdiction": "Central",
+      "state": null,
+      "department": "Ministry of Corporate Affairs through MY Bharat",
+      "scheme_category": "SkillDevelopment",
+      "eligibility_rules": {
+        "rules_version": "v1",
+        "root": {
+          "rule_id": "pmis-g001",
+          "type": "and",
+          "description": "Current verified MY Bharat PM Internship eligibility conditions.",
+          "mandatory": true,
+          "conditions": [
+            {
+              "rule_id": "pmis-r001-age-min",
+              "type": "condition",
+              "description": "Applicant is at least 18 years old.",
+              "field": "age",
+              "operator": "gte",
+              "value": 18,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-pmis-mybharat-event-007"
+              ]
+            },
+            {
+              "rule_id": "pmis-r002-age-max",
+              "type": "condition",
+              "description": "Applicant is no more than 25 years old.",
+              "field": "age",
+              "operator": "lte",
+              "value": 25,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-pmis-mybharat-event-007"
+              ]
+            },
+            {
+              "rule_id": "pmis-r003-education",
+              "type": "condition",
+              "description": "Applicant has a currently listed eligible qualification.",
+              "field": "education_level",
+              "operator": "in",
+              "value": [
+                "Class10",
+                "Class12",
+                "ITI",
+                "Diploma",
+                "Undergraduate"
+              ],
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-pmis-mybharat-event-007"
+              ],
+              "notes": "Undergraduate represents a completed or bachelor-level qualification in this Phase 0 profile model."
+            },
+            {
+              "rule_id": "pmis-r004-not-fulltime-student",
+              "type": "condition",
+              "description": "Applicant is not engaged in full-time education.",
+              "field": "is_full_time_student",
+              "operator": "eq",
+              "value": false,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-pmis-mybharat-event-007"
+              ]
+            },
+            {
+              "rule_id": "pmis-r005-not-fulltime-employed",
+              "type": "condition",
+              "description": "Applicant is not in full-time employment.",
+              "field": "employment_status",
+              "operator": "neq",
+              "value": "FullTime",
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-pmis-mybharat-event-007"
+              ]
+            },
+            {
+              "rule_id": "pmis-r006-citizenship",
+              "type": "condition",
+              "description": "Applicant is an Indian citizen.",
+              "field": "citizenship",
+              "operator": "eq",
+              "value": "Indian",
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "Verified",
+              "source_ids": [
+                "src-pmis-mybharat-overview-006"
+              ]
+            },
+            {
+              "rule_id": "pmis-r007-current-exclusions",
+              "type": "condition",
+              "description": "Applicant satisfies all current detailed exclusion conditions.",
+              "field": "pmis_exclusion_clearance",
+              "operator": "eq",
+              "value": true,
+              "mandatory": true,
+              "missing_behavior": "Unresolved",
+              "verification_status": "VerificationRequired",
+              "source_ids": [
+                "src-pmis-mybharat-overview-006",
+                "src-pmis-mybharat-event-007"
+              ],
+              "notes": "The current detailed exclusion list was not fully available in the verified source content."
+            }
+          ],
+          "source_ids": [
+            "src-pmis-mybharat-overview-006",
+            "src-pmis-mybharat-event-007"
+          ]
+        }
+      },
+      "required_documents": [
+        {
+          "document_id": "pmis-doc-current-checklist",
+          "document_type": "Other",
+          "name": "Current MY Bharat PM Internship document checklist",
+          "required": true,
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-pmis-mybharat-overview-006",
+            "src-pmis-mybharat-event-007"
+          ]
+        }
+      ],
+      "application_process": [
+        {
+          "step_number": 1,
+          "description": "Register or sign in on MY Bharat and complete the participant profile.",
+          "channel": "Online",
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-pmis-mybharat-overview-006"
+          ]
+        },
+        {
+          "step_number": 2,
+          "description": "Open the PM Internship Scheme section and apply to available internship opportunities during an announced cycle.",
+          "channel": "Online",
+          "verification_status": "Verified",
+          "source_ids": [
+            "src-pmis-mybharat-event-007"
+          ]
+        }
+      ],
+      "official_information_url": "https://mybharat.gov.in/pages/pm-internship-scheme",
+      "official_application_url": "https://mybharat.gov.in/Gov/Department/pm-internship-scheme",
+      "application_windows": [
+        {
+          "window_id": "pmis-window-current",
+          "deadline_type": "NotAnnounced",
+          "opens_on": null,
+          "closes_on": null,
+          "application_cycle": "Next MY Bharat application cycle not announced as of 2026-08-07",
+          "verification_status": "VerificationRequired",
+          "source_ids": [
+            "src-pmis-mybharat-overview-006",
+            "src-pmis-mybharat-event-007"
+          ]
+        }
+      ],
+      "source_documents": [
+        "src-pmis-mybharat-overview-006",
+        "src-pmis-mybharat-event-007"
+      ],
+      "publication_date": null,
+      "effective_from": "2026-01-01",
+      "effective_to": null,
+      "application_cycle": "MY Bharat 2026 implementation",
+      "retrieved_at": "2026-08-07T00:00:00+05:30",
+      "verified_at": "2026-08-07T00:00:00+05:30",
+      "verified_by": "schemora-phase0-research",
+      "status": "Active",
+      "verification": {
+        "overall_status": "VerificationRequired",
+        "verified_fields": [
+          "scheme_name",
+          "scheme_version",
+          "benefits",
+          "jurisdiction",
+          "department",
+          "eligibility_rules.pmis-r001-age-min",
+          "eligibility_rules.pmis-r002-age-max",
+          "eligibility_rules.pmis-r003-education",
+          "eligibility_rules.pmis-r004-not-fulltime-student",
+          "eligibility_rules.pmis-r005-not-fulltime-employed",
+          "eligibility_rules.pmis-r006-citizenship",
+          "application_process",
+          "official_information_url",
+          "official_application_url"
+        ],
+        "verification_required_fields": [
+          "eligibility_rules.pmis-r007-current-exclusions",
+          "required_documents",
+          "application_windows"
+        ],
+        "notes": "All unresolved fields remain explicit and force NeedsInformation when no verified rule has failed."
+      }
+    }
+  ]
+}

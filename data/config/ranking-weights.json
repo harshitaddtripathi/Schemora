@@ -1,0 +1,13 @@
+{
+  "model_version": "v1",
+  "eligibility_gate_required": true,
+  "components": {
+    "education_relevance": 30,
+    "benefit_relevance": 25,
+    "document_readiness": 20,
+    "deadline_priority": 15,
+    "advisory_rule_match": 10
+  },
+  "total": 100,
+  "notes": "Ranking configuration is frozen for future use. Phase 0 benchmarks do not test Top 3 recommendations."
+}
