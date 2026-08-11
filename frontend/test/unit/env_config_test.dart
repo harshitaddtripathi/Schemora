@@ -6,12 +6,14 @@ void main() {
     test('default constants match expected baseline', () {
       expect(EnvConfig.appName, equals('Schemora'));
       expect(EnvConfig.appVersion, equals('1.0.0'));
-      expect(EnvConfig.connectTimeoutMs, equals(10000));
-      expect(EnvConfig.receiveTimeoutMs, equals(10000));
+      expect(EnvConfig.connectTimeoutMs, equals(15000));
+      expect(EnvConfig.receiveTimeoutMs, equals(15000));
     });
 
-    test('defaultBaseUrl contains api/v1', () {
-      expect(EnvConfig.defaultBaseUrl, contains('/api/v1'));
+    test('baseUrl contains /api/v1', () {
+      // baseUrl is a runtime getter; in the test environment (non-Android)
+      // it should resolve to the local 127.0.0.1 URL.
+      expect(EnvConfig.baseUrl, contains('/api/v1'));
     });
   });
 }

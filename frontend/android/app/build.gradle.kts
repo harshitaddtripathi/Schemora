@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.schemora.schemora_frontend"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // NDK 27 required by path_provider_android (NDK versions are backward compatible)
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

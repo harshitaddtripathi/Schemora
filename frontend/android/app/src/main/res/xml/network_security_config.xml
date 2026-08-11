@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  network_security_config.xml
+  Allows cleartext HTTP only to 10.0.2.2 (Android emulator host alias).
+  All other traffic requires HTTPS (Android 9+ default is enforced for everything else).
+-->
+<network-security-config>
+    <!-- Local development: Android emulator → host machine via 10.0.2.2 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
+    </domain-config>
+
+    <!-- Everything else (production Render URL etc.) must use HTTPS -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>

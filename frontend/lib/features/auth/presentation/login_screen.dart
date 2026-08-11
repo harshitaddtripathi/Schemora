@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/features/auth/data/auth_repository.dart';
 import 'package:schemora_frontend/features/auth/domain/auth_state.dart';
+import 'package:schemora_frontend/features/profile/data/profile_repository.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _phoneController = TextEditingController(text: '9876543210');
   final _otpController = TextEditingController(text: '123456');
 
+  bool _isNavigating = false;
+
   @override
   void dispose() {
     _phoneController.dispose();
@@ -23,19 +26,74 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  /// Deterministic direct OTP verification & navigation flow.
+  /// Triggered directly by the "Verify OTP & Continue" button.
+  Future<void> _handleVerifyOtp() async {
+    if (_isNavigating) return;
+
+    final otp = _otpController.text.trim();
+
+    debugPrint('[AUTH] Verify OTP started');
+    await ref.read(authProvider.notifier).verifyOtp(otp);
+    debugPrint('[AUTH] OTP verification completed');
+
+    if (!mounted) return;
+
+    final authState = ref.read(authProvider);
+    debugPrint('[AUTH] Auth status: ${authState.status}');
+    debugPrint('[AUTH] Token: ${authState.token}');
+
+    if (authState.status != AuthStatus.authenticated) {
+      // Unauthenticated / invalid OTP error: remain on screen, UI displays authState.errorMessage
+      return;
+    }
+
+    final token = authState.token;
+    if (token == null || token.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Authentication succeeded but no token was received.'),
+        ),
+      );
+      return;
+    }
+
+    debugPrint('[PROFILE] Checking current profile');
+    ref.invalidate(currentProfileProvider);
+
+    try {
+      final profile = await ref
+          .read(currentProfileProvider.future)
+          .timeout(const Duration(seconds: 5));
+
+      if (!mounted) return;
+
+      debugPrint('[PROFILE] Profile found: ${profile != null}');
+      if (profile == null) {
+        debugPrint('[NAV] Navigating to /profile-type');
+        _isNavigating = true;
+        context.go('/profile-type');
+      } else {
+        debugPrint('[NAV] Navigating to /recommendations');
+        _isNavigating = true;
+        context.go('/recommendations');
+      }
+    } catch (e) {
+      debugPrint('[PROFILE] Profile lookup failed: $e');
+      debugPrint('[NAV] Falling back to /profile-type');
+      if (!mounted) return;
+      _isNavigating = true;
+      context.go('/profile-type');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.status == AuthStatus.authenticated) {
-        context.go('/profile');
-      }
-    });
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Schemora Student Verification'),
+        title: const Text('Schemora — Citizen Login'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -57,7 +115,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter your 10-digit mobile number to log in or create your student profile.',
+                'Enter your 10-digit mobile number to access government schemes matched to your profile.',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -100,10 +158,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: authState.status == AuthStatus.authenticating
+                  onPressed: (authState.status == AuthStatus.authenticating || _isNavigating)
                       ? null
-                      : () => ref.read(authProvider.notifier).verifyOtp(_otpController.text),
-                  child: const Text('Verify OTP & Continue'),
+                      : _handleVerifyOtp,
+                  child: authState.status == AuthStatus.authenticating
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text('Verify OTP & Continue'),
                 ),
               ],
               if (authState.errorMessage != null) ...[

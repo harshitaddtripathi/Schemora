@@ -14,7 +14,20 @@ class RecommendationScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Top 3 Scheme Recommendations'),
+        title: const Text('My Scheme Matches'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_outline_rounded),
+            tooltip: 'Edit Profile',
+            onPressed: () => context.go('/profile-type'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.grid_view_rounded),
+            tooltip: 'All Schemes',
+            onPressed: () => context.push('/catalog'),
+          ),
+        ],
       ),
       body: SafeArea(
         child: top3Async.when(
