@@ -35,10 +35,13 @@ SAMPLE_PAN_SYNTH = "ABCDE_5678_F"
 def init_database():
     async def _init():
         async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
         json_path = ROOT / "data" / "schemes" / "schemes.v1.json"
         async with AsyncSessionLocal() as db:
             await seed_scheme_dataset(db, json_path)
+        await engine.dispose()
+
     asyncio.run(_init())
 
 
@@ -147,6 +150,7 @@ async def test_p0809_no_raw_identifiers_in_document_responses():
                 "date_of_birth": "2000-01-01",
                 "gender": "Male",
                 "state": "Maharashtra",
+                "social_category": "General",
                 "education_level": "Undergraduate",
                 "annual_family_income": 200000.0,
             },
@@ -177,7 +181,7 @@ async def test_p0812_top3_recommendation_accuracy():
     """P0-812/P0-815: Top 3 recommendation endpoint returns ≥1 result per benchmark profile."""
     benchmark_tokens = [
         # (token, expected_scheme_in_top3)
-        ("test-token-citizen-phase8a", "sch-maharashtra-obc-postmatric-002"),
+        ("test-token-citizen-phase8-bench1", "sch-maharashtra-obc-postmatric-002"),
         ("test-token-citizen-phase8-bench2", "sch-central-csss-001"),
     ]
 

@@ -119,3 +119,25 @@ async def chat_assistant(
         message="Assistant response generated successfully",
         data=resp,
     )
+
+
+from mcp_server.security import create_user_context
+from app.agents.orchestrator import SchemoraOrchestratorAgent
+
+
+@router.post("/agent-chat", summary="Multi-Agent AI Orchestrator Assistant")
+async def agent_chat_assistant(
+    req: AIChatRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Multi-Agent AI system endpoint delegating user request to Schemora Orchestrator Agent."""
+    user_ctx = create_user_context(current_user) if current_user else None
+    orchestrator = SchemoraOrchestratorAgent(db)
+    result = await orchestrator.execute(query=req.question, context=user_ctx)
+
+    return APIResponse(
+        success=True,
+        message="Multi-agent orchestration executed successfully",
+        data=result,
+    )
