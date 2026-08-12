@@ -39,6 +39,9 @@ def extract_conditions(node: Dict[str, Any], rule_type_default: str = "mandatory
     return conditions
 
 
+from app.services.rag_service import ingest_document
+
+
 async def seed_scheme_dataset(db: AsyncSession, json_path: Path) -> int:
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -110,14 +113,33 @@ async def seed_scheme_dataset(db: AsyncSession, json_path: Path) -> int:
                 db.add(db_rule)
 
         # Seed default source
+        official_url = s.get("official_information_url", f"https://myscheme.gov.in/schemes/{scheme_id}")
         db_source = SchemeSource(
             scheme_id=scheme_id,
             source_name=f"{title} Official Portal",
-            url=f"https://myscheme.gov.in/schemes/{scheme_id}",
+            url=official_url,
             source_type="OfficialPortal",
             last_verified_at="2026-08-07",
         )
         db.add(db_source)
+
+        # Ingest text document for RAG AI Retrieval
+        rag_text = (
+            f"Official Scheme: {title}\n"
+            f"Provider: {provider} ({jurisdiction})\n"
+            f"Summary: {short_desc}\n"
+            f"Detailed Overview: {detailed_desc}\n"
+            f"Benefits: {benefit_summary}\n"
+            f"Official Application URL: {official_url}"
+        )
+        await ingest_document(
+            db=db,
+            title=f"Official Guideline: {title}",
+            content=rag_text,
+            scheme_id=scheme_id,
+            source_url=official_url,
+            doc_type="OfficialGuideline",
+        )
 
         seeded_count += 1
 

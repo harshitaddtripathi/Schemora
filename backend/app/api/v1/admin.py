@@ -187,3 +187,68 @@ async def admin_unpublish_knowledge(
         message=f"Unpublished {chunk_count} knowledge chunks for scheme '{req.scheme_id}'",
         data={"scheme_id": req.scheme_id, "chunks_removed": chunk_count, "status": "unpublished"},
     )
+
+
+# ─── Gemini Knowledge Base Expansion ─────────────────────────────────
+
+from pydantic import BaseModel, Field
+from app.core.config import settings
+from app.services.gemini_schemes_generator import generate_schemes_with_gemini
+from app.services.seeder import seed_scheme_dataset
+from pathlib import Path
+import json
+
+
+class AdminGenerateSchemesRequest(BaseModel):
+    gemini_api_key: Optional[str] = Field(default=None, description="Optional Gemini API key (defaults to server config)")
+    categories: List[str] = Field(default=["Agriculture", "Scholarship", "Health"], description="Categories to generate")
+    count_per_category: int = Field(default=2, ge=1, le=5)
+
+
+@router.post("/schemes/generate-gemini", response_model=APIResponse[dict], summary="[Admin] Generate & Index Schemes using Gemini AI")
+async def admin_generate_schemes(
+    req: AdminGenerateSchemesRequest,
+    admin: User = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Use Gemini AI to generate structured government schemes and seed them into DB and RAG index."""
+    api_key = req.gemini_api_key or settings.GEMINI_API_KEY
+    if not api_key:
+        raise HTTPException(
+            status_code=400,
+            detail="Gemini API key is required. Provide 'gemini_api_key' in request or set GEMINI_API_KEY in server environment.",
+        )
+
+    json_path = Path(__file__).resolve().parent.parent.parent.parent / "data" / "schemes" / "schemes.v1.json"
+    if json_path.exists():
+        with open(json_path, "r", encoding="utf-8") as f:
+            dataset_data = json.load(f)
+    else:
+        dataset_data = {"dataset_version": "v1", "schemes": []}
+
+    existing_ids = {s["scheme_id"] for s in dataset_data.get("schemes", [])}
+    new_schemes = []
+
+    for cat in req.categories:
+        try:
+            generated = await generate_schemes_with_gemini(api_key=api_key, category=cat, count=req.count_per_category)
+            for s in generated:
+                s_id = s.get("scheme_id")
+                if s_id and s_id not in existing_ids:
+                    dataset_data["schemes"].append(s)
+                    existing_ids.add(s_id)
+                    new_schemes.append(s)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Gemini scheme generation failed for category '{cat}': {str(e)}")
+
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(dataset_data, f, indent=2, ensure_ascii=False)
+
+    seeded_count = await seed_scheme_dataset(db, json_path)
+
+    return APIResponse(
+        success=True,
+        message=f"Successfully generated {len(new_schemes)} new schemes and indexed {seeded_count} total into database & RAG.",
+        data={"generated_schemes_count": len(new_schemes), "seeded_count": seeded_count},
+    )
+

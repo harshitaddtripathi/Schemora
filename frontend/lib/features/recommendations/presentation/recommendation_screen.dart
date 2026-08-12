@@ -40,7 +40,7 @@ class RecommendationScreen extends ConsumerWidget {
             if (items.isEmpty) {
               return const EmptyStateWidget(
                 title: 'No Eligible Schemes',
-                description: 'No eligible schemes found. Try updating your student profile.',
+                description: 'No eligible schemes found. Try updating your citizen profile.',
               );
             }
 
@@ -50,7 +50,7 @@ class RecommendationScreen extends ConsumerWidget {
                 Text('Your Top Matched Schemes', style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 22)),
                 const SizedBox(height: 6),
                 const Text(
-                  'Deterministic evaluation based on your active student profile.',
+                  'Deterministic evaluation based on your active profile.',
                   style: TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
@@ -68,6 +68,7 @@ class RecommendationScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               CircleAvatar(
                                 backgroundColor: AppTheme.primaryNavy,
@@ -84,18 +85,23 @@ class RecommendationScreen extends ConsumerWidget {
                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: isMatched ? AppTheme.successGreen.withAlpha(25) : Colors.orange.withAlpha(25),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  item.status,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: isMatched ? AppTheme.successGreen : Colors.orange.shade800,
+                              const SizedBox(width: 8),
+                              Flexible(
+                                flex: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: isMatched ? AppTheme.successGreen.withAlpha(25) : Colors.orange.withAlpha(25),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    item.status,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: isMatched ? AppTheme.successGreen : Colors.orange.shade800,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ),
@@ -104,8 +110,11 @@ class RecommendationScreen extends ConsumerWidget {
                           const SizedBox(height: 12),
                           Text(item.benefitSummary, style: Theme.of(context).textTheme.bodyMedium),
                           const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            runSpacing: 8,
+                            spacing: 12,
                             children: [
                               Text(
                                 'Confidence: ${(item.confidenceScore * 100).toInt()}%',
