@@ -1,33 +1,39 @@
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 class EnvConfig {
   static const String appName = 'Schemora';
   static const String appVersion = '1.0.0';
 
-  // Production URL injected at build time via:
-  //   flutter run --dart-define=API_BASE_URL=https://your-api.onrender.com/api/v1
-  // Leave empty to auto-select the correct local development URL.
-  static const String _productionBaseUrl =
+  // ---------------------------------------------------------------------------
+  // DEVELOPMENT API CONFIGURATION FOR PHYSICAL ANDROID PHONE / LOCAL PC
+  // ---------------------------------------------------------------------------
+  // 1. Enter your PC's LAN IPv4 address here (e.g. '192.168.3.150').
+  // 2. OR run ADB port reverse: `adb reverse tcp:8000 tcp:8000` and use '127.0.0.1'.
+  // 3. OR pass at run time via CLI:
+  //    flutter run --dart-define=API_BASE_URL=http://192.168.x.x:8000/api/v1
+  // ---------------------------------------------------------------------------
+  static const String devHostIp =
+      '127.0.0.1'; // Set your PC's LAN IP address here
+  static const String devPort = '8000';
+
+  // Production or runtime override injected via --dart-define=API_BASE_URL=...
+  static const String _overrideBaseUrl =
       String.fromEnvironment('API_BASE_URL', defaultValue: '');
 
-  // Local development URL with port 8000
+  /// Dynamically computes the local development base URL.
   static String get _localBaseUrl {
-    if (!kIsWeb && Platform.isAndroid) {
-      return 'http://192.168.3.150:8000/api/v1/';
-    }
-    return 'http://127.0.0.1:8000/api/v1/';
+    final host = devHostIp.trim().isNotEmpty ? devHostIp.trim() : '127.0.0.1';
+    return 'http://$host:$devPort/api/v1/';
   }
 
-  /// The base URL in use for this run.
-  /// Priority: --dart-define override → auto-detected local URL.
-  /// Always guarantees a trailing slash so Dio relative path resolution works properly.
+  /// The active API Base URL used by Dio.
+  /// Priority:
+  /// 1. `--dart-define=API_BASE_URL=...` CLI argument
+  /// 2. Configured `devHostIp` / `_localBaseUrl`
   static String get baseUrl {
     final rawUrl =
-        _productionBaseUrl.isNotEmpty ? _productionBaseUrl : _localBaseUrl;
+        _overrideBaseUrl.isNotEmpty ? _overrideBaseUrl : _localBaseUrl;
     return rawUrl.endsWith('/') ? rawUrl : '$rawUrl/';
   }
 
   static const int connectTimeoutMs = 15000;
-  static const int receiveTimeoutMs = 15000;
+  static const int receiveTimeoutMs = 30000;
 }

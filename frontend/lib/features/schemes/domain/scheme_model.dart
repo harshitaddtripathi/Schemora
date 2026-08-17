@@ -131,7 +131,7 @@ class RecommendationItemModel {
   final int failedRulesCount;
   final List<String> unresolvedFields;
 
-  RecommendationItemModel({
+  const RecommendationItemModel({
     required this.schemeId,
     required this.schemeTitle,
     required this.provider,

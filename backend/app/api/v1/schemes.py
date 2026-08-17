@@ -67,6 +67,7 @@ async def list_schemes(
 @router.get("/recommendations", response_model=APIResponse[RecommendationResponse], summary="Calculate Recommendations")
 @router.post("/recommendations", response_model=APIResponse[RecommendationResponse], summary="Calculate Recommendations")
 async def get_recommendations(
+    category: Optional[str] = Query(None, description="Active profile category filter"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -81,13 +82,28 @@ async def get_recommendations(
             detail="Student profile not found. Please complete your profile before requesting recommendations.",
         )
 
-    # Fetch all published schemes with rules
-    schemes_res = await db.execute(
-        select(Scheme).options(selectinload(Scheme.rules)).where(Scheme.is_published == True)
-    )
+    # Fetch published schemes with rules
+    query = select(Scheme).options(selectinload(Scheme.rules)).where(Scheme.is_published == True)
+    schemes_res = await db.execute(query)
     schemes = schemes_res.scalars().all()
 
     evaluations = [evaluate_scheme_eligibility(s, profile) for s in schemes]
+    
+    # Boost confidence score for schemes matching active category and domicile state
+    for ev in evaluations:
+        scheme_id = ev["scheme_id"]
+        matched_scheme = next((s for s in schemes if s.id == scheme_id), None)
+        if matched_scheme:
+            # Boost category match
+            if category and matched_scheme.scheme_category and matched_scheme.scheme_category.lower() == category.lower():
+                ev["confidence_score"] = min(1.0, ev["confidence_score"] + 0.3)
+            # Boost state match if user state matches scheme state
+            if profile and profile.state and matched_scheme.state and matched_scheme.state.lower() == profile.state.lower():
+                ev["confidence_score"] = min(1.0, ev["confidence_score"] + 0.2)
+
+    # Sort all evaluations by confidence score descending
+    evaluations.sort(key=lambda x: (x["status"] == "RuleMatched", x["confidence_score"]), reverse=True)
+
     top3 = rank_and_select_top3(evaluations)
 
     resp_data = RecommendationResponse(

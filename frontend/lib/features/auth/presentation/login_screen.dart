@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/features/auth/data/auth_repository.dart';
 import 'package:schemora_frontend/features/auth/domain/auth_state.dart';
-import 'package:schemora_frontend/features/profile/data/profile_repository.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -58,33 +57,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    debugPrint('[PROFILE] Checking current profile');
-    ref.invalidate(currentProfileProvider);
-
-    try {
-      final profile = await ref
-          .read(currentProfileProvider.future)
-          .timeout(const Duration(seconds: 5));
-
-      if (!mounted) return;
-
-      debugPrint('[PROFILE] Profile found: ${profile != null}');
-      if (profile == null) {
-        debugPrint('[NAV] Navigating to /profile-type');
-        _isNavigating = true;
-        context.go('/profile-type');
-      } else {
-        debugPrint('[NAV] Navigating to /recommendations');
-        _isNavigating = true;
-        context.go('/recommendations');
-      }
-    } catch (e) {
-      debugPrint('[PROFILE] Profile lookup failed: $e');
-      debugPrint('[NAV] Falling back to /profile-type');
-      if (!mounted) return;
-      _isNavigating = true;
-      context.go('/profile-type');
-    }
+    debugPrint('[NAV] OTP verified successfully. Navigating to /dashboard first');
+    _isNavigating = true;
+    context.go('/dashboard');
   }
 
   @override

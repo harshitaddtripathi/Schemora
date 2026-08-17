@@ -7,7 +7,7 @@ void main() {
       expect(EnvConfig.appName, equals('Schemora'));
       expect(EnvConfig.appVersion, equals('1.0.0'));
       expect(EnvConfig.connectTimeoutMs, equals(15000));
-      expect(EnvConfig.receiveTimeoutMs, equals(15000));
+      expect(EnvConfig.receiveTimeoutMs, equals(30000));
     });
 
     test('baseUrl contains /api/v1', () {

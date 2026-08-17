@@ -4,6 +4,7 @@ import 'package:schemora_frontend/features/auth/presentation/login_screen.dart';
 import 'package:schemora_frontend/features/health/presentation/health_screen.dart';
 import 'package:schemora_frontend/features/profile/presentation/profile_form_screen.dart';
 import 'package:schemora_frontend/features/profile/presentation/profile_type_screen.dart';
+import 'package:schemora_frontend/features/schemes/presentation/dashboard_screen.dart';
 import 'package:schemora_frontend/features/schemes/presentation/scheme_catalog_screen.dart';
 import 'package:schemora_frontend/features/schemes/presentation/scheme_detail_screen.dart';
 import 'package:schemora_frontend/features/recommendations/presentation/recommendation_screen.dart';
@@ -22,6 +23,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/health-diagnostic',
         builder: (context, state) => const HealthScreen(),
+      ),
+      GoRoute(
+        path: '/dashboard',
+        builder: (context, state) => const DashboardScreen(),
       ),
       // Profile type selection — new onboarding first step
       GoRoute(

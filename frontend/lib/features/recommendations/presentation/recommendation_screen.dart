@@ -5,16 +5,19 @@ import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 
+import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
+
 class RecommendationScreen extends ConsumerWidget {
   const RecommendationScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final top3Async = ref.watch(top3RecommendationsProvider);
+    final profileType = ref.watch(selectedProfileTypeProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Scheme Matches'),
+        title: Text('My Matches (${profileType.displayName})'),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -47,11 +50,11 @@ class RecommendationScreen extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.all(20.0),
               children: [
-                Text('Your Top Matched Schemes', style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 22)),
+                Text('All Eligible ${profileType.displayName} Schemes', style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 22)),
                 const SizedBox(height: 6),
-                const Text(
-                  'Deterministic evaluation based on your active profile.',
-                  style: TextStyle(color: Colors.grey),
+                Text(
+                  'Showing all ${items.length} matched schemes across Central & State governments.',
+                  style: const TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
                 ...items.asMap().entries.map((entry) {

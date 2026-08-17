@@ -4,11 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:schemora_frontend/core/config/env_config.dart';
 
 final dioProvider = Provider<Dio>((ref) {
-  // EnvConfig.baseUrl is a runtime getter — evaluated here so Platform.isAndroid
-  // is read after the Flutter engine is initialized (not as a compile-time const).
+  final activeBaseUrl = EnvConfig.baseUrl;
+
+  debugPrint('===========================================================');
+  debugPrint('[Schemora API Client] Active Base URL: $activeBaseUrl');
+  debugPrint('===========================================================');
+
   final dio = Dio(
     BaseOptions(
-      baseUrl: EnvConfig.baseUrl,
+      baseUrl: activeBaseUrl,
       connectTimeout: const Duration(milliseconds: EnvConfig.connectTimeoutMs),
       receiveTimeout: const Duration(milliseconds: EnvConfig.receiveTimeoutMs),
       headers: {

@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 SCHEME_GENERATION_PROMPT = """You are an expert on Indian Central and State Government Schemes (MyScheme, NSP, MahaDBT, PM Initiatives, State Welfare).
 Generate {count} comprehensive, highly accurate Indian government schemes for the category '{category}'.

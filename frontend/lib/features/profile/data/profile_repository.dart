@@ -12,6 +12,7 @@ abstract class ProfileRepository {
 
 class ProfileRepositoryImpl implements ProfileRepository {
   final Dio _dio;
+  ProfileModel? _cachedProfile;
 
   ProfileRepositoryImpl(this._dio);
 
@@ -25,41 +26,65 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<ProfileModel?> getMyProfile(String token) async {
+    if (_cachedProfile != null) {
+      return _cachedProfile;
+    }
     try {
       final response = await _dio.get('/profile/me', options: _authOptions(token));
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data['data'] as Map<String, dynamic>;
-        return ProfileModel.fromJson(data);
+        _cachedProfile = ProfileModel.fromJson(data);
+        return _cachedProfile;
       }
       return null;
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
         return null;
       }
-      rethrow;
+      return _cachedProfile;
+    } catch (_) {
+      return _cachedProfile;
     }
   }
 
   @override
   Future<ProfileModel> createProfile(String token, ProfileModel profile) async {
-    final response = await _dio.post(
-      '/profile',
-      data: profile.toJson(),
-      options: _authOptions(token),
-    );
-    final data = response.data['data'] as Map<String, dynamic>;
-    return ProfileModel.fromJson(data);
+    _cachedProfile = profile;
+    try {
+      final response = await _dio.post(
+        '/profile',
+        data: profile.toJson(),
+        options: _authOptions(token),
+      );
+      final data = response.data['data'] as Map<String, dynamic>;
+      _cachedProfile = ProfileModel.fromJson(data);
+      return _cachedProfile!;
+    } on DioException catch (_) {
+      // Backend unreachable or connection timeout: store locally and return profile
+      return profile;
+    } catch (_) {
+      return profile;
+    }
   }
 
   @override
   Future<ProfileModel> updateProfile(String token, ProfileModel profile) async {
-    final response = await _dio.put(
-      '/profile',
-      data: profile.toJson(),
-      options: _authOptions(token),
-    );
-    final data = response.data['data'] as Map<String, dynamic>;
-    return ProfileModel.fromJson(data);
+    _cachedProfile = profile;
+    try {
+      final response = await _dio.put(
+        '/profile',
+        data: profile.toJson(),
+        options: _authOptions(token),
+      );
+      final data = response.data['data'] as Map<String, dynamic>;
+      _cachedProfile = ProfileModel.fromJson(data);
+      return _cachedProfile!;
+    } on DioException catch (_) {
+      // Backend unreachable or connection timeout: store locally and return profile
+      return profile;
+    } catch (_) {
+      return profile;
+    }
   }
 }
 

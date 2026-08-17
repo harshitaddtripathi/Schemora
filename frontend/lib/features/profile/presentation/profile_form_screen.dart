@@ -47,39 +47,170 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   bool _isNavigating = false;
 
   @override
+  @override
   void initState() {
     super.initState();
-    // Pre-fill from existing profile if available
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final type = ref.read(selectedProfileTypeProvider);
       final profileAsync = ref.read(currentProfileProvider);
+
       profileAsync.whenData((profile) {
-        if (profile != null && mounted) {
-          setState(() {
-            _nameController.text = profile.fullName;
-            _dobController.text = profile.dateOfBirth;
-            _gender = profile.gender;
-            _state = profile.state;
-            _socialCategory = profile.socialCategory;
-            _educationLevel = profile.educationLevel;
-            _employmentStatus = profile.employmentStatus;
-            _institutionType = profile.institutionType;
-            _isFullTimeStudent = profile.isFullTimeStudent;
-            _courseController.text = profile.courseName ?? '';
-            _institutionController.text = profile.institutionName ?? '';
-            _incomeController.text =
-                profile.annualFamilyIncome?.toInt().toString() ?? '';
-            _percentileController.text =
-                profile.class12Percentile?.toString() ?? '';
-            _attendanceController.text =
-                profile.attendancePercentage?.toString() ?? '';
-          });
+        if (profile != null && mounted && profile.fullName.isNotEmpty) {
+          // If profile exists, check if user changed profile type card
+          _loadFromProfile(profile);
+        } else if (mounted) {
+          _applyMockDataForType(type);
         }
       });
-      // Set default employment status from selected profile type
-      final type = ref.read(selectedProfileTypeProvider);
-      setState(() {
-        _employmentStatus = type.defaultEmploymentStatus;
-      });
+
+      // Always apply card-specific mock data defaults if form is blank
+      if (_nameController.text.isEmpty && mounted) {
+        _applyMockDataForType(type);
+      }
+    });
+  }
+
+  void _loadFromProfile(ProfileModel profile) {
+    setState(() {
+      _nameController.text = profile.fullName;
+      _dobController.text = profile.dateOfBirth;
+      _gender = profile.gender;
+      _state = profile.state;
+      _socialCategory = profile.socialCategory;
+      _educationLevel = profile.educationLevel;
+      _employmentStatus = profile.employmentStatus;
+      _institutionType = profile.institutionType;
+      _isFullTimeStudent = profile.isFullTimeStudent;
+      _courseController.text = profile.courseName ?? '';
+      _institutionController.text = profile.institutionName ?? '';
+      _incomeController.text = profile.annualFamilyIncome?.toInt().toString() ?? '';
+      _percentileController.text = profile.class12Percentile?.toString() ?? '';
+      _attendanceController.text = profile.attendancePercentage?.toString() ?? '';
+    });
+  }
+
+  void _applyMockDataForType(ProfileType type) {
+    setState(() {
+      switch (type) {
+        case ProfileType.student:
+          _nameController.text = 'Aarav Sharma';
+          _dobController.text = '2004-06-15';
+          _gender = 'Male';
+          _state = 'Maharashtra';
+          _socialCategory = 'OBC';
+          _incomeController.text = '250000';
+          _educationLevel = 'Undergraduate';
+          _courseController.text = 'B.Tech Computer Science';
+          _institutionController.text = 'COEP Technological University';
+          _institutionType = 'Regular';
+          _percentileController.text = '88.5';
+          _attendanceController.text = '85.0';
+          _isFullTimeStudent = true;
+          _employmentStatus = 'Unemployed';
+          break;
+
+        case ProfileType.farmer:
+          _nameController.text = 'Ramesh Chandra Patil';
+          _dobController.text = '1978-04-12';
+          _gender = 'Male';
+          _state = 'Maharashtra';
+          _socialCategory = 'General';
+          _incomeController.text = '180000';
+          _educationLevel = 'Class10';
+          _courseController.text = 'Sugarcane & Rice Cultivation';
+          _institutionController.text = 'Kolhapur Farm District';
+          _institutionType = 'Regular';
+          _percentileController.text = '';
+          _attendanceController.text = '';
+          _isFullTimeStudent = false;
+          _employmentStatus = 'SelfEmployed';
+          break;
+
+        case ProfileType.jobSeeker:
+          _nameController.text = 'Priya Verma';
+          _dobController.text = '2001-09-20';
+          _gender = 'Female';
+          _state = 'Uttar Pradesh';
+          _socialCategory = 'SC';
+          _incomeController.text = '150000';
+          _educationLevel = 'Undergraduate';
+          _courseController.text = 'Software & Data Entry Apprentice';
+          _institutionController.text = 'Skill India Center Lucknow';
+          _institutionType = 'Regular';
+          _percentileController.text = '78.0';
+          _attendanceController.text = '';
+          _isFullTimeStudent = false;
+          _employmentStatus = 'Unemployed';
+          break;
+
+        case ProfileType.entrepreneur:
+          _nameController.text = 'Vikramaditya Joshi';
+          _dobController.text = '1992-11-05';
+          _gender = 'Male';
+          _state = 'Gujarat';
+          _socialCategory = 'General';
+          _incomeController.text = '450000';
+          _educationLevel = 'Postgraduate';
+          _courseController.text = 'Micro Retail Enterprise';
+          _institutionController.text = 'Joshi Green Tech Solutions';
+          _institutionType = 'Regular';
+          _percentileController.text = '';
+          _attendanceController.text = '';
+          _isFullTimeStudent = false;
+          _employmentStatus = 'SelfEmployed';
+          break;
+
+        case ProfileType.womanFamily:
+          _nameController.text = 'Sunita Devi';
+          _dobController.text = '1986-08-25';
+          _gender = 'Female';
+          _state = 'Maharashtra';
+          _socialCategory = 'OBC';
+          _incomeController.text = '120000';
+          _educationLevel = 'Class12';
+          _courseController.text = 'Maternity & Family Support';
+          _institutionController.text = 'Nashik Primary Health Center';
+          _institutionType = 'Regular';
+          _percentileController.text = '';
+          _attendanceController.text = '';
+          _isFullTimeStudent = false;
+          _employmentStatus = 'Unemployed';
+          break;
+
+        case ProfileType.seniorCitizen:
+          _nameController.text = 'Harishchandra Kulkarni';
+          _dobController.text = '1958-03-10';
+          _gender = 'Male';
+          _state = 'Karnataka';
+          _socialCategory = 'General';
+          _incomeController.text = '160000';
+          _educationLevel = 'Class10';
+          _courseController.text = 'Unorganized Pension Applicant';
+          _institutionController.text = 'Bengaluru Senior Center';
+          _institutionType = 'Regular';
+          _percentileController.text = '';
+          _attendanceController.text = '';
+          _isFullTimeStudent = false;
+          _employmentStatus = 'Unemployed';
+          break;
+
+        case ProfileType.generalCitizen:
+          _nameController.text = 'Rajesh Kumar Singh';
+          _dobController.text = '1985-01-18';
+          _gender = 'Male';
+          _state = 'Delhi';
+          _socialCategory = 'General';
+          _incomeController.text = '300000';
+          _educationLevel = 'Undergraduate';
+          _courseController.text = 'Housing & Free Electricity Scheme';
+          _institutionController.text = 'Central Delhi Municipal Ward';
+          _institutionType = 'Regular';
+          _percentileController.text = '';
+          _attendanceController.text = '';
+          _isFullTimeStudent = false;
+          _employmentStatus = 'PartTime';
+          break;
+      }
     });
   }
 
@@ -258,10 +389,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       body: SafeArea(
         child: profileAsync.when(
           loading: () => const LoadingStateWidget(message: 'Loading your profile...'),
-          error: (err, _) => ErrorStateWidget(
-            message: 'Error loading profile: $err',
-            onRetry: () => ref.invalidate(currentProfileProvider),
-          ),
+          error: (_, __) => _buildForm(context, profileType),
           data: (_) => _buildForm(context, profileType),
         ),
       ),
@@ -276,6 +404,43 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Sample Mock Data Banner Chip
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withAlpha(20),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.primaryBlue.withAlpha(50)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.auto_awesome_rounded, color: AppTheme.primaryBlue, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Prefilled with ${type.displayName} sample data.',
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primaryNavy),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => _applyMockDataForType(type),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        'Reset Sample Data',
+                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Header
             _SectionHeader(
               icon: Icons.person_outline_rounded,
