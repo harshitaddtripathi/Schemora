@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type.dart';
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
@@ -178,6 +179,7 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
       appBar: AppBar(
         title: const Text('Scheme Application & Details'),
         actions: [
+          const DashboardButton(),
           IconButton(
             icon: const Icon(Icons.share_rounded),
             tooltip: 'Share Scheme',

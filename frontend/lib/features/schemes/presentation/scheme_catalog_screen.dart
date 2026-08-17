@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
 
@@ -31,6 +32,7 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
       appBar: AppBar(
         title: const Text('Schemora Catalog'),
         actions: [
+          const DashboardButton(),
           IconButton(
             icon: const Icon(Icons.star_rounded, color: AppTheme.warningOrange),
             tooltip: 'Top Recommendations',

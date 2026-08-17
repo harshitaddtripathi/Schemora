@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/documents/data/document_repository.dart';
 import 'package:schemora_frontend/features/documents/domain/document_model.dart';
 
@@ -40,6 +41,9 @@ class _SchemeChecklistScreenState extends ConsumerState<SchemeChecklistScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Application Checklist'),
+        actions: const [
+          DashboardButton(),
+        ],
       ),
       body: FutureBuilder<SchemeChecklistModel>(
         future: _checklistFuture,

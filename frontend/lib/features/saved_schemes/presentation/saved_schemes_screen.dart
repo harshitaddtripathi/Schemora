@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/saved_schemes/data/saved_scheme_repository.dart';
 import 'package:schemora_frontend/features/saved_schemes/domain/saved_scheme_model.dart';
 
@@ -44,7 +45,7 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
     } catch (e) {
       if (mounted) {
         messenger.showSnackBar(
-          SnackBar(content: Text('Error updating status: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed to update status: $e')),
         );
       }
     }
@@ -87,6 +88,9 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Saved Schemes & Tracker'),
+        actions: [
+          const DashboardButton(),
+        ],
       ),
       body: FutureBuilder<List<SavedSchemeItemModel>>(
         future: _savedFuture,

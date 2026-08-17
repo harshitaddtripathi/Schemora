@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:schemora_frontend/core/network/api_client.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -102,6 +103,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         actions: [
+          const DashboardButton(color: Colors.white, tooltip: 'Citizen Dashboard'),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadSchemes),
         ],
       ),

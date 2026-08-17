@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/ai_assistant/data/ai_repository.dart';
 import 'package:schemora_frontend/features/ai_assistant/domain/ai_chat_model.dart';
 
@@ -104,6 +105,7 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
       appBar: AppBar(
         title: Text(widget.schemeTitle != null ? 'AI Assistant' : 'Schemora AI Assistant'),
         actions: [
+          const DashboardButton(),
           DropdownButton<String>(
             value: _selectedLang,
             underline: const SizedBox(),

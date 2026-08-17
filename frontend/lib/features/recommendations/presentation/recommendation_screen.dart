@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 
 import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
@@ -20,6 +21,7 @@ class RecommendationScreen extends ConsumerWidget {
         title: Text('My Matches (${profileType.displayName})'),
         automaticallyImplyLeading: false,
         actions: [
+          const DashboardButton(),
           IconButton(
             icon: const Icon(Icons.person_outline_rounded),
             tooltip: 'Edit Profile',

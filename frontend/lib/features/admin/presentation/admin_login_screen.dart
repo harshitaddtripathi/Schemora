@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 
 /// Admin login screen (P0-702).
 /// In production this would validate admin email+password+OTP.
@@ -42,6 +43,14 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Administrator Access'),
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
+        actions: const [
+          DashboardButton(color: Colors.white, tooltip: 'Back to Citizen Dashboard'),
+        ],
+      ),
       backgroundColor: AppTheme.primaryNavy,
       body: Center(
         child: Card(

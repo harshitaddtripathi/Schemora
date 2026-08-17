@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/health/data/health_repository.dart';
 
 class HealthScreen extends ConsumerWidget {
@@ -15,6 +16,7 @@ class HealthScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Schemora API Diagnostic'),
         actions: [
+          const DashboardButton(),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(healthStatusProvider),

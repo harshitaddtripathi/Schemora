@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
+import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
 
@@ -21,18 +22,18 @@ class ProfileTypeScreen extends ConsumerWidget {
     ),
     _ProfileCard(
       type: ProfileType.jobSeeker,
-      icon: Icons.work_outline_rounded,
-      gradient: [Color(0xFFF59E0B), Color(0xFFD97706)],
+      icon: Icons.work_rounded,
+      gradient: [Color(0xFFD97706), Color(0xFFB45309)],
     ),
     _ProfileCard(
       type: ProfileType.entrepreneur,
-      icon: Icons.business_center_rounded,
+      icon: Icons.store_rounded,
       gradient: [Color(0xFF7C3AED), Color(0xFF6D28D9)],
     ),
     _ProfileCard(
       type: ProfileType.womanFamily,
-      icon: Icons.favorite_rounded,
-      gradient: [Color(0xFFEC4899), Color(0xFFDB2777)],
+      icon: Icons.female_rounded,
+      gradient: [Color(0xFFDB2777), Color(0xFFBE185D)],
     ),
     _ProfileCard(
       type: ProfileType.seniorCitizen,
@@ -49,6 +50,12 @@ class ProfileTypeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile Category'),
+        actions: const [
+          DashboardButton(),
+        ],
+      ),
       backgroundColor: AppTheme.surfaceLight,
       body: SafeArea(
         child: CustomScrollView(
