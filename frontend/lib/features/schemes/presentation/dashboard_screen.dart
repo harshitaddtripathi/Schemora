@@ -789,22 +789,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             final isCentral = scheme.jurisdiction.toLowerCase() == 'central';
                             final isSaved = _savedSchemeIds.contains(scheme.id);
 
+                            final schemeTheme = SchemeImageHelper.getSchemeTheme(
+                              title: scheme.title,
+                              category: _selectedSector,
+                            );
+
                             return Container(
-                              margin: const EdgeInsets.only(bottom: 14.0),
+                              margin: const EdgeInsets.only(bottom: 12.0),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(16),
                                 border: Border.all(color: Colors.grey.shade200),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withAlpha(10),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
+                                    color: Colors.black.withAlpha(8),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 3),
                                   )
                                 ],
                               ),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(16),
                                 child: Material(
                                   color: Colors.transparent,
                                   child: InkWell(
@@ -812,72 +817,79 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        // Visual Header Banner Image
-                                        SizedBox(
-                                          height: 110,
-                                          width: double.infinity,
-                                          child: Stack(
-                                            fit: StackFit.expand,
+                                        // ── Professional compact header bar ──────────────
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: schemeTheme.gradient,
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            ),
+                                          ),
+                                          child: Row(
                                             children: [
-                                              Image.asset(
-                                                SchemeImageHelper.getSchemeImage(
-                                                  title: scheme.title,
-                                                  category: _selectedSector,
-                                                ),
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) => const SizedBox(),
-                                              ),
+                                              // Category icon
                                               Container(
+                                                padding: const EdgeInsets.all(8),
                                                 decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    colors: [
-                                                      Colors.black.withAlpha(160),
-                                                      Colors.black.withAlpha(40),
-                                                      Colors.transparent,
-                                                    ],
-                                                    begin: Alignment.bottomCenter,
-                                                    end: Alignment.topCenter,
-                                                  ),
+                                                  color: Colors.white.withAlpha(28),
+                                                  borderRadius: BorderRadius.circular(10),
+                                                ),
+                                                child: Icon(
+                                                  schemeTheme.icon,
+                                                  color: Colors.white,
+                                                  size: 20,
                                                 ),
                                               ),
-                                              Positioned(
-                                                top: 10,
-                                                left: 12,
-                                                right: 12,
-                                                child: Row(
+                                              const SizedBox(width: 10),
+                                              // Category label
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                                      decoration: BoxDecoration(
-                                                        color: isCentral ? AppTheme.primaryNavy : const Color(0xFF0D9488),
-                                                        borderRadius: BorderRadius.circular(8),
-                                                      ),
-                                                      child: Text(
-                                                        isCentral ? 'Central Scheme' : 'State Scheme (${scheme.state ?? _selectedState})',
-                                                        style: const TextStyle(
-                                                          fontSize: 11,
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Colors.white,
-                                                        ),
+                                                    Text(
+                                                      schemeTheme.label,
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 10,
+                                                        fontWeight: FontWeight.w600,
+                                                        letterSpacing: 0.5,
                                                       ),
                                                     ),
-                                                    const Spacer(),
-                                                    InkWell(
-                                                      onTap: () => _toggleSaveScheme(scheme.id),
-                                                      child: Container(
-                                                        padding: const EdgeInsets.all(6),
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.black.withAlpha(120),
-                                                          shape: BoxShape.circle,
-                                                        ),
-                                                        child: Icon(
-                                                          isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                                                          color: isSaved ? AppTheme.warningOrange : Colors.white,
-                                                          size: 18,
+                                                    const SizedBox(height: 1),
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white.withAlpha(28),
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: Text(
+                                                        isCentral ? '🏛 Central Government' : '🗺 State: ${scheme.state ?? _selectedState}',
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 10.5,
+                                                          fontWeight: FontWeight.w700,
                                                         ),
                                                       ),
                                                     ),
                                                   ],
+                                                ),
+                                              ),
+                                              // Save bookmark button
+                                              GestureDetector(
+                                                onTap: () => _toggleSaveScheme(scheme.id),
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(7),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white.withAlpha(28),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                  ),
+                                                  child: Icon(
+                                                    isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                                                    color: isSaved ? const Color(0xFFFBBF24) : Colors.white,
+                                                    size: 18,
+                                                  ),
                                                 ),
                                               ),
                                             ],

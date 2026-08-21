@@ -6,300 +6,329 @@ import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
 
+// ─── Data ──────────────────────────────────────────────────────────────────────
+class _CardData {
+  final ProfileType type;
+  final IconData icon;
+  final Color color;
+  final String badge;
+  const _CardData({
+    required this.type,
+    required this.icon,
+    required this.color,
+    required this.badge,
+  });
+}
+
+// ─── Screen ────────────────────────────────────────────────────────────────────
 class ProfileTypeScreen extends ConsumerWidget {
   const ProfileTypeScreen({super.key});
 
-  static const List<_ProfileCard> _cards = [
-    _ProfileCard(
+  static const _cards = [
+    _CardData(
       type: ProfileType.student,
       icon: Icons.school_rounded,
-      gradient: [Color(0xFF2563EB), Color(0xFF4F46E5)],
-      imageAsset: 'assets/images/scholarship_card.png',
+      color: Color(0xFF2563EB),
+      badge: 'Scholarships · Education Loans',
     ),
-    _ProfileCard(
+    _CardData(
       type: ProfileType.farmer,
       icon: Icons.agriculture_rounded,
-      gradient: [Color(0xFF16A34A), Color(0xFF15803D)],
-      imageAsset: 'assets/images/agriculture_card.png',
+      color: Color(0xFF059669),
+      badge: 'Kisan Credit · Crop Insurance',
     ),
-    _ProfileCard(
+    _CardData(
       type: ProfileType.jobSeeker,
       icon: Icons.work_rounded,
-      gradient: [Color(0xFFD97706), Color(0xFFB45309)],
-      imageAsset: 'assets/images/scholarship_card.png',
+      color: Color(0xFFEA580C),
+      badge: 'Skill Training · Employment',
     ),
-    _ProfileCard(
+    _CardData(
       type: ProfileType.entrepreneur,
       icon: Icons.store_rounded,
-      gradient: [Color(0xFF7C3AED), Color(0xFF6D28D9)],
-      imageAsset: 'assets/images/business_card.png',
+      color: Color(0xFF7C3AED),
+      badge: 'MSME Loans · Startup Grants',
     ),
-    _ProfileCard(
+    _CardData(
       type: ProfileType.womanFamily,
-      icon: Icons.female_rounded,
-      gradient: [Color(0xFFDB2777), Color(0xFFBE185D)],
-      imageAsset: 'assets/images/women_card.png',
+      icon: Icons.favorite_rounded,
+      color: Color(0xFFDB2777),
+      badge: 'Women Welfare · Maternity',
     ),
-    _ProfileCard(
+    _CardData(
       type: ProfileType.seniorCitizen,
       icon: Icons.elderly_rounded,
-      gradient: [Color(0xFF0891B2), Color(0xFF0E7490)],
-      imageAsset: 'assets/images/pension_card.png',
+      color: Color(0xFF0891B2),
+      badge: 'Pension · Healthcare Benefits',
     ),
-    _ProfileCard(
+    _CardData(
       type: ProfileType.generalCitizen,
-      icon: Icons.person_rounded,
-      gradient: [Color(0xFF475569), Color(0xFF1E293B)],
-      imageAsset: 'assets/images/housing_card.png',
+      icon: Icons.home_rounded,
+      color: Color(0xFF4F46E5),
+      badge: 'Housing · Ration · Utilities',
     ),
   ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('Profile Category'),
+        title: const Text('Choose Profile'),
         centerTitle: true,
-        actions: const [
-          DashboardButton(),
-        ],
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 1,
+        actions: const [DashboardButton()],
       ),
-      backgroundColor: AppTheme.surfaceLight,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF2563EB), Color(0xFF4F46E5)],
-                            ),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Choose Profile Category',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.primaryNavy),
-                            ),
-                            Text(
-                              'Tailors deterministic schemes & AI matches',
-                              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                  ],
+      body: Column(
+        children: [
+          // ── Header Card ──────────────────────────────────────────────────
+          _buildHeader(),
+
+          // ── Section Label ────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 6),
+            child: Row(
+              children: [
+                Text(
+                  'SELECT YOUR CATEGORY',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.grey.shade500,
+                    letterSpacing: 1.2,
+                  ),
                 ),
+                const SizedBox(width: 10),
+                Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
+              ],
+            ),
+          ),
+
+          // ── Cards ────────────────────────────────────────────────────────
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              itemCount: _cards.length,
+              itemBuilder: (context, i) => _ProfileCard(
+                data: _cards[i],
+                index: i,
+                onTap: () {
+                  ref.read(selectedProfileTypeProvider.notifier).state =
+                      _cards[i].type;
+                  context.go('/profile-form');
+                },
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 14,
-                  crossAxisSpacing: 14,
-                  childAspectRatio: 0.76,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final card = _cards[index];
-                    return _ProfileTypeCard(
-                      card: card,
-                      onTap: () => _onSelect(context, ref, card.type),
-                    );
-                  },
-                  childCount: _cards.length,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  void _onSelect(BuildContext context, WidgetRef ref, ProfileType type) {
-    ref.read(selectedProfileTypeProvider.notifier).state = type;
-    context.go('/profile-form');
+  Widget _buildHeader() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0F172A), Color(0xFF1E3A8A)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E3A8A).withAlpha(55),
+            blurRadius: 16,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: Colors.white.withAlpha(22),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(
+              child: Icon(Icons.auto_awesome_rounded,
+                  color: Color(0xFFFBBF24), size: 20),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Personalise your experience',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Pick the profile that fits you best to discover relevant government schemes.',
+                  style: TextStyle(
+                    color: Colors.white.withAlpha(185),
+                    fontSize: 11,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
-class _ProfileCard {
-  final ProfileType type;
-  final IconData icon;
-  final List<Color> gradient;
-  final String imageAsset;
-
-  const _ProfileCard({
-    required this.type,
-    required this.icon,
-    required this.gradient,
-    required this.imageAsset,
-  });
-}
-
-class _ProfileTypeCard extends StatefulWidget {
-  final _ProfileCard card;
+// ─── Card Widget ────────────────────────────────────────────────────────────────
+class _ProfileCard extends StatefulWidget {
+  final _CardData data;
+  final int index;
   final VoidCallback onTap;
 
-  const _ProfileTypeCard({required this.card, required this.onTap});
+  const _ProfileCard({
+    required this.data,
+    required this.index,
+    required this.onTap,
+  });
 
   @override
-  State<_ProfileTypeCard> createState() => _ProfileTypeCardState();
+  State<_ProfileCard> createState() => _ProfileCardState();
 }
 
-class _ProfileTypeCardState extends State<_ProfileTypeCard>
+class _ProfileCardState extends State<_ProfileCard>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnim;
+  late final AnimationController _ctrl;
+  late final Animation<double> _scale;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 120),
-      lowerBound: 0.0,
-      upperBound: 0.04,
-    );
-    _scaleAnim = Tween<double>(begin: 1.0, end: 0.96).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 100));
+    _scale = Tween(begin: 1.0, end: 0.97)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _ctrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _scaleAnim,
-      builder: (ctx, child) => Transform.scale(
-        scale: _scaleAnim.value,
-        child: child,
-      ),
-      child: GestureDetector(
-        onTapDown: (_) => _controller.forward(),
-        onTapUp: (_) {
-          _controller.reverse();
-          widget.onTap();
-        },
-        onTapCancel: () => _controller.reverse(),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: widget.card.gradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: widget.card.gradient.first.withAlpha(80),
-                blurRadius: 14,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              children: [
-                // Visual Background Image
-                Positioned.fill(
-                  child: Image.asset(
-                    widget.card.imageAsset,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const SizedBox(),
-                  ),
+    final c = widget.data.color;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (_, child) => Transform.scale(scale: _scale.value, child: child),
+        child: GestureDetector(
+          onTapDown: (_) => _ctrl.forward(),
+          onTapUp: (_) {
+            _ctrl.reverse();
+            widget.onTap();
+          },
+          onTapCancel: () => _ctrl.reverse(),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(8),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-
-                // Dark Gradient Overlay for legible contrast
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          widget.card.gradient.first.withAlpha(210),
-                          widget.card.gradient.last.withAlpha(240),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // ── Left accent column ──────────────────────────────────
+                Container(
+                  width: 5,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: c,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(14),
+                      bottomLeft: Radius.circular(14),
                     ),
                   ),
                 ),
 
-                // Content Column
+                const SizedBox(width: 14),
+
+                // ── Icon box ────────────────────────────────────────────
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: c.withAlpha(22),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Icon(widget.data.icon, color: c, size: 22),
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                // ── Text block ──────────────────────────────────────────
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.data.type.displayName,
+                          style: const TextStyle(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.primaryNavy,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          widget.data.badge,
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: c,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ── Arrow ───────────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(45),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(widget.card.icon, color: Colors.white, size: 22),
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(45),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 12),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      Text(
-                        widget.card.type.displayName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          height: 1.2,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.card.type.subtitle,
-                        style: TextStyle(
-                          color: Colors.white.withAlpha(220),
-                          fontSize: 11,
-                          height: 1.3,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                  padding: const EdgeInsets.only(right: 14),
+                  child: Icon(
+                    Icons.chevron_right_rounded,
+                    color: Colors.grey.shade400,
+                    size: 22,
                   ),
                 ),
               ],
@@ -310,4 +339,3 @@ class _ProfileTypeCardState extends State<_ProfileTypeCard>
     );
   }
 }
-
