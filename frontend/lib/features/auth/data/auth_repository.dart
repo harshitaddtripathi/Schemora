@@ -40,6 +40,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> signInWithEmail(String email, String password) async {
+    state = state.copyWith(
+      status: AuthStatus.authenticating,
+      errorMessage: null,
+    );
+
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    // Demo credentials accepted
+    if ((email == 'user@demo.com' && password == 'demo123') ||
+        password.length >= 6) {
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        token: 'test-token-email',
+      );
+    } else {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: 'Invalid email or password. Try user@demo.com / demo123.',
+      );
+    }
+  }
+
+  void reset() {
+    state = const AuthState();
+  }
+
   void logout() {
     state = const AuthState();
   }

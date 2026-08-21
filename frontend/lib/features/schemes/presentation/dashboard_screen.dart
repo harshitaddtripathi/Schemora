@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
 import 'package:schemora_frontend/core/widgets/scheme_image_helper.dart';
+import 'package:schemora_frontend/features/auth/data/auth_repository.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
 
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
@@ -207,6 +208,54 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   behavior: SnackBarBehavior.floating,
                 ),
               );
+            },
+          ),
+          PopupMenuButton<String>(
+            tooltip: 'Account',
+            icon: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppTheme.primaryBlue.withAlpha(80), width: 1.5),
+              ),
+              child: const CircleAvatar(
+                radius: 14,
+                backgroundColor: Color(0xFFEFF6FF),
+                child: Icon(Icons.person_rounded, size: 17, color: AppTheme.primaryBlue),
+              ),
+            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            offset: const Offset(0, 48),
+            itemBuilder: (_) => [
+              const PopupMenuItem<String>(
+                enabled: false,
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Citizen Account', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF0F172A))),
+                    SizedBox(height: 2),
+                    Text('+91 9876543210', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout_rounded, size: 18, color: Color(0xFFDC2626)),
+                    SizedBox(width: 10),
+                    Text('Sign Out', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.w600, fontSize: 14)),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 'logout') {
+                ref.read(authProvider.notifier).logout();
+                context.go('/login');
+              }
             },
           ),
           const SizedBox(width: 4),
