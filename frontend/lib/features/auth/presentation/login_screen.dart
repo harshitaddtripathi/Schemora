@@ -21,12 +21,12 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen>
     with SingleTickerProviderStateMixin {
   // Controllers
-  final _phoneController = TextEditingController();
-  final _otpController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController(text: '9876543210');
+  final _otpController = TextEditingController(text: '123456');
+  final _emailController = TextEditingController(text: 'user@demo.com');
+  final _passwordController = TextEditingController(text: 'demo123');
   final _nameController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController(text: 'demo123');
 
   _LoginMethod _method = _LoginMethod.phone;
   _AuthMode _mode = _AuthMode.signIn;
