@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
+import 'package:schemora_frontend/core/widgets/scheme_image_helper.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
+
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
 
@@ -62,15 +64,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   ];
 
   static const List<Map<String, dynamic>> _kSectors = [
-    {'id': 'All', 'label': 'All Schemes', 'icon': Icons.apps_rounded, 'color': AppTheme.primaryBlue},
-    {'id': 'Education', 'label': 'Education & Scholarship', 'icon': Icons.school_rounded, 'color': Color(0xFF2563EB)},
-    {'id': 'Agriculture', 'label': 'Agriculture & Farmers', 'icon': Icons.agriculture_rounded, 'color': Color(0xFF059669)},
-    {'id': 'Skill', 'label': 'Employment & Skill', 'icon': Icons.work_rounded, 'color': Color(0xFFD97706)},
-    {'id': 'Entrepreneurship', 'label': 'Business & MSME', 'icon': Icons.store_rounded, 'color': Color(0xFF7C3AED)},
-    {'id': 'Women', 'label': 'Women & Child Welfare', 'icon': Icons.female_rounded, 'color': Color(0xFFDB2777)},
-    {'id': 'Senior', 'label': 'Senior Citizen & Pension', 'icon': Icons.elderly_rounded, 'color': Color(0xFF0D9488)},
-    {'id': 'General', 'label': 'Housing & Social Security', 'icon': Icons.home_rounded, 'color': Color(0xFF4F46E5)},
+    {'id': 'All', 'label': 'All Schemes', 'icon': Icons.apps_rounded, 'color': AppTheme.primaryBlue, 'image': null},
+    {'id': 'Education', 'label': 'Education & Scholarship', 'icon': Icons.school_rounded, 'color': Color(0xFF2563EB), 'image': 'assets/images/scholarship_card.png'},
+    {'id': 'Agriculture', 'label': 'Agriculture & Farmers', 'icon': Icons.agriculture_rounded, 'color': Color(0xFF059669), 'image': 'assets/images/agriculture_card.png'},
+    {'id': 'Entrepreneurship', 'label': 'Business & MSME', 'icon': Icons.store_rounded, 'color': Color(0xFF7C3AED), 'image': 'assets/images/business_card.png'},
+    {'id': 'Women', 'label': 'Women & Child Welfare', 'icon': Icons.female_rounded, 'color': Color(0xFFDB2777), 'image': 'assets/images/women_card.png'},
+    {'id': 'Skill', 'label': 'Employment & Skill', 'icon': Icons.work_rounded, 'color': Color(0xFFD97706), 'image': null},
+    {'id': 'Senior', 'label': 'Senior Citizen & Pension', 'icon': Icons.elderly_rounded, 'color': Color(0xFF0D9488), 'image': null},
+    {'id': 'General', 'label': 'Housing & Social Security', 'icon': Icons.home_rounded, 'color': Color(0xFF4F46E5), 'image': null},
   ];
+
 
   static const List<String> _kPopularTags = [
     'Scholarship',
@@ -124,7 +127,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final profileType = ref.watch(selectedProfileTypeProvider);
-    final repo = ref.watch(schemeRepositoryProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -689,31 +691,29 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
 
               // Scheme Cards List
-              FutureBuilder<List<SchemeModel>>(
-                future: repo.getSchemes(
-                  query: _searchController.text,
-                  jurisdiction: _selectedJurisdiction,
-                  state: _selectedJurisdiction == 'State' ? _selectedState : null,
-                  category: _selectedSector == 'All' ? null : _selectedSector,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SliverFillRemaining(
-                      child: LoadingStateWidget(message: 'Searching government scheme repository...'),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return SliverFillRemaining(
-                      child: ErrorStateWidget(
-                        message: 'Failed to load schemes: ${snapshot.error}',
-                        onRetry: () => setState(() {}),
-                      ),
-                    );
-                  }
+              ...ref.watch(allSchemesProvider).when(
+                loading: () => const [
+                  SliverFillRemaining(
+                    child: LoadingStateWidget(message: 'Searching government scheme repository...'),
+                  ),
+                ],
+                error: (err, _) => [
+                  SliverFillRemaining(
+                    child: ErrorStateWidget(
+                      message: 'Failed to load schemes: $err',
+                      onRetry: () => ref.invalidate(allSchemesProvider),
+                    ),
+                  ),
+                ],
+                data: (allSchemes) {
+                  var schemes = List<SchemeModel>.from(allSchemes);
 
-                  var schemes = snapshot.data ?? [];
-
-                  // Client-side category filtering fallback
+                  if (_selectedJurisdiction.isNotEmpty) {
+                    schemes = schemes.where((s) => s.jurisdiction.toLowerCase() == _selectedJurisdiction.toLowerCase()).toList();
+                  }
+                  if (_selectedJurisdiction == 'State') {
+                    schemes = schemes.where((s) => s.state == null || s.state!.toLowerCase() == _selectedState.toLowerCase()).toList();
+                  }
                   if (_selectedSector != 'All') {
                     final secLower = _selectedSector.toLowerCase();
                     schemes = schemes.where((s) {
@@ -723,151 +723,194 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       return title.contains(secLower) || desc.contains(secLower) || ben.contains(secLower);
                     }).toList();
                   }
-
-                  if (schemes.isEmpty) {
-                    return SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue.withAlpha(20),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.search_off_rounded, size: 48, color: AppTheme.primaryBlue),
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'No Matching Schemes Found',
-                              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Try adjusting your search keywords, switching jurisdiction, or clearing sector filters.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton.icon(
-                              onPressed: _resetFilters,
-                              icon: const Icon(Icons.refresh_rounded, size: 18),
-                              label: const Text('Reset All Filters'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryNavy,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                  if (_searchController.text.isNotEmpty) {
+                    final q = _searchController.text.toLowerCase();
+                    schemes = schemes.where((s) {
+                      final title = s.title.toLowerCase();
+                      final desc = s.shortDescription.toLowerCase();
+                      final ben = s.benefitSummary.toLowerCase();
+                      final prov = s.provider.toLowerCase();
+                      return title.contains(q) || desc.contains(q) || ben.contains(q) || prov.contains(q);
+                    }).toList();
                   }
 
-                  return SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final scheme = schemes[index];
-                          final isCentral = scheme.jurisdiction.toLowerCase() == 'central';
-                          final isSaved = _savedSchemeIds.contains(scheme.id);
+                  if (schemes.isEmpty) {
+                    return [
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue.withAlpha(20),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.search_off_rounded, size: 48, color: AppTheme.primaryBlue),
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'No Matching Schemes Found',
+                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Try adjusting your search keywords, switching jurisdiction, or clearing sector filters.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                onPressed: _resetFilters,
+                                icon: const Icon(Icons.refresh_rounded, size: 18),
+                                label: const Text('Reset All Filters'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primaryNavy,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ];
+                  }
 
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 14.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
-                              border: Border.all(color: Colors.grey.shade200),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withAlpha(10),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                )
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(18),
-                              child: InkWell(
+                  return [
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final scheme = schemes[index];
+                            final isCentral = scheme.jurisdiction.toLowerCase() == 'central';
+                            final isSaved = _savedSchemeIds.contains(scheme.id);
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 14.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(18),
-                                onTap: () => context.push('/catalog/${scheme.id}'),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(18.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Badges Header Row
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: isCentral
-                                                  ? const Color(0xFFEFF6FF)
-                                                  : const Color(0xFFF0FDFA),
-                                              borderRadius: BorderRadius.circular(8),
-                                              border: Border.all(
-                                                color: isCentral
-                                                    ? const Color(0xFFBFDBFE)
-                                                    : const Color(0xFF99F6E4),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  isCentral ? Icons.flag_rounded : Icons.location_city_rounded,
-                                                  size: 13,
-                                                  color: isCentral ? AppTheme.primaryNavy : const Color(0xFF0D9488),
+                                border: Border.all(color: Colors.grey.shade200),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withAlpha(10),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  )
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(18),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () => context.push('/catalog/${scheme.id}'),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Visual Header Banner Image
+                                        SizedBox(
+                                          height: 110,
+                                          width: double.infinity,
+                                          child: Stack(
+                                            fit: StackFit.expand,
+                                            children: [
+                                              Image.asset(
+                                                SchemeImageHelper.getSchemeImage(
+                                                  title: scheme.title,
+                                                  category: _selectedSector,
                                                 ),
-                                                const SizedBox(width: 5),
-                                                Text(
-                                                  isCentral ? 'Central Scheme' : 'State Scheme (${scheme.state ?? _selectedState})',
-                                                  style: TextStyle(
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: isCentral ? AppTheme.primaryNavy : const Color(0xFF0D9488),
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (_, __, ___) => const SizedBox(),
+                                              ),
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.black.withAlpha(160),
+                                                      Colors.black.withAlpha(40),
+                                                      Colors.transparent,
+                                                    ],
+                                                    begin: Alignment.bottomCenter,
+                                                    end: Alignment.topCenter,
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFFEF3C7),
-                                              borderRadius: BorderRadius.circular(8),
-                                              border: Border.all(color: const Color(0xFFFDE68A)),
-                                            ),
-                                            child: Text(
-                                              scheme.benefitType,
-                                              style: const TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xFFB45309),
                                               ),
-                                            ),
+                                              Positioned(
+                                                top: 10,
+                                                left: 12,
+                                                right: 12,
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                      decoration: BoxDecoration(
+                                                        color: isCentral ? AppTheme.primaryNavy : const Color(0xFF0D9488),
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      ),
+                                                      child: Text(
+                                                        isCentral ? 'Central Scheme' : 'State Scheme (${scheme.state ?? _selectedState})',
+                                                        style: const TextStyle(
+                                                          fontSize: 11,
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const Spacer(),
+                                                    InkWell(
+                                                      onTap: () => _toggleSaveScheme(scheme.id),
+                                                      child: Container(
+                                                        padding: const EdgeInsets.all(6),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.black.withAlpha(120),
+                                                          shape: BoxShape.circle,
+                                                        ),
+                                                        child: Icon(
+                                                          isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                                                          color: isSaved ? AppTheme.warningOrange : Colors.white,
+                                                          size: 18,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(width: 6),
-                                          IconButton(
-                                            constraints: const BoxConstraints(),
-                                            padding: EdgeInsets.zero,
-                                            icon: Icon(
-                                              isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                                              color: isSaved ? AppTheme.warningOrange : Colors.grey.shade400,
-                                              size: 22,
-                                            ),
-                                            onPressed: () => _toggleSaveScheme(scheme.id),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
+                                        ),
+
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(0xFFFEF3C7),
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      border: Border.all(color: const Color(0xFFFDE68A)),
+                                                    ),
+                                                    child: Text(
+                                                      scheme.benefitType,
+                                                      style: const TextStyle(
+                                                        fontSize: 11,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Color(0xFFB45309),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                               ),
+                                       const SizedBox(height: 12),
+
 
                                       // Scheme Title
                                       Text(
@@ -990,22 +1033,34 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
+                                         ],
+                                       ),
+                                     ],
+                                   ),
+                                 ),
+                               ],
+                             ),
+                           ),
+                         ),
+                       ),
+                     );
+
+
+
+
                         },
+
+
                         childCount: schemes.length,
                       ),
                     ),
-                  );
-                },
-              ),
-            ],
+                  ),
+                ];
+              },
+            ),
+          ],
+
+
           ),
         ),
       ),

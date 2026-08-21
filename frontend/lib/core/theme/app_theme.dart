@@ -11,6 +11,8 @@ class AppTheme {
   static const Color errorRed = Color(0xFFEF4444);
   static const Color surfaceLight = Color(0xFFF8FAFC);
   static const Color cardLight = Colors.white;
+  static const Color textDark = Color(0xFF1E293B);
+  static const Color textMuted = Color(0xFF64748B);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -27,63 +29,87 @@ class AppTheme {
       textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme).copyWith(
         displayLarge: GoogleFonts.outfit(
           fontSize: 32,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
           color: primaryNavy,
+          letterSpacing: -0.5,
         ),
         headlineMedium: GoogleFonts.outfit(
           fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: primaryNavy,
+          letterSpacing: -0.3,
         ),
         titleLarge: GoogleFonts.inter(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: primaryNavy,
         ),
         bodyLarge: GoogleFonts.inter(
           fontSize: 16,
-          color: const Color(0xFF334155),
+          color: textDark,
+          height: 1.5,
         ),
         bodyMedium: GoogleFonts.inter(
           fontSize: 14,
-          color: const Color(0xFF64748B),
+          color: textMuted,
+          height: 1.4,
         ),
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: cardLight,
         elevation: 0,
         centerTitle: true,
         scrolledUnderElevation: 1,
-        iconTheme: IconThemeData(color: primaryNavy),
-        titleTextStyle: TextStyle(
+        iconTheme: const IconThemeData(color: primaryNavy),
+        titleTextStyle: GoogleFonts.outfit(
           color: primaryNavy,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
       ),
       cardTheme: CardThemeData(
         color: cardLight,
-        elevation: 2,
-        shadowColor: Colors.black.withAlpha(13),
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: Colors.grey.shade200),
         ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFFF1F5F9),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 0.8),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 0.8),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: primaryBlue, width: 1.8),
+        ),
+        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          elevation: 2,
+          shadowColor: primaryBlue.withAlpha(80),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+          textStyle: GoogleFonts.inter(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
     );
   }
 }
+

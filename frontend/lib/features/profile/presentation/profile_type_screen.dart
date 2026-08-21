@@ -14,36 +14,43 @@ class ProfileTypeScreen extends ConsumerWidget {
       type: ProfileType.student,
       icon: Icons.school_rounded,
       gradient: [Color(0xFF2563EB), Color(0xFF4F46E5)],
+      imageAsset: 'assets/images/scholarship_card.png',
     ),
     _ProfileCard(
       type: ProfileType.farmer,
       icon: Icons.agriculture_rounded,
       gradient: [Color(0xFF16A34A), Color(0xFF15803D)],
+      imageAsset: 'assets/images/agriculture_card.png',
     ),
     _ProfileCard(
       type: ProfileType.jobSeeker,
       icon: Icons.work_rounded,
       gradient: [Color(0xFFD97706), Color(0xFFB45309)],
+      imageAsset: 'assets/images/scholarship_card.png',
     ),
     _ProfileCard(
       type: ProfileType.entrepreneur,
       icon: Icons.store_rounded,
       gradient: [Color(0xFF7C3AED), Color(0xFF6D28D9)],
+      imageAsset: 'assets/images/business_card.png',
     ),
     _ProfileCard(
       type: ProfileType.womanFamily,
       icon: Icons.female_rounded,
       gradient: [Color(0xFFDB2777), Color(0xFFBE185D)],
+      imageAsset: 'assets/images/women_card.png',
     ),
     _ProfileCard(
       type: ProfileType.seniorCitizen,
       icon: Icons.elderly_rounded,
       gradient: [Color(0xFF0891B2), Color(0xFF0E7490)],
+      imageAsset: 'assets/images/pension_card.png',
     ),
     _ProfileCard(
       type: ProfileType.generalCitizen,
       icon: Icons.person_rounded,
-      gradient: [Color(0xFF64748B), Color(0xFF475569)],
+      gradient: [Color(0xFF475569), Color(0xFF1E293B)],
+      imageAsset: 'assets/images/housing_card.png',
     ),
   ];
 
@@ -52,6 +59,7 @@ class ProfileTypeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile Category'),
+        centerTitle: true,
         actions: const [
           DashboardButton(),
         ],
@@ -62,36 +70,39 @@ class ProfileTypeScreen extends ConsumerWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 32, 24, 8),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF2563EB), Color(0xFF4F46E5)],
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF2563EB), Color(0xFF4F46E5)],
+                            ),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),
                         ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 28),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Choose Profile Category',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.primaryNavy),
+                            ),
+                            Text(
+                              'Tailors deterministic schemes & AI matches',
+                              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'How can Schemora\nhelp you?',
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                            fontSize: 30,
-                            height: 1.2,
-                          ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Choose the profile that best matches your needs.\nYou can update this anytime.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            height: 1.5,
-                          ),
-                    ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -103,7 +114,7 @@ class ProfileTypeScreen extends ConsumerWidget {
                   crossAxisCount: 2,
                   mainAxisSpacing: 14,
                   crossAxisSpacing: 14,
-                  childAspectRatio: 0.92,
+                  childAspectRatio: 0.76,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -133,11 +144,13 @@ class _ProfileCard {
   final ProfileType type;
   final IconData icon;
   final List<Color> gradient;
+  final String imageAsset;
 
   const _ProfileCard({
     required this.type,
     required this.icon,
     required this.gradient,
+    required this.imageAsset,
   });
 }
 
@@ -201,60 +214,93 @@ class _ProfileTypeCardState extends State<_ProfileTypeCard>
             ),
             boxShadow: [
               BoxShadow(
-                color: widget.card.gradient.first.withAlpha(70),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+                color: widget.card.gradient.first.withAlpha(80),
+                blurRadius: 14,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(45),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(widget.card.icon, color: Colors.white, size: 26),
-                ),
-                const Spacer(),
-                Text(
-                  widget.card.type.displayName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    height: 1.2,
+                // Visual Background Image
+                Positioned.fill(
+                  child: Image.asset(
+                    widget.card.imageAsset,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox(),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  widget.card.type.subtitle,
-                  style: TextStyle(
-                    color: Colors.white.withAlpha(210),
-                    fontSize: 11,
-                    height: 1.4,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(45),
-                        shape: BoxShape.circle,
+
+                // Dark Gradient Overlay for legible contrast
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          widget.card.gradient.first.withAlpha(210),
+                          widget.card.gradient.last.withAlpha(240),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
-                      child: const Icon(Icons.arrow_forward_rounded,
-                          color: Colors.white, size: 14),
                     ),
-                  ],
+                  ),
+                ),
+
+                // Content Column
+                Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(45),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(widget.card.icon, color: Colors.white, size: 22),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(45),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 12),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Text(
+                        widget.card.type.displayName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          height: 1.2,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.card.type.subtitle,
+                        style: TextStyle(
+                          color: Colors.white.withAlpha(220),
+                          fontSize: 11,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -264,3 +310,4 @@ class _ProfileTypeCardState extends State<_ProfileTypeCard>
     );
   }
 }
+

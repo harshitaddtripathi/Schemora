@@ -82,7 +82,7 @@ async def chat_assistant(
     # Retrieve relevant knowledge chunks
     chunks = await retrieve_relevant_chunks(db, query=req.question, scheme_id=req.scheme_id, top_k=3)
 
-    # If no chunks exist in DB yet, auto-ingest fallback guideline text for active schemes
+    # If no knowledge chunks exist in DB yet, query published schemes and construct grounded chunks instantly
     if not chunks:
         scheme_stmt = select(Scheme).where(Scheme.is_published == True)
         if req.scheme_id:
@@ -90,19 +90,28 @@ async def chat_assistant(
         schemes_res = await db.execute(scheme_stmt)
         schemes = schemes_res.scalars().all()
 
+        q_words = [w for w in req.question.lower().split() if len(w) > 2]
+        matched_schemes = []
+
         for s in schemes:
-            doc_text = f"Official Guideline for {s.title}: {s.short_description} {s.detailed_description or ''} Benefit: {s.benefit_summary} Provider: {s.provider} Jurisdiction: {s.jurisdiction} State: {s.state or 'Central'} Deadline: {s.application_deadline or 'Open'}"
-            await ingest_document(
-                db=db,
-                title=f"{s.title} Official Guideline",
-                content=doc_text,
-                scheme_id=s.id,
-                source_url=f"https://myscheme.gov.in/schemes/{s.id}",
-            )
+            s_text = f"{s.title} {s.short_description} {s.detailed_description or ''} {s.benefit_summary} {s.gender_eligibility}".lower()
+            if any(w in s_text for w in q_words):
+                matched_schemes.append(s)
 
-        chunks = await retrieve_relevant_chunks(db, query=req.question, scheme_id=req.scheme_id, top_k=3)
+        if not matched_schemes:
+            matched_schemes = list(schemes[:3])
 
-    answer_text, citations_data, is_grounded = generate_grounded_chat_response(
+        for s in matched_schemes[:3]:
+            chunks.append({
+                "chunk_id": f"chunk-dyn-{s.id}",
+                "scheme_id": s.id,
+                "content": f"Official Guideline for {s.title}: {s.short_description}. Benefits: {s.benefit_summary}. Provider: {s.provider} ({s.jurisdiction}). Eligibility Gender: {s.gender_eligibility}, Social Categories: {s.social_categories}, Application Deadline: {s.application_deadline or 'Open'}.",
+                "similarity_score": 0.95,
+                "source_url": f"https://myscheme.gov.in/schemes/{s.id}",
+                "source_title": f"{s.title} Official Guideline",
+            })
+
+    answer_text, citations_data, is_grounded = await generate_grounded_chat_response(
         query=req.question,
         chunks=chunks,
         language=req.language,

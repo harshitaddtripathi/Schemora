@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/ai_assistant/data/ai_repository.dart';
+import 'package:schemora_frontend/features/ai_assistant/data/voice_assistant_service.dart';
 import 'package:schemora_frontend/features/ai_assistant/domain/ai_chat_model.dart';
 
 class AssistantChatScreen extends ConsumerStatefulWidget {
@@ -20,6 +21,8 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
   final _controller = TextEditingController();
   final List<ChatMessageModel> _messages = [];
   bool _isLoading = false;
+  bool _isListening = false;
+  String? _currentlySpeakingId;
   String _selectedLang = 'en';
 
   @override
@@ -43,7 +46,53 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
     super.dispose();
   }
 
+  Future<void> _toggleVoiceListening() async {
+    final voiceService = ref.read(voiceAssistantServiceProvider);
+    if (_isListening) {
+      await voiceService.stopListening();
+      setState(() => _isListening = false);
+    } else {
+      setState(() {
+        _isListening = true;
+      });
+
+      await voiceService.startListening(
+        languageCode: _selectedLang,
+        onResult: (text, isFinal) {
+          if (mounted) {
+            setState(() {
+              _controller.text = text;
+              _controller.selection = TextSelection.fromPosition(
+                TextPosition(offset: _controller.text.length),
+              );
+            });
+          }
+        },
+        onDone: () {
+          if (mounted) {
+            setState(() => _isListening = false);
+          }
+        },
+      );
+    }
+  }
+
+  Future<void> _toggleSpeakMessage(ChatMessageModel msg) async {
+    final voiceService = ref.read(voiceAssistantServiceProvider);
+    if (_currentlySpeakingId == msg.id) {
+      await voiceService.stopSpeaking();
+      setState(() => _currentlySpeakingId = null);
+    } else {
+      setState(() => _currentlySpeakingId = msg.id);
+      await voiceService.speak(msg.text, languageCode: _selectedLang);
+    }
+  }
+
   Future<void> _sendMessage() async {
+    if (_isListening) {
+      await _toggleVoiceListening();
+    }
+
     final text = _controller.text.trim();
     if (text.isEmpty || _isLoading) return;
 
@@ -86,10 +135,13 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final errText = e.toString().contains('connection timeout') || e.toString().contains('receive timeout')
+            ? 'Connection timed out while reaching AI Assistant. Please check server status and try again.'
+            : 'Error connecting to AI service: $e';
         _messages.add(
           ChatMessageModel(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
-            text: 'Error connecting to AI service: $e',
+            text: errText,
             isUser: false,
             timestamp: DateTime.now(),
           ),
@@ -129,6 +181,8 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final msg = _messages[index];
+                  final isSpeaking = _currentlySpeakingId == msg.id;
+
                   return Align(
                     alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
                     child: Container(
@@ -149,12 +203,37 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            msg.text,
-                            style: TextStyle(
-                              color: msg.isUser ? Colors.white : AppTheme.primaryNavy,
-                              fontSize: 15,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  msg.text,
+                                  style: TextStyle(
+                                    color: msg.isUser ? Colors.white : AppTheme.primaryNavy,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                              if (!msg.isUser) ...[
+                                const SizedBox(width: 4),
+                                InkWell(
+                                  onTap: () => _toggleSpeakMessage(msg),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: isSpeaking ? AppTheme.primaryBlue.withAlpha(38) : Colors.transparent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      isSpeaking ? Icons.volume_up_rounded : Icons.volume_mute_rounded,
+                                      size: 20,
+                                      color: isSpeaking ? AppTheme.primaryBlue : Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ),
+                              ]
+                            ],
                           ),
                           if (msg.citations.isNotEmpty) ...[
                             const SizedBox(height: 8),
@@ -205,6 +284,85 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
                 },
               ),
             ),
+            if (_isListening)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryBlue.withAlpha(20),
+                      AppTheme.primaryBlue.withAlpha(35),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppTheme.primaryBlue.withAlpha(60)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryBlue.withAlpha(15),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: AppTheme.primaryBlue,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.graphic_eq_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Listening to your voice...',
+                            style: TextStyle(
+                              color: AppTheme.primaryNavy,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'Speak your question clearly',
+                            style: TextStyle(
+                              color: AppTheme.primaryBlue,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: _toggleVoiceListening,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBlue,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: const Text(
+                        'Done',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             if (_isLoading)
               const Padding(
                 padding: EdgeInsets.all(8.0),
@@ -215,12 +373,29 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
               color: Colors.white,
               child: Row(
                 children: [
+                  Tooltip(
+                    message: _isListening ? 'Stop Listening' : 'Voice Assistant / Speak',
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: _isListening ? AppTheme.primaryBlue.withAlpha(25) : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        onPressed: _toggleVoiceListening,
+                        icon: Icon(
+                          _isListening ? Icons.graphic_eq_rounded : Icons.mic_none_rounded,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: TextField(
                       controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Ask a question about guidelines...',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: _isListening ? 'Listening to your voice...' : 'Ask a question or tap mic...',
+                        border: const OutlineInputBorder(),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
@@ -239,3 +414,4 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
     );
   }
 }
+
