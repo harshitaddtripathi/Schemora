@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/ai_assistant/data/ai_repository.dart';
@@ -159,14 +160,41 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
                             const SizedBox(height: 8),
                             const Divider(height: 12),
                             const Text(
-                              'Official Citations:',
+                              'Official Sources & Citations:',
                               style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue),
                             ),
+                            const SizedBox(height: 4),
                             ...msg.citations.map((c) => Padding(
-                                  padding: const EdgeInsets.only(top: 2),
-                                  child: Text(
-                                    '• ${c.sourceName} (${c.url})',
-                                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      var cleanUrl = c.url.trim();
+                                      if (!cleanUrl.startsWith('http')) {
+                                        cleanUrl = 'https://$cleanUrl';
+                                      }
+                                      final uri = Uri.parse(cleanUrl);
+                                      try {
+                                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                      } catch (_) {}
+                                    },
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.open_in_new_rounded, size: 12, color: AppTheme.primaryBlue),
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Text(
+                                            '${c.sourceName} (${c.url})',
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              color: AppTheme.primaryBlue,
+                                              decoration: TextDecoration.underline,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 )),
                           ],

@@ -1,0 +1,135 @@
+[
+  {
+    "scheme_id": "sch-central-csss-001",
+    "scheme_name": "Central Sector Scheme of Scholarship for College and University Students",
+    "text_representation": "Scheme: Central Sector Scheme of Scholarship for College and University Students\n\nDescription:\nA Ministry of Education scholarship implemented through the National Scholarship Portal. The current detailed guideline thresholds and document checklist require a fresh authoritative guideline snapshot before production use.\n\nBenefits:\n- Financial scholarship assistance for eligible college and university students; the current amount and course-stage schedule require verification.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nCurrent CSSS required-document checklist\n\nApplication Process:\n[{'step_number': 1, 'description': 'Open the National Scholarship Portal and complete the CSSS application when the current application cycle is available.', 'channel': 'Online', 'verification_status': 'VerificationRequired', 'source_ids': ['src-csss-nsp-portal-002']}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-maharashtra-obc-postmatric-002",
+    "scheme_name": "Post Matric Scholarship to OBC Students",
+    "text_representation": "Scheme: Post Matric Scholarship to OBC Students\n\nDescription:\nA Maharashtra scheme administered through MahaDBT for eligible OBC students pursuing post-matric education, subject to domicile, income, attendance, course, gap, admission, and family-beneficiary conditions.\n\nBenefits:\n- Tuition fee, examination fee, and maintenance allowance support according to the applicable course group and official schedule.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Maharashtra\n\nDocuments:\nCaste certificate, Income certificate or income declaration, Previous examination marksheet, Gap declaration when an education gap exists, Leaving certificate, Ration card, Parent or guardian declaration regarding beneficiary children\n\nApplication Process:\n[{'step_number': 1, 'description': 'Register or sign in on the MahaDBT applicant portal.', 'channel': 'Online', 'verification_status': 'VerificationRequired', 'source_ids': ['src-maha-dbt-portal-005']}, {'step_number': 2, 'description': 'Complete the applicant profile, select Post Matric Scholarship to OBC Students, upload the current required documents, and submit.', 'channel': 'Online', 'verification_status': 'VerificationRequired', 'source_ids': ['src-maha-obc-details-004', 'src-maha-dbt-portal-005']}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-pmis-003",
+    "scheme_name": "PM Internship Scheme",
+    "text_representation": "Scheme: PM Internship Scheme\n\nDescription:\nThe latest official MY Bharat implementation provides eligible youth with a structured internship experience. This record intentionally uses the 2026 MY Bharat implementation rather than older MCA-era benefit values and portal assumptions.\n\nBenefits:\n- Monthly financial assistance during the internship period.\n- Structured industry exposure and practical work experience for the published internship duration.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nCurrent MY Bharat PM Internship document checklist\n\nApplication Process:\n[{'step_number': 1, 'description': 'Register or sign in on MY Bharat and complete the participant profile.', 'channel': 'Online', 'verification_status': 'Verified', 'source_ids': ['src-pmis-mybharat-overview-006']}, {'step_number': 2, 'description': 'Open the PM Internship Scheme section and apply to available internship opportunities during an announced cycle.', 'channel': 'Online', 'verification_status': 'Verified', 'source_ids': ['src-pmis-mybharat-event-007']}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-pmkisan-004",
+    "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "text_representation": "Scheme: Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)\n\nDescription:\nPM-KISAN is a Central Sector Scheme that provides financial support of Rs 6,000 per annum to landholding farmer families across India, transferred directly into their bank accounts in three equal installments of Rs 2,000 every four months.\n\nBenefits:\n- Direct bank transfer of Rs 6,000 annually in 3 equal installments of Rs 2,000.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nCultivable Land Record / Khatauni, Aadhaar Card linked with Bank Account\n\nApplication Process:\n[{'step_number': 1, 'description': 'Register online at PM-KISAN portal (pmkisan.gov.in) or visit nearest Common Service Center (CSC).', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-ayushman-005",
+    "scheme_name": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+    "text_representation": "Scheme: Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)\n\nDescription:\nAyushman Bharat PM-JAY is the world's largest health insurance scheme fully financed by the government. It provides a cover of Rs 5 lakhs per family per year for secondary and tertiary care hospitalization across empanelled public and private hospitals in India.\n\nBenefits:\n- Cashless hospitalization coverage up to Rs 5,000,000 per family annually.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nAadhaar Card or E-KYC Identity, Ration Card or Ayushman Card\n\nApplication Process:\n[{'step_number': 1, 'description': 'Check eligibility at beneficiary.nha.gov.in or visit any empanelled hospital with Ayushman Mitra.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-maharashtra-ladkibahin-006",
+    "scheme_name": "Mukhyamantri Majhi Ladki Bahin Yojana",
+    "text_representation": "Scheme: Mukhyamantri Majhi Ladki Bahin Yojana\n\nDescription:\nA flagship Maharashtra state government initiative aimed at financial independence, health, and nutrition for women. Eligible women receive direct monthly financial transfers of Rs 1,500.\n\nBenefits:\n- Monthly direct financial support of Rs 1,500 transferred to Aadhaar-linked bank account.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Maharashtra\n\nDocuments:\nAadhaar Card, Maharashtra Domicile Certificate or 15-year old Ration Card, Income Certificate (Family income <= 2.5 Lakhs) or Yellow/Orange Ration Card\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply online through Nari Shakti Doot App or official MahaDBT portal.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-pmsvanidhi-007",
+    "scheme_name": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+    "text_representation": "Scheme: PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)\n\nDescription:\nPM SVANidhi is a micro-credit scheme providing street vendors with collateral-free working capital loans starting from Rs 10,000, with enhanced limits up to Rs 50,000 upon timely repayment, along with digital cashback incentives.\n\nBenefits:\n- Collateral-free working capital loan up to Rs 50,000 with 7% interest subsidy.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nCertificate of Vending (CoV) or Identity Card issued by Urban Local Body, Aadhaar Card\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply online at pmsvanidhi.mohua.gov.in or through nearest CSC or lending bank branch.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-sukanya-008",
+    "scheme_name": "Sukanya Samriddhi Yojana (SSY)",
+    "text_representation": "Scheme: Sukanya Samriddhi Yojana (SSY)\n\nDescription:\nPart of the Beti Bachao Beti Padhao campaign, Sukanya Samriddhi Yojana offers attractive government-guaranteed interest rates and tax benefits under Section 80C for accounts opened for girl children up to 10 years of age.\n\nBenefits:\n- High government interest rate (approx 8.2% p.a.) compounded annually with tax exemption.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nGirl Child Birth Certificate, Identity & Address proof of Guardian\n\nApplication Process:\n[{'step_number': 1, 'description': 'Visit any India Post Office or authorized commercial bank branch to open SSY account.', 'channel': 'Offline', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-mudra-009",
+    "scheme_name": "Pradhan Mantri MUDRA Yojana (PMMY)",
+    "text_representation": "Scheme: Pradhan Mantri MUDRA Yojana (PMMY)\n\nDescription:\nPradhan Mantri MUDRA Yojana provides micro-loans up to Rs 10 Lakhs under Shishu (up to 50k), Kishore (50k-5L), and Tarun (5L-10L) categories to non-farm micro/small enterprises and entrepreneurs.\n\nBenefits:\n- Collateral-free business loan up to Rs 10,000,000 for entrepreneurship.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nAadhaar Card / Voter ID / PAN Card, Business Plan / Project Report\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply online at udyamimitra.in or submit loan application to any commercial bank, MFI, or RRB branch.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-apy-010",
+    "scheme_name": "Atal Pension Yojana (APY)",
+    "text_representation": "Scheme: Atal Pension Yojana (APY)\n\nDescription:\nAtal Pension Yojana (APY) provides a guaranteed minimum monthly pension ranging from Rs 1,000 to Rs 5,000 per month after reaching 60 years of age, depending on contributions.\n\nBenefits:\n- Guaranteed lifetime monthly pension of Rs 1,000 to Rs 5,000 after 60 years of age.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nAadhaar Card linked to Savings Account\n\nApplication Process:\n[{'step_number': 1, 'description': 'Subscribe through net banking or visit your bank post office branch.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-pmfby-011",
+    "scheme_name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "text_representation": "Scheme: Pradhan Mantri Fasal Bima Yojana (PMFBY)\n\nDescription:\nPMFBY provides financial support and insurance coverage to farmers in the event of failure of any notified crop as a result of natural calamities, pests, and diseases.\n\nBenefits:\n- Full crop loss financial compensation directly deposited into farmer bank accounts.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nLand ownership paper or tenancy agreement\n\nApplication Process:\n[{'step_number': 1, 'description': 'Enroll through PMFBY portal (pmfby.gov.in), bank branch, or insurance intermediary before cutoff date.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-pmay-012",
+    "scheme_name": "Pradhan Mantri Awas Yojana (PMAY)",
+    "text_representation": "Scheme: Pradhan Mantri Awas Yojana (PMAY)\n\nDescription:\nPradhan Mantri Awas Yojana provides pucca houses with basic amenities to all eligible urban and rural homeless and EWS/LIG families across India.\n\nBenefits:\n- Direct financial assistance of up to Rs 2.67 Lakhs as interest subsidy or construction grant.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nAadhaar Card of all family members, Income Proof / Self-Declaration\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply online at pmaymis.gov.in or visit local municipal office/CSC center.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-central-pmkvy-013",
+    "scheme_name": "Pradhan Mantri Kaushal Vikas Yojana (PMKVY 4.0)",
+    "text_representation": "Scheme: Pradhan Mantri Kaushal Vikas Yojana (PMKVY 4.0)\n\nDescription:\nPMKVY 4.0 is the flagship skill training scheme enabling Indian youth to take up industry-relevant skill training that helps them in securing a better livelihood.\n\nBenefits:\n- Free skill training, government certification, assessment fees, and placement assistance.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Central / All States\n\nDocuments:\nAadhaar Card and Bank Details\n\nApplication Process:\n[{'step_number': 1, 'description': 'Register on Skill India Digital portal (skillindiadigital.gov.in) and choose desired training course.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-up-kanya-sumangala-014",
+    "scheme_name": "Mukhya Mantri Kanya Sumangala Yojana",
+    "text_representation": "Scheme: Mukhya Mantri Kanya Sumangala Yojana\n\nDescription:\nA Uttar Pradesh state government initiative providing conditional cash transfers totaling Rs 25,000 to girl children from birth through higher education.\n\nBenefits:\n- Rs 25,000 total financial assistance paid in instalments from birth to graduation.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Uttar Pradesh\n\nDocuments:\nUP Domicile Certificate\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply online on the official portal mksy.up.gov.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-tn-pudhumai-penn-017",
+    "scheme_name": "Pudhumai Penn Scheme (Moovalur Ramamirtham Ammal Scheme)",
+    "text_representation": "Scheme: Pudhumai Penn Scheme (Moovalur Ramamirtham Ammal Scheme)\n\nDescription:\nTamil Nadu state scheme granting Rs 1,000 per month to female students who studied in government schools from Classes 6 to 12 and enrolled in degree or diploma courses.\n\nBenefits:\n- Rs 1,000 monthly financial assistance directly deposited into student bank accounts.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Tamil Nadu\n\nDocuments:\nGovernment School Transfer / Schooling Certificate (Class 6-12)\n\nApplication Process:\n[{'step_number': 1, 'description': 'Register on penkalvi.tn.gov.in through college nodal officer.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-kar-gruha-lakshmi-019",
+    "scheme_name": "Karnataka Gruha Lakshmi Scheme",
+    "text_representation": "Scheme: Karnataka Gruha Lakshmi Scheme\n\nDescription:\nKarnataka state scheme providing Rs 2,000 every month directly to female house heads (APL/BPL/Antyodaya ration card holders).\n\nBenefits:\n- Rs 2,000 per month direct bank benefit to woman house head.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Karnataka\n\nDocuments:\nBPL / APL Ration Card listing applicant as head of family\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply online at sevasindhugs.karnataka.gov.in or visit Grama One / Karnataka One centers.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-kar-raitha-vidya-020",
+    "scheme_name": "Karnataka Raitha Vidya Nidhi Scheme",
+    "text_representation": "Scheme: Karnataka Raitha Vidya Nidhi Scheme\n\nDescription:\nScholarship granted by Karnataka state government to students whose parents are farmers, encouraging higher education among agricultural families.\n\nBenefits:\n- Annual scholarship of Rs 2,500 to Rs 11,000 depending on course stage.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Karnataka\n\nDocuments:\nFarmer Identification (FID) or Land Record of Parent\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply on State Scholarship Portal (SSP Karnataka) at ssp.postmatric.karnataka.gov.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-wb-kanyashree-023",
+    "scheme_name": "West Bengal Kanyashree Prakalpa",
+    "text_representation": "Scheme: West Bengal Kanyashree Prakalpa\n\nDescription:\nA globally recognized West Bengal conditional cash transfer scheme empowering adolescent girls and preventing child marriage.\n\nBenefits:\n- Annual stipend K1 (Rs 1,000) and one-time K2 grant (Rs 25,000) at age 18.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: West Bengal\n\nDocuments:\nUnmarried Certificate and School/College Enrollment Proof\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply through school/educational institution portal at wbkanyashree.gov.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  },
+  {
+    "scheme_id": "sch-guj-mysy-029",
+    "scheme_name": "Mukhymantri Yuva Swavalamban Yojana (MYSY Gujarat)",
+    "text_representation": "Scheme: Mukhymantri Yuva Swavalamban Yojana (MYSY Gujarat)\n\nDescription:\nGujarat state scholarship providing up to 50% tuition fee assistance and hostel food allowance to meritorious students with family income <= Rs 6 Lakhs.\n\nBenefits:\n- 50% tuition fee subsidy (up to Rs 2,000,000/yr for medical/engineering) + hostel allowance.\n\nEligibility:\nAge Range: None to None years\nGender: all\nMax Income: None INR\nCategories: \nState Domicile: Gujarat\n\nDocuments:\nGujarat Income Certificate & Class 10/12 Marksheet (>= 80 percentile)\n\nApplication Process:\n[{'step_number': 1, 'description': 'Apply online at mysy.guj.nic.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+    "embedding": null,
+    "has_vector": false
+  }
+]

@@ -1,0 +1,1178 @@
+[
+  {
+    "scheme_id": "sch-central-csss-001",
+    "scheme_name": "Central Sector Scheme of Scholarship for College and University Students",
+    "slug": "central-sector-scheme-of-scholarship-for-college-and-university-students",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Department of Higher Education, Ministry of Education",
+    "department": "Department of Higher Education, Ministry of Education",
+    "category": [
+      "Scholarship"
+    ],
+    "description": "A Ministry of Education scholarship implemented through the National Scholarship Portal. The current detailed guideline thresholds and document checklist require a fresh authoritative guideline snapshot before production use.",
+    "benefits": [
+      {
+        "description": "Financial scholarship assistance for eligible college and university students; the current amount and course-stage schedule require verification.",
+        "amount": null,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Current CSSS required-document checklist"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Open the National Scholarship Portal and complete the CSSS application when the current application cycle is available.', 'channel': 'Online', 'verification_status': 'VerificationRequired', 'source_ids': ['src-csss-nsp-portal-002']}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://www.education.gov.in/implementation-central-sector-scholarship-scheme-college-and-university-students-through-national-e",
+      "source_id": "sch-central-csss-001",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-maharashtra-obc-postmatric-002",
+    "scheme_name": "Post Matric Scholarship to OBC Students",
+    "slug": "post-matric-scholarship-to-obc-students",
+    "government_level": "state",
+    "state": "Maharashtra",
+    "ministry": "VJNT, OBC and SBC Welfare Department, Government of Maharashtra",
+    "department": "VJNT, OBC and SBC Welfare Department, Government of Maharashtra",
+    "category": [
+      "Scholarship"
+    ],
+    "description": "A Maharashtra scheme administered through MahaDBT for eligible OBC students pursuing post-matric education, subject to domicile, income, attendance, course, gap, admission, and family-beneficiary conditions.",
+    "benefits": [
+      {
+        "description": "Tuition fee, examination fee, and maintenance allowance support according to the applicable course group and official schedule.",
+        "amount": null,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "Maharashtra"
+      ]
+    },
+    "documents_required": [
+      "Caste certificate",
+      "Income certificate or income declaration",
+      "Previous examination marksheet",
+      "Gap declaration when an education gap exists",
+      "Leaving certificate",
+      "Ration card",
+      "Parent or guardian declaration regarding beneficiary children"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Register or sign in on the MahaDBT applicant portal.', 'channel': 'Online', 'verification_status': 'VerificationRequired', 'source_ids': ['src-maha-dbt-portal-005']}, {'step_number': 2, 'description': 'Complete the applicant profile, select Post Matric Scholarship to OBC Students, upload the current required documents, and submit.', 'channel': 'Online', 'verification_status': 'VerificationRequired', 'source_ids': ['src-maha-obc-details-004', 'src-maha-dbt-portal-005']}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://mahadbt.maharashtra.gov.in/SchemeData/SchemeData?str=E9DDFA703C38E51AB02E984835E89FEFDB316E301CE6A991F41C5D42B01A7D7E",
+      "source_id": "sch-maharashtra-obc-postmatric-002",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-pmis-003",
+    "scheme_name": "PM Internship Scheme",
+    "slug": "pm-internship-scheme",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Ministry of Corporate Affairs through MY Bharat",
+    "department": "Ministry of Corporate Affairs through MY Bharat",
+    "category": [
+      "SkillDevelopment"
+    ],
+    "description": "The latest official MY Bharat implementation provides eligible youth with a structured internship experience. This record intentionally uses the 2026 MY Bharat implementation rather than older MCA-era benefit values and portal assumptions.",
+    "benefits": [
+      {
+        "description": "Monthly financial assistance during the internship period.",
+        "amount": 9000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      },
+      {
+        "description": "Structured industry exposure and practical work experience for the published internship duration.",
+        "amount": null,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Current MY Bharat PM Internship document checklist"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Register or sign in on MY Bharat and complete the participant profile.', 'channel': 'Online', 'verification_status': 'Verified', 'source_ids': ['src-pmis-mybharat-overview-006']}, {'step_number': 2, 'description': 'Open the PM Internship Scheme section and apply to available internship opportunities during an announced cycle.', 'channel': 'Online', 'verification_status': 'Verified', 'source_ids': ['src-pmis-mybharat-event-007']}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://mybharat.gov.in/pages/pm-internship-scheme",
+      "source_id": "sch-central-pmis-003",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-pmkisan-004",
+    "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "slug": "pradhan-mantri-kisan-samman-nidhi-pm-kisan",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Ministry of Agriculture & Farmers Welfare",
+    "department": "Ministry of Agriculture & Farmers Welfare",
+    "category": [
+      "Agriculture"
+    ],
+    "description": "PM-KISAN is a Central Sector Scheme that provides financial support of Rs 6,000 per annum to landholding farmer families across India, transferred directly into their bank accounts in three equal installments of Rs 2,000 every four months.",
+    "benefits": [
+      {
+        "description": "Direct bank transfer of Rs 6,000 annually in 3 equal installments of Rs 2,000.",
+        "amount": 6000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Cultivable Land Record / Khatauni",
+      "Aadhaar Card linked with Bank Account"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Register online at PM-KISAN portal (pmkisan.gov.in) or visit nearest Common Service Center (CSC).', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://pmkisan.gov.in/",
+      "source_id": "sch-central-pmkisan-004",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-ayushman-005",
+    "scheme_name": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+    "slug": "ayushman-bharat-pradhan-mantri-jan-arogya-yojana-pm-jay",
+    "government_level": "central",
+    "state": null,
+    "ministry": "National Health Authority, Ministry of Health and Family Welfare",
+    "department": "National Health Authority, Ministry of Health and Family Welfare",
+    "category": [
+      "Health"
+    ],
+    "description": "Ayushman Bharat PM-JAY is the world's largest health insurance scheme fully financed by the government. It provides a cover of Rs 5 lakhs per family per year for secondary and tertiary care hospitalization across empanelled public and private hospitals in India.",
+    "benefits": [
+      {
+        "description": "Cashless hospitalization coverage up to Rs 5,000,000 per family annually.",
+        "amount": 500000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Aadhaar Card or E-KYC Identity",
+      "Ration Card or Ayushman Card"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Check eligibility at beneficiary.nha.gov.in or visit any empanelled hospital with Ayushman Mitra.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://pmjay.gov.in/",
+      "source_id": "sch-central-ayushman-005",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-maharashtra-ladkibahin-006",
+    "scheme_name": "Mukhyamantri Majhi Ladki Bahin Yojana",
+    "slug": "mukhyamantri-majhi-ladki-bahin-yojana",
+    "government_level": "state",
+    "state": "Maharashtra",
+    "ministry": "Women and Child Development Department, Government of Maharashtra",
+    "department": "Women and Child Development Department, Government of Maharashtra",
+    "category": [
+      "WomenEmpowerment"
+    ],
+    "description": "A flagship Maharashtra state government initiative aimed at financial independence, health, and nutrition for women. Eligible women receive direct monthly financial transfers of Rs 1,500.",
+    "benefits": [
+      {
+        "description": "Monthly direct financial support of Rs 1,500 transferred to Aadhaar-linked bank account.",
+        "amount": 1500.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "Maharashtra"
+      ]
+    },
+    "documents_required": [
+      "Aadhaar Card",
+      "Maharashtra Domicile Certificate or 15-year old Ration Card",
+      "Income Certificate (Family income <= 2.5 Lakhs) or Yellow/Orange Ration Card"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply online through Nari Shakti Doot App or official MahaDBT portal.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://ladkibahin.maharashtra.gov.in/",
+      "source_id": "sch-maharashtra-ladkibahin-006",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-pmsvanidhi-007",
+    "scheme_name": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+    "slug": "pm-street-vendors-atmanirbhar-nidhi-pm-svanidhi",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Ministry of Housing and Urban Affairs",
+    "department": "Ministry of Housing and Urban Affairs",
+    "category": [
+      "Microfinance"
+    ],
+    "description": "PM SVANidhi is a micro-credit scheme providing street vendors with collateral-free working capital loans starting from Rs 10,000, with enhanced limits up to Rs 50,000 upon timely repayment, along with digital cashback incentives.",
+    "benefits": [
+      {
+        "description": "Collateral-free working capital loan up to Rs 50,000 with 7% interest subsidy.",
+        "amount": 50000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Certificate of Vending (CoV) or Identity Card issued by Urban Local Body",
+      "Aadhaar Card"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply online at pmsvanidhi.mohua.gov.in or through nearest CSC or lending bank branch.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://pmsvanidhi.mohua.gov.in/",
+      "source_id": "sch-central-pmsvanidhi-007",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-sukanya-008",
+    "scheme_name": "Sukanya Samriddhi Yojana (SSY)",
+    "slug": "sukanya-samriddhi-yojana-ssy",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Ministry of Finance & Department of Posts",
+    "department": "Ministry of Finance & Department of Posts",
+    "category": [
+      "FinancialInclusion"
+    ],
+    "description": "Part of the Beti Bachao Beti Padhao campaign, Sukanya Samriddhi Yojana offers attractive government-guaranteed interest rates and tax benefits under Section 80C for accounts opened for girl children up to 10 years of age.",
+    "benefits": [
+      {
+        "description": "High government interest rate (approx 8.2% p.a.) compounded annually with tax exemption.",
+        "amount": null,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Girl Child Birth Certificate",
+      "Identity & Address proof of Guardian"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Visit any India Post Office or authorized commercial bank branch to open SSY account.', 'channel': 'Offline', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://www.indiapost.gov.in/Financial/Pages/Content/Post-Office-Saving-Schemes.aspx",
+      "source_id": "sch-central-sukanya-008",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-mudra-009",
+    "scheme_name": "Pradhan Mantri MUDRA Yojana (PMMY)",
+    "slug": "pradhan-mantri-mudra-yojana-pmmy",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Department of Financial Services, Ministry of Finance",
+    "department": "Department of Financial Services, Ministry of Finance",
+    "category": [
+      "Entrepreneurship"
+    ],
+    "description": "Pradhan Mantri MUDRA Yojana provides micro-loans up to Rs 10 Lakhs under Shishu (up to 50k), Kishore (50k-5L), and Tarun (5L-10L) categories to non-farm micro/small enterprises and entrepreneurs.",
+    "benefits": [
+      {
+        "description": "Collateral-free business loan up to Rs 10,000,000 for entrepreneurship.",
+        "amount": 1000000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Aadhaar Card / Voter ID / PAN Card",
+      "Business Plan / Project Report"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply online at udyamimitra.in or submit loan application to any commercial bank, MFI, or RRB branch.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://www.mudra.org.in/",
+      "source_id": "sch-central-mudra-009",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-apy-010",
+    "scheme_name": "Atal Pension Yojana (APY)",
+    "slug": "atal-pension-yojana-apy",
+    "government_level": "central",
+    "state": null,
+    "ministry": "PFRDA, Ministry of Finance",
+    "department": "PFRDA, Ministry of Finance",
+    "category": [
+      "SeniorCitizen"
+    ],
+    "description": "Atal Pension Yojana (APY) provides a guaranteed minimum monthly pension ranging from Rs 1,000 to Rs 5,000 per month after reaching 60 years of age, depending on contributions.",
+    "benefits": [
+      {
+        "description": "Guaranteed lifetime monthly pension of Rs 1,000 to Rs 5,000 after 60 years of age.",
+        "amount": 5000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Aadhaar Card linked to Savings Account"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Subscribe through net banking or visit your bank post office branch.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://www.npscra.nsdl.co.in/scheme-details.php",
+      "source_id": "sch-central-apy-010",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-pmfby-011",
+    "scheme_name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "slug": "pradhan-mantri-fasal-bima-yojana-pmfby",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Ministry of Agriculture & Farmers Welfare",
+    "department": "Ministry of Agriculture & Farmers Welfare",
+    "category": [
+      "Agriculture"
+    ],
+    "description": "PMFBY provides financial support and insurance coverage to farmers in the event of failure of any notified crop as a result of natural calamities, pests, and diseases.",
+    "benefits": [
+      {
+        "description": "Full crop loss financial compensation directly deposited into farmer bank accounts.",
+        "amount": null,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Land ownership paper or tenancy agreement"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Enroll through PMFBY portal (pmfby.gov.in), bank branch, or insurance intermediary before cutoff date.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://pmfby.gov.in/",
+      "source_id": "sch-central-pmfby-011",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-pmay-012",
+    "scheme_name": "Pradhan Mantri Awas Yojana (PMAY)",
+    "slug": "pradhan-mantri-awas-yojana-pmay",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Ministry of Housing and Urban Affairs",
+    "department": "Ministry of Housing and Urban Affairs",
+    "category": [
+      "General"
+    ],
+    "description": "Pradhan Mantri Awas Yojana provides pucca houses with basic amenities to all eligible urban and rural homeless and EWS/LIG families across India.",
+    "benefits": [
+      {
+        "description": "Direct financial assistance of up to Rs 2.67 Lakhs as interest subsidy or construction grant.",
+        "amount": 267000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Aadhaar Card of all family members",
+      "Income Proof / Self-Declaration"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply online at pmaymis.gov.in or visit local municipal office/CSC center.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://pmaymis.gov.in/",
+      "source_id": "sch-central-pmay-012",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-central-pmkvy-013",
+    "scheme_name": "Pradhan Mantri Kaushal Vikas Yojana (PMKVY 4.0)",
+    "slug": "pradhan-mantri-kaushal-vikas-yojana-pmkvy-40",
+    "government_level": "central",
+    "state": null,
+    "ministry": "Ministry of Skill Development and Entrepreneurship",
+    "department": "Ministry of Skill Development and Entrepreneurship",
+    "category": [
+      "SkillDevelopment"
+    ],
+    "description": "PMKVY 4.0 is the flagship skill training scheme enabling Indian youth to take up industry-relevant skill training that helps them in securing a better livelihood.",
+    "benefits": [
+      {
+        "description": "Free skill training, government certification, assessment fees, and placement assistance.",
+        "amount": null,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": []
+    },
+    "documents_required": [
+      "Aadhaar Card and Bank Details"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Register on Skill India Digital portal (skillindiadigital.gov.in) and choose desired training course.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://www.pmkvyofficial.org/",
+      "source_id": "sch-central-pmkvy-013",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-up-kanya-sumangala-014",
+    "scheme_name": "Mukhya Mantri Kanya Sumangala Yojana",
+    "slug": "mukhya-mantri-kanya-sumangala-yojana",
+    "government_level": "state",
+    "state": "Uttar Pradesh",
+    "ministry": "Women and Child Development Department, Government of Uttar Pradesh",
+    "department": "Women and Child Development Department, Government of Uttar Pradesh",
+    "category": [
+      "WomenEmpowerment"
+    ],
+    "description": "A Uttar Pradesh state government initiative providing conditional cash transfers totaling Rs 25,000 to girl children from birth through higher education.",
+    "benefits": [
+      {
+        "description": "Rs 25,000 total financial assistance paid in instalments from birth to graduation.",
+        "amount": 25000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "Uttar Pradesh"
+      ]
+    },
+    "documents_required": [
+      "UP Domicile Certificate"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply online on the official portal mksy.up.gov.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://mksy.up.gov.in/",
+      "source_id": "sch-up-kanya-sumangala-014",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-tn-pudhumai-penn-017",
+    "scheme_name": "Pudhumai Penn Scheme (Moovalur Ramamirtham Ammal Scheme)",
+    "slug": "pudhumai-penn-scheme-moovalur-ramamirtham-ammal-scheme",
+    "government_level": "state",
+    "state": "Tamil Nadu",
+    "ministry": "Social Welfare and Women Empowerment Department, Government of Tamil Nadu",
+    "department": "Social Welfare and Women Empowerment Department, Government of Tamil Nadu",
+    "category": [
+      "Scholarship"
+    ],
+    "description": "Tamil Nadu state scheme granting Rs 1,000 per month to female students who studied in government schools from Classes 6 to 12 and enrolled in degree or diploma courses.",
+    "benefits": [
+      {
+        "description": "Rs 1,000 monthly financial assistance directly deposited into student bank accounts.",
+        "amount": 1000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "Tamil Nadu"
+      ]
+    },
+    "documents_required": [
+      "Government School Transfer / Schooling Certificate (Class 6-12)"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Register on penkalvi.tn.gov.in through college nodal officer.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://penkalvi.tn.gov.in/",
+      "source_id": "sch-tn-pudhumai-penn-017",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-kar-gruha-lakshmi-019",
+    "scheme_name": "Karnataka Gruha Lakshmi Scheme",
+    "slug": "karnataka-gruha-lakshmi-scheme",
+    "government_level": "state",
+    "state": "Karnataka",
+    "ministry": "Women and Child Development Department, Government of Karnataka",
+    "department": "Women and Child Development Department, Government of Karnataka",
+    "category": [
+      "WomenEmpowerment"
+    ],
+    "description": "Karnataka state scheme providing Rs 2,000 every month directly to female house heads (APL/BPL/Antyodaya ration card holders).",
+    "benefits": [
+      {
+        "description": "Rs 2,000 per month direct bank benefit to woman house head.",
+        "amount": 2000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "Karnataka"
+      ]
+    },
+    "documents_required": [
+      "BPL / APL Ration Card listing applicant as head of family"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply online at sevasindhugs.karnataka.gov.in or visit Grama One / Karnataka One centers.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://sevasindhugs.karnataka.gov.in/",
+      "source_id": "sch-kar-gruha-lakshmi-019",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-kar-raitha-vidya-020",
+    "scheme_name": "Karnataka Raitha Vidya Nidhi Scheme",
+    "slug": "karnataka-raitha-vidya-nidhi-scheme",
+    "government_level": "state",
+    "state": "Karnataka",
+    "ministry": "Agriculture Department, Government of Karnataka",
+    "department": "Agriculture Department, Government of Karnataka",
+    "category": [
+      "Scholarship"
+    ],
+    "description": "Scholarship granted by Karnataka state government to students whose parents are farmers, encouraging higher education among agricultural families.",
+    "benefits": [
+      {
+        "description": "Annual scholarship of Rs 2,500 to Rs 11,000 depending on course stage.",
+        "amount": 11000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "Karnataka"
+      ]
+    },
+    "documents_required": [
+      "Farmer Identification (FID) or Land Record of Parent"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply on State Scholarship Portal (SSP Karnataka) at ssp.postmatric.karnataka.gov.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://ssp.postmatric.karnataka.gov.in/",
+      "source_id": "sch-kar-raitha-vidya-020",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-wb-kanyashree-023",
+    "scheme_name": "West Bengal Kanyashree Prakalpa",
+    "slug": "west-bengal-kanyashree-prakalpa",
+    "government_level": "state",
+    "state": "West Bengal",
+    "ministry": "Department of Women & Child Development and Social Welfare, West Bengal",
+    "department": "Department of Women & Child Development and Social Welfare, West Bengal",
+    "category": [
+      "Scholarship"
+    ],
+    "description": "A globally recognized West Bengal conditional cash transfer scheme empowering adolescent girls and preventing child marriage.",
+    "benefits": [
+      {
+        "description": "Annual stipend K1 (Rs 1,000) and one-time K2 grant (Rs 25,000) at age 18.",
+        "amount": 25000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "West Bengal"
+      ]
+    },
+    "documents_required": [
+      "Unmarried Certificate and School/College Enrollment Proof"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply through school/educational institution portal at wbkanyashree.gov.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://wbkanyashree.gov.in/",
+      "source_id": "sch-wb-kanyashree-023",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  },
+  {
+    "scheme_id": "sch-guj-mysy-029",
+    "scheme_name": "Mukhymantri Yuva Swavalamban Yojana (MYSY Gujarat)",
+    "slug": "mukhymantri-yuva-swavalamban-yojana-mysy-gujarat",
+    "government_level": "state",
+    "state": "Gujarat",
+    "ministry": "Education Department, Government of Gujarat",
+    "department": "Education Department, Government of Gujarat",
+    "category": [
+      "Scholarship"
+    ],
+    "description": "Gujarat state scholarship providing up to 50% tuition fee assistance and hostel food allowance to meritorious students with family income <= Rs 6 Lakhs.",
+    "benefits": [
+      {
+        "description": "50% tuition fee subsidy (up to Rs 2,000,000/yr for medical/engineering) + hostel allowance.",
+        "amount": 200000.0,
+        "currency": "INR",
+        "benefit_type": "Financial"
+      }
+    ],
+    "eligibility": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null,
+      "marital_status": [],
+      "residence": [],
+      "states": [
+        "Gujarat"
+      ]
+    },
+    "documents_required": [
+      "Gujarat Income Certificate & Class 10/12 Marksheet (>= 80 percentile)"
+    ],
+    "application": {
+      "mode": [
+        "Offline"
+      ],
+      "process": "[{'step_number': 1, 'description': 'Apply online at mysy.guj.nic.in.', 'channel': 'Online', 'verification_status': 'Verified'}]",
+      "url": ""
+    },
+    "official_source": {
+      "name": "LocalAuthorizedExport",
+      "url": "https://mysy.guj.nic.in/",
+      "source_id": "sch-guj-mysy-029",
+      "last_verified": "2026-08-17T00:00:00Z",
+      "verification_status": "verified"
+    },
+    "last_verified": "2026-08-17T00:00:00Z"
+  }
+]

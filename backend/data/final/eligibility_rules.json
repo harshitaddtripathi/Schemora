@@ -1,0 +1,474 @@
+{
+  "sch-central-csss-001": {
+    "scheme_id": "sch-central-csss-001",
+    "scheme_name": "Central Sector Scheme of Scholarship for College and University Students",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-maharashtra-obc-postmatric-002": {
+    "scheme_id": "sch-maharashtra-obc-postmatric-002",
+    "scheme_name": "Post Matric Scholarship to OBC Students",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "Maharashtra"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-pmis-003": {
+    "scheme_id": "sch-central-pmis-003",
+    "scheme_name": "PM Internship Scheme",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-pmkisan-004": {
+    "scheme_id": "sch-central-pmkisan-004",
+    "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-ayushman-005": {
+    "scheme_id": "sch-central-ayushman-005",
+    "scheme_name": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-maharashtra-ladkibahin-006": {
+    "scheme_id": "sch-maharashtra-ladkibahin-006",
+    "scheme_name": "Mukhyamantri Majhi Ladki Bahin Yojana",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "Maharashtra"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-pmsvanidhi-007": {
+    "scheme_id": "sch-central-pmsvanidhi-007",
+    "scheme_name": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-sukanya-008": {
+    "scheme_id": "sch-central-sukanya-008",
+    "scheme_name": "Sukanya Samriddhi Yojana (SSY)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-mudra-009": {
+    "scheme_id": "sch-central-mudra-009",
+    "scheme_name": "Pradhan Mantri MUDRA Yojana (PMMY)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-apy-010": {
+    "scheme_id": "sch-central-apy-010",
+    "scheme_name": "Atal Pension Yojana (APY)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-pmfby-011": {
+    "scheme_id": "sch-central-pmfby-011",
+    "scheme_name": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-pmay-012": {
+    "scheme_id": "sch-central-pmay-012",
+    "scheme_name": "Pradhan Mantri Awas Yojana (PMAY)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-central-pmkvy-013": {
+    "scheme_id": "sch-central-pmkvy-013",
+    "scheme_name": "Pradhan Mantri Kaushal Vikas Yojana (PMKVY 4.0)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-up-kanya-sumangala-014": {
+    "scheme_id": "sch-up-kanya-sumangala-014",
+    "scheme_name": "Mukhya Mantri Kanya Sumangala Yojana",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "Uttar Pradesh"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-tn-pudhumai-penn-017": {
+    "scheme_id": "sch-tn-pudhumai-penn-017",
+    "scheme_name": "Pudhumai Penn Scheme (Moovalur Ramamirtham Ammal Scheme)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "Tamil Nadu"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-kar-gruha-lakshmi-019": {
+    "scheme_id": "sch-kar-gruha-lakshmi-019",
+    "scheme_name": "Karnataka Gruha Lakshmi Scheme",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "Karnataka"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-kar-raitha-vidya-020": {
+    "scheme_id": "sch-kar-raitha-vidya-020",
+    "scheme_name": "Karnataka Raitha Vidya Nidhi Scheme",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "Karnataka"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-wb-kanyashree-023": {
+    "scheme_id": "sch-wb-kanyashree-023",
+    "scheme_name": "West Bengal Kanyashree Prakalpa",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "West Bengal"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  },
+  "sch-guj-mysy-029": {
+    "scheme_id": "sch-guj-mysy-029",
+    "scheme_name": "Mukhymantri Yuva Swavalamban Yojana (MYSY Gujarat)",
+    "rules": {
+      "age": {
+        "min": null,
+        "max": null
+      },
+      "gender": [
+        "all"
+      ],
+      "annual_income": {
+        "minimum": null,
+        "maximum": null,
+        "currency": "INR"
+      },
+      "states": [
+        "Gujarat"
+      ],
+      "occupation": [],
+      "education": [],
+      "social_category": [],
+      "disability": null
+    },
+    "needs_review": false
+  }
+}

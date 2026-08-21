@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from app.models.student_profile import StudentProfile
 from app.models.scheme import Scheme, SchemeRule
 
@@ -129,3 +129,155 @@ def rank_and_select_top3(evaluations: List[Dict[str, Any]]) -> List[Dict[str, An
     )
 
     return eligible_candidates[:3]
+
+
+def evaluate_user_against_scheme_dict(user: Dict[str, Any], scheme: Dict[str, Any]) -> Dict[str, Any]:
+    """Deterministic eligibility evaluation of a user profile dict against a normalized scheme dict.
+    
+    Returns:
+        {
+          "scheme_id": "...",
+          "scheme_name": "...",
+          "eligibility": "eligible" | "not_eligible" | "needs_review",
+          "matched_rules": [],
+          "failed_rules": [],
+          "unknown_rules": []
+        }
+    """
+    matched = []
+    failed = []
+    unknown = []
+
+    elig = scheme.get("eligibility", {})
+    if not isinstance(elig, dict):
+        elig = {}
+
+    # 1. Age check
+    age_req = elig.get("age", {})
+    user_age = user.get("age")
+    if user_age is not None:
+        try:
+            u_age = float(user_age)
+            min_a = age_req.get("min")
+            max_a = age_req.get("max")
+            if min_a is not None and u_age < min_a:
+                failed.append("age_min")
+            elif max_a is not None and u_age > max_a:
+                failed.append("age_max")
+            elif min_a is not None or max_a is not None:
+                matched.append("age")
+        except Exception:
+            unknown.append("age")
+    elif age_req.get("min") is not None or age_req.get("max") is not None:
+        unknown.append("age")
+
+    # 2. Gender check
+    gender_req = elig.get("gender", [])
+    user_gender = user.get("gender")
+    if user_gender:
+        u_gen = str(user_gender).lower()
+        g_req_lower = [str(g).lower() for g in gender_req]
+        if "all" in g_req_lower or not g_req_lower:
+            matched.append("gender")
+        elif u_gen in g_req_lower:
+            matched.append("gender")
+        else:
+            failed.append("gender")
+    elif gender_req and "all" not in [str(g).lower() for g in gender_req]:
+        unknown.append("gender")
+
+    # 3. Income check
+    income_req = elig.get("income", {})
+    max_income = income_req.get("maximum") if isinstance(income_req, dict) else None
+    user_income = user.get("annual_income") or user.get("family_income")
+    if user_income is not None and max_income is not None:
+        try:
+            if float(user_income) <= float(max_income):
+                matched.append("income")
+            else:
+                failed.append("income")
+        except Exception:
+            unknown.append("income")
+    elif max_income is not None:
+        unknown.append("income")
+
+    # 4. State / Domicile check
+    scheme_govt_level = scheme.get("government_level", "central").lower()
+    scheme_state = scheme.get("state")
+    user_state = user.get("state")
+
+    if scheme_govt_level == "state" or scheme_state:
+        if user_state:
+            if scheme_state and user_state.strip().lower() == scheme_state.strip().lower():
+                matched.append("state")
+            elif not scheme_state:
+                matched.append("state")
+            else:
+                failed.append("state")
+        else:
+            unknown.append("state")
+
+    # 5. Social Category check
+    soc_req = elig.get("social_category", [])
+    user_soc = user.get("social_category")
+    if user_soc and soc_req:
+        soc_req_upper = [s.upper() for s in soc_req]
+        if user_soc.strip().upper() in soc_req_upper or "ALL" in soc_req_upper:
+            matched.append("social_category")
+        else:
+            failed.append("social_category")
+    elif soc_req:
+        unknown.append("social_category")
+
+    # 6. Occupation check
+    occ_req = elig.get("occupation", [])
+    user_occ = user.get("occupation")
+    if user_occ and occ_req:
+        occ_req_lower = [o.lower() for o in occ_req]
+        if user_occ.strip().lower() in occ_req_lower or "all" in occ_req_lower:
+            matched.append("occupation")
+        else:
+            failed.append("occupation")
+    elif occ_req:
+        unknown.append("occupation")
+
+    # 7. Education check
+    edu_req = elig.get("education", [])
+    user_edu = user.get("education")
+    if user_edu and edu_req:
+        edu_req_lower = [e.lower() for e in edu_req]
+        if user_edu.strip().lower() in edu_req_lower or "all" in edu_req_lower:
+            matched.append("education")
+        else:
+            failed.append("education")
+    elif edu_req:
+        unknown.append("education")
+
+    # 8. Disability check
+    disability_req = elig.get("disability")
+    user_disability = user.get("disability")
+    if disability_req is not None:
+        if user_disability is not None:
+            if bool(user_disability) == bool(disability_req):
+                matched.append("disability")
+            else:
+                failed.append("disability")
+        else:
+            unknown.append("disability")
+
+    # Final status evaluation
+    if len(failed) > 0:
+        overall_status = "not_eligible"
+    elif len(unknown) > 0:
+        overall_status = "needs_review"
+    else:
+        overall_status = "eligible"
+
+    return {
+        "scheme_id": scheme.get("scheme_id") or scheme.get("id"),
+        "scheme_name": scheme.get("scheme_name") or scheme.get("title"),
+        "eligibility": overall_status,
+        "matched_rules": matched,
+        "failed_rules": failed,
+        "unknown_rules": unknown,
+    }

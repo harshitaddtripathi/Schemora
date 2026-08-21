@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
@@ -19,6 +20,35 @@ class SchemeDetailScreen extends ConsumerStatefulWidget {
 
 class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
   bool _isAutoFilledApplied = true;
+
+  Future<void> _launchPortalUrl(String rawUrl) async {
+    if (rawUrl.trim().isEmpty) return;
+    var cleanUrl = rawUrl.trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      cleanUrl = 'https://$cleanUrl';
+    }
+    final uri = Uri.parse(cleanUrl);
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open portal link: $cleanUrl'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening portal link: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
 
   ProfileType _detectSchemeProfileType(SchemeModel scheme) {
     final text = '${scheme.title} ${scheme.shortDescription} ${scheme.benefitSummary}'.toLowerCase();
@@ -412,17 +442,146 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Official Links
-                  if (scheme.sources.isNotEmpty) ...[
-                    Text('Official Portals & Sources', style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 12),
-                    ...scheme.sources.map((src) => ListTile(
-                          leading: const Icon(Icons.open_in_new_rounded, color: AppTheme.primaryBlue),
-                          title: Text(src.sourceName),
-                          subtitle: Text(src.url, style: const TextStyle(color: AppTheme.primaryBlue)),
-                        )),
-                    const SizedBox(height: 24),
-                  ],
+                  // Official Links & Portal Access
+                  Text('Official Portals & Sources', style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: 12),
+                  Card(
+                    elevation: 1.5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: AppTheme.primaryBlue.withAlpha(50)),
+                    ),
+                    color: const Color(0xFFF8FAFC),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue.withAlpha(20),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.language_rounded, color: AppTheme.primaryBlue, size: 20),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Verified Government Portal',
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryNavy),
+                                    ),
+                                    Text(
+                                      'Source Authority: ${scheme.provider}',
+                                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 20),
+                          if (scheme.sources.isNotEmpty) ...[
+                            ...scheme.sources.map((src) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Material(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: InkWell(
+                                      onTap: () => _launchPortalUrl(src.url),
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.grey.shade300),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.open_in_new_rounded, size: 18, color: AppTheme.primaryBlue),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    src.sourceName,
+                                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.primaryNavy),
+                                                  ),
+                                                  Text(
+                                                    src.url,
+                                                    style: const TextStyle(
+                                                      fontSize: 11,
+                                                      color: AppTheme.primaryBlue,
+                                                      decoration: TextDecoration.underline,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.grey),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                          ] else ...[
+                            // Fallback official portal link
+                            Material(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              child: InkWell(
+                                onTap: () => _launchPortalUrl('https://www.myscheme.gov.in/'),
+                                borderRadius: BorderRadius.circular(10),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Row(
+                                    children: [
+                                      Icon(Icons.open_in_new_rounded, size: 18, color: AppTheme.primaryBlue),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'National myScheme Portal (Official)',
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.primaryNavy),
+                                            ),
+                                            Text(
+                                              'https://www.myscheme.gov.in/',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: AppTheme.primaryBlue,
+                                                decoration: TextDecoration.underline,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Icon(Icons.arrow_forward_ios_rounded, size: 12, color: Colors.grey),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
                   // Action Buttons
                   ElevatedButton.icon(

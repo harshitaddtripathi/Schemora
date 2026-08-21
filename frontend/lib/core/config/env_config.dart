@@ -11,7 +11,7 @@ class EnvConfig {
   //    flutter run --dart-define=API_BASE_URL=http://192.168.x.x:8000/api/v1
   // ---------------------------------------------------------------------------
   static const String devHostIp =
-      '127.0.0.1'; // Set your PC's LAN IP address here
+      '192.168.3.129'; // Set to PC's LAN IP address (192.168.3.129) for physical Android devices
   static const String devPort = '8000';
 
   // Production or runtime override injected via --dart-define=API_BASE_URL=...
