@@ -30,7 +30,20 @@ async def upload_and_parse_document(
     profile = prof_res.scalar_one_or_none()
 
     if not profile:
-        raise HTTPException(status_code=400, detail="Student profile not found")
+        # Auto-create default profile for user if they haven't filled profile form yet
+        from datetime import date
+        profile = StudentProfile(
+            user_id=current_user.id,
+            full_name=current_user.full_name or "Citizen Applicant",
+            date_of_birth=date(2005, 6, 15),
+            gender="Other",
+            state="Maharashtra",
+            education_level="Undergraduate",
+            social_category="General",
+            annual_family_income=250000.0,
+        )
+        db.add(profile)
+        await db.flush()
 
     extracted = parse_document_content(req.doc_type, req.raw_content)
     verification_status, verification_notes = compare_document_with_profile(req.doc_type, extracted, profile)
@@ -63,6 +76,25 @@ async def upload_and_parse_document(
         message="Document uploaded, parsed, masked, and cross-verified successfully",
         data=resp_data,
     )
+
+
+@router.delete("/{doc_id}", response_model=APIResponse[dict], summary="Delete User Document")
+async def delete_user_document(
+    doc_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete a document from user's vault."""
+    result = await db.execute(
+        select(UserDocument).where(UserDocument.id == doc_id, UserDocument.user_id == current_user.id)
+    )
+    doc = result.scalar_one_or_none()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    await db.delete(doc)
+    await db.commit()
+    return APIResponse(success=True, message="Document deleted successfully", data={"document_id": doc_id})
 
 
 @router.get("/my-documents", response_model=APIResponse[List[DocumentResponse]], summary="List User Documents")

@@ -30,7 +30,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
       jurisdiction: 'Central',
       provider: 'Ministry of Education',
       rules: [],
-      sources: [],
+      sources: [
+        SchemeSourceModel(
+          id: 'src-csss-001',
+          sourceName: 'National Scholarship Portal (NSP Direct)',
+          url: 'https://scholarships.gov.in/',
+          sourceType: 'OfficialPortal',
+        ),
+      ],
     ),
     SchemeModel(
       id: 'sch-central-pmkisan-004',
@@ -44,7 +51,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
       jurisdiction: 'Central',
       provider: 'Ministry of Agriculture',
       rules: [],
-      sources: [],
+      sources: [
+        SchemeSourceModel(
+          id: 'src-pmkisan-004',
+          sourceName: 'PM-KISAN Official Direct Portal',
+          url: 'https://pmkisan.gov.in/',
+          sourceType: 'OfficialPortal',
+        ),
+      ],
     ),
     SchemeModel(
       id: 'sch-central-pmis-003',
@@ -58,7 +72,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
       jurisdiction: 'Central',
       provider: 'Ministry of Corporate Affairs',
       rules: [],
-      sources: [],
+      sources: [
+        SchemeSourceModel(
+          id: 'src-pmis-003',
+          sourceName: 'PM Internship Scheme Portal (MY Bharat)',
+          url: 'https://pminternship.mca.gov.in/',
+          sourceType: 'OfficialPortal',
+        ),
+      ],
     ),
   ];
 
@@ -390,6 +411,7 @@ class SchemeRepositoryImpl implements SchemeRepository {
   }
 
   List<SchemeModel>? _cachedAllSchemes;
+  final Map<String, SchemeModel> _cachedSchemeDetails = {};
 
   @override
   Future<List<SchemeModel>> getSchemes({
@@ -422,7 +444,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             jurisdiction: 'Central',
             provider: 'Ministry of Finance',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-mudra-009',
+                sourceName: 'PMMY MUDRA Official Loan Portal',
+                url: 'https://www.mudra.org.in/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-central-apy-010',
@@ -436,7 +465,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             jurisdiction: 'Central',
             provider: 'PFRDA, Ministry of Finance',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-apy-010',
+                sourceName: 'PFRDA Atal Pension Yojana (APY) Direct Portal',
+                url: 'https://npslite-nsdl.com/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-central-pmfby-011',
@@ -450,7 +486,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             jurisdiction: 'Central',
             provider: 'Ministry of Agriculture',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-pmfby-011',
+                sourceName: 'PMFBY Crop Insurance Direct Portal',
+                url: 'https://pmfby.gov.in/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-central-pmay-012',
@@ -464,7 +507,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             jurisdiction: 'Central',
             provider: 'Ministry of Housing',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-pmay-012',
+                sourceName: 'PMAY Housing Direct Portal',
+                url: 'https://pmaymis.gov.in/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-central-pmkvy-013',
@@ -478,7 +528,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             jurisdiction: 'Central',
             provider: 'Ministry of Skill Development',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-pmkvy-013',
+                sourceName: 'PMKVY Skill India Portal',
+                url: 'https://www.pmkvyofficial.org/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-up-kanya-sumangala-014',
@@ -493,7 +550,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             state: 'Uttar Pradesh',
             provider: 'Government of Uttar Pradesh',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-mksy-014',
+                sourceName: 'MKSY Uttar Pradesh Direct Portal',
+                url: 'https://mksy.up.gov.in/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-kar-gruha-lakshmi-019',
@@ -508,7 +572,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             state: 'Karnataka',
             provider: 'Government of Karnataka',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-gruha-019',
+                sourceName: 'Seva Sindhu Karnataka Direct Portal',
+                url: 'https://sevasindhugs.karnataka.gov.in/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-guj-mysy-029',
@@ -523,7 +594,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             state: 'Gujarat',
             provider: 'Government of Gujarat',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-mysy-029',
+                sourceName: 'MYSY Gujarat Scholarship Portal',
+                url: 'https://mysy.guj.nic.in/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
           SchemeModel(
             id: 'sch-maharashtra-ladkibahin-006',
@@ -538,7 +616,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
             state: 'Maharashtra',
             provider: 'Government of Maharashtra',
             rules: [],
-            sources: [],
+            sources: [
+              SchemeSourceModel(
+                id: 'src-ladki-006',
+                sourceName: 'Mukhyamantri Ladki Bahin Maharashtra Portal',
+                url: 'https://www.maharashtra.gov.in/',
+                sourceType: 'OfficialPortal',
+              ),
+            ],
           ),
         ]);
         allSchemes = list;
@@ -577,15 +662,33 @@ class SchemeRepositoryImpl implements SchemeRepository {
 
   @override
   Future<SchemeModel> getSchemeDetails(String schemeId) async {
+    if (_cachedSchemeDetails.containsKey(schemeId)) {
+      return _cachedSchemeDetails[schemeId]!;
+    }
     try {
       final response = await _dio.get('/schemes/$schemeId');
       final data = response.data['data'] as Map<String, dynamic>;
-      return SchemeModel.fromJson(data);
+      final model = SchemeModel.fromJson(data);
+      _cachedSchemeDetails[schemeId] = model;
+      return model;
     } catch (_) {
-      return _fallbackSchemes.firstWhere(
+      if (_cachedAllSchemes != null && _cachedAllSchemes!.isNotEmpty) {
+        final match = _cachedAllSchemes!.firstWhere(
+          (s) => s.id == schemeId,
+          orElse: () => _fallbackSchemes.firstWhere(
+            (s) => s.id == schemeId,
+            orElse: () => _fallbackSchemes.first,
+          ),
+        );
+        _cachedSchemeDetails[schemeId] = match;
+        return match;
+      }
+      final fallback = _fallbackSchemes.firstWhere(
         (s) => s.id == schemeId,
         orElse: () => _fallbackSchemes.first,
       );
+      _cachedSchemeDetails[schemeId] = fallback;
+      return fallback;
     }
   }
 

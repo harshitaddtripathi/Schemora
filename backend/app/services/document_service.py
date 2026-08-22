@@ -52,6 +52,23 @@ def parse_document_content(doc_type: str, raw_content: str) -> Dict[str, Any]:
         parsed["certificate_number"] = data.get("certificate_number", "INC-2026-9876")
         parsed["issuing_authority"] = data.get("issuing_authority", "Tehsildar Office")
         parsed["masked_identifier"] = parsed["certificate_number"]
+    elif doc_type == "CasteCertificate":
+        parsed["social_category"] = data.get("social_category", "OBC")
+        parsed["certificate_number"] = data.get("certificate_number", "CST-2026-4321")
+        parsed["masked_identifier"] = parsed["certificate_number"]
+    elif doc_type == "Marksheet":
+        parsed["percentage"] = data.get("percentage", 85.0)
+        parsed["roll_number"] = data.get("roll_number", "ROLL-2026-1001")
+        parsed["masked_identifier"] = parsed["roll_number"]
+    elif doc_type == "DomicileCertificate":
+        parsed["state"] = data.get("state", "Maharashtra")
+        parsed["certificate_number"] = data.get("certificate_number", "DOM-2026-5544")
+        parsed["masked_identifier"] = parsed["certificate_number"]
+    elif doc_type == "RationCard":
+        parsed["ration_card_number"] = data.get("ration_card_number", "RAT-2026-9988")
+        parsed["masked_identifier"] = parsed["ration_card_number"]
+    else:
+        parsed["masked_identifier"] = data.get("document_number") or data.get("certificate_number") or f"{doc_type[:3].upper()}-2026-8877"
 
     return parsed
 

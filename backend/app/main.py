@@ -28,6 +28,43 @@ async def lifespan(app: FastAPI):
     if "sqlite" in settings.DATABASE_URL:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+
+        # Auto-migrate: add new RAG columns to knowledge_chunks if missing
+        # This is needed when upgrading an existing dev DB (SQLAlchemy create_all
+        # does not ALTER existing tables).
+        try:
+            import sqlite3
+            db_file = settings.DATABASE_URL.replace("sqlite+aiosqlite:///", "")
+            if db_file.startswith("./"):
+                import os
+                db_file = os.path.join(os.path.dirname(__file__), "..", db_file[2:])
+            conn_sync = sqlite3.connect(db_file)
+            cur = conn_sync.execute("PRAGMA table_info(knowledge_chunks)")
+            existing_cols = {row[1] for row in cur.fetchall()}
+            new_cols = [
+                ("section",           "TEXT"),
+                ("scheme_name",       "TEXT"),
+                ("jurisdiction",      "TEXT"),
+                ("state",             "TEXT"),
+                ("category",          "TEXT"),
+                ("source_id",         "TEXT"),
+                ("official_info_url", "TEXT"),
+                ("official_app_url",  "TEXT"),
+                ("last_verified_at",  "TEXT"),
+                ("scheme_version",    "TEXT"),
+                ("is_indexed",        "INTEGER NOT NULL DEFAULT 0"),
+            ]
+            for col_name, col_type in new_cols:
+                if col_name not in existing_cols:
+                    conn_sync.execute(
+                        f"ALTER TABLE knowledge_chunks ADD COLUMN {col_name} {col_type}"
+                    )
+                    logger.info(f"Auto-migrated: added knowledge_chunks.{col_name}")
+            conn_sync.commit()
+            conn_sync.close()
+        except Exception as e:
+            logger.warning(f"knowledge_chunks auto-migration skipped: {e}")
+
     yield
 
 

@@ -58,13 +58,14 @@ async def list_schemes(
             | (func.lower(Scheme.short_description).contains(q_lower))
         )
 
-    result = await db.execute(query)
-    all_items = result.scalars().all()
+    count_query = select(func.count()).select_from(query.subquery())
+    count_res = await db.execute(count_query)
+    total_items = count_res.scalar() or 0
 
-    total_items = len(all_items)
-    total_pages = max(1, (total_items + page_size - 1) // page_size)
     start_idx = (page - 1) * page_size
-    paginated_items = all_items[start_idx : start_idx + page_size]
+    paginated_query = query.offset(start_idx).limit(page_size)
+    result = await db.execute(paginated_query)
+    paginated_items = result.scalars().all()
 
     meta = PaginationMeta(
         page=page,

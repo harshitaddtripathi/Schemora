@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
+import 'package:schemora_frontend/core/utils/url_launcher_helper.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/ai_assistant/data/ai_repository.dart';
 import 'package:schemora_frontend/features/ai_assistant/data/voice_assistant_service.dart';
@@ -162,10 +162,27 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
           DropdownButton<String>(
             value: _selectedLang,
             underline: const SizedBox(),
+            icon: const Icon(Icons.language_rounded),
             items: const [
               DropdownMenuItem(value: 'en', child: Text('English')),
               DropdownMenuItem(value: 'hi', child: Text('हिंदी')),
               DropdownMenuItem(value: 'mr', child: Text('मराठी')),
+              DropdownMenuItem(value: 'bn', child: Text('বাংলা')),
+              DropdownMenuItem(value: 'te', child: Text('తెలుగు')),
+              DropdownMenuItem(value: 'ta', child: Text('தமிழ்')),
+              DropdownMenuItem(value: 'gu', child: Text('ગુજરાતી')),
+              DropdownMenuItem(value: 'kn', child: Text('ಕನ್ನಡ')),
+              DropdownMenuItem(value: 'ml', child: Text('മലയാളം')),
+              DropdownMenuItem(value: 'pa', child: Text('ਪੰਜਾਬੀ')),
+              DropdownMenuItem(value: 'or', child: Text('ଓଡ଼ିଆ')),
+              DropdownMenuItem(value: 'as', child: Text('অসমীয়া')),
+              DropdownMenuItem(value: 'ur', child: Text('اردو')),
+              DropdownMenuItem(value: 'sa', child: Text('संस्कृत')),
+              DropdownMenuItem(value: 'ne', child: Text('नेपाली')),
+              DropdownMenuItem(value: 'sd', child: Text('سنڌي')),
+              DropdownMenuItem(value: 'kok', child: Text('कोंकणी')),
+              DropdownMenuItem(value: 'mai', child: Text('मैथिली')),
+              DropdownMenuItem(value: 'doi', child: Text('डोगरी')),
             ],
             onChanged: (val) => setState(() => _selectedLang = val!),
           ),
@@ -246,16 +263,7 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
                             ...msg.citations.map((c) => Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: InkWell(
-                                    onTap: () async {
-                                      var cleanUrl = c.url.trim();
-                                      if (!cleanUrl.startsWith('http')) {
-                                        cleanUrl = 'https://$cleanUrl';
-                                      }
-                                      final uri = Uri.parse(cleanUrl);
-                                      try {
-                                        await launchUrl(uri, mode: LaunchMode.externalApplication);
-                                      } catch (_) {}
-                                    },
+                                    onTap: () => UrlLauncherHelper.openUrl(context, c.url),
                                     child: Row(
                                       children: [
                                         const Icon(Icons.open_in_new_rounded, size: 12, color: AppTheme.primaryBlue),

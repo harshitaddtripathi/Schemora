@@ -317,7 +317,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
         _isNavigating = true;
       });
 
-      await Future.delayed(const Duration(milliseconds: 1200));
+      await Future.delayed(const Duration(milliseconds: 50));
 
       if (mounted) {
         context.go('/recommendations');

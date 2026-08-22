@@ -112,11 +112,15 @@ async def seed_scheme_dataset(db: AsyncSession, json_path: Path) -> int:
                 )
                 db.add(db_rule)
 
-        # Seed default source
-        official_url = s.get("official_information_url", f"https://myscheme.gov.in/schemes/{scheme_id}")
+        # Seed default source with direct application link
+        official_url = (
+            s.get("official_application_url")
+            or s.get("official_information_url")
+            or f"https://www.india.gov.in/"
+        )
         db_source = SchemeSource(
             scheme_id=scheme_id,
-            source_name=f"{title} Official Portal",
+            source_name=f"{title} Official Application Portal",
             url=official_url,
             source_type="OfficialPortal",
             last_verified_at="2026-08-07",

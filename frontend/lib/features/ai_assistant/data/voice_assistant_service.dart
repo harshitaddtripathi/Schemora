@@ -60,15 +60,27 @@ class VoiceAssistantService {
   }
 
   String _getLocaleId(String languageCode) {
-    switch (languageCode) {
-      case 'hi':
-        return 'hi_IN';
-      case 'mr':
-        return 'mr_IN';
-      case 'en':
-      default:
-        return 'en_IN';
-    }
+    const localeMap = {
+      'hi': 'hi_IN',
+      'mr': 'mr_IN',
+      'bn': 'bn_IN',
+      'te': 'te_IN',
+      'ta': 'ta_IN',
+      'gu': 'gu_IN',
+      'kn': 'kn_IN',
+      'ml': 'ml_IN',
+      'pa': 'pa_IN',
+      'or': 'or_IN',
+      'as': 'as_IN',
+      'ur': 'ur_IN',
+      'sa': 'sa_IN',
+      'ne': 'ne_IN',
+      'sd': 'sd_IN',
+      'kok': 'kok_IN',
+      'mai': 'mai_IN',
+      'doi': 'doi_IN',
+    };
+    return localeMap[languageCode] ?? 'en_IN';
   }
 
   Future<void> startListening({
@@ -116,11 +128,27 @@ class VoiceAssistantService {
   Future<void> speak(String text, {required String languageCode}) async {
     try {
       await stopSpeaking();
-      final ttsLanguage = languageCode == 'hi'
-          ? 'hi-IN'
-          : languageCode == 'mr'
-              ? 'mr-IN'
-              : 'en-US';
+      const ttsMap = {
+        'hi': 'hi-IN',
+        'mr': 'mr-IN',
+        'bn': 'bn-IN',
+        'te': 'te-IN',
+        'ta': 'ta-IN',
+        'gu': 'gu-IN',
+        'kn': 'kn-IN',
+        'ml': 'ml-IN',
+        'pa': 'pa-IN',
+        'or': 'or-IN',
+        'as': 'as-IN',
+        'ur': 'ur-IN',
+        'sa': 'sa-IN',
+        'ne': 'ne-IN',
+        'sd': 'sd-IN',
+        'kok': 'kok-IN',
+        'mai': 'mai-IN',
+        'doi': 'doi-IN',
+      };
+      final ttsLanguage = ttsMap[languageCode] ?? 'en-US';
       await _tts.setLanguage(ttsLanguage);
       await _tts.speak(text);
     } catch (e) {

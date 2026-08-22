@@ -32,7 +32,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       _loading = true;
     });
     // Simulate auth delay
-    Future.delayed(const Duration(milliseconds: 800), () {
+    Future.delayed(const Duration(milliseconds: 50), () {
       if (mounted) {
         setState(() => _loading = false);
         Navigator.pushReplacementNamed(context, '/admin/dashboard');

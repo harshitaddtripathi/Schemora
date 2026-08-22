@@ -12,6 +12,7 @@ from app.models.user import User
 from app.models.scheme import Scheme, SchemeSource
 from app.models.knowledge import KnowledgeDocument, KnowledgeChunk
 from app.services.rag_service import ingest_document
+from app.services.knowledge_base_service import index_all_schemes, DATASET_PATH
 from app.schemas.admin import (
     AdminSchemeCreateRequest,
     AdminSchemeUpdateRequest,
@@ -252,3 +253,32 @@ async def admin_generate_schemes(
         data={"generated_schemes_count": len(new_schemes), "seeded_count": seeded_count},
     )
 
+
+# ─── Knowledge Base Reindex-All ───────────────────────────────────────────────
+
+
+@router.post("/knowledge/reindex-all", response_model=APIResponse[dict], summary="[Admin] Reindex Full Knowledge Base")
+async def admin_reindex_all(
+    admin: User = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Re-index the full Phase 0 scheme dataset into the RAG knowledge base.
+
+    This is idempotent — existing chunks for each scheme are replaced.
+    Generates semantic embeddings using Gemini text-embedding-004.
+    """
+    if not DATASET_PATH.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Phase 0 dataset not found at {DATASET_PATH}",
+        )
+
+    result = await index_all_schemes(db)
+    return APIResponse(
+        success=True,
+        message=(
+            f"Reindexed {result['indexed_schemes']}/{result['total_schemes']} schemes, "
+            f"{result['total_chunks']} chunks ({result['semantic_chunks']} semantic embeddings)"
+        ),
+        data=result,
+    )

@@ -11,7 +11,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       errorMessage: null,
     );
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 50));
 
     state = state.copyWith(
       status: AuthStatus.otpSent,
@@ -25,7 +25,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       errorMessage: null,
     );
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 50));
 
     if (otp == '123456' || otp == '000000') {
       state = state.copyWith(
@@ -46,7 +46,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       errorMessage: null,
     );
 
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future.delayed(const Duration(milliseconds: 50));
 
     // Demo credentials accepted
     if ((email == 'user@demo.com' && password == 'demo123') ||

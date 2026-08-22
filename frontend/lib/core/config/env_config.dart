@@ -7,7 +7,9 @@ class EnvConfig {
   // ---------------------------------------------------------------------------
   // DEVELOPMENT API CONFIGURATION FOR PHYSICAL ANDROID PHONE / LOCAL PC
   // ---------------------------------------------------------------------------
-  static const String devHostIp = '127.0.0.1'; // Default fast localhost for Web/Desktop/Emulator
+  // ⚠️ PHYSICAL DEVICE: Use PC's LAN IP so the phone can reach the backend over WiFi.
+  // For emulator use: 10.0.2.2  |  For web/desktop use: 127.0.0.1
+  static const String devHostIp = '192.168.3.28'; // PC's LAN IP
   static const String devPort = '8000';
 
   // Production or runtime override injected via --dart-define=API_BASE_URL=...
@@ -27,8 +29,8 @@ class EnvConfig {
     return rawUrl.endsWith('/') ? rawUrl : '$rawUrl/';
   }
 
-  // Fast performance timeouts with instant failover
-  static const int connectTimeoutMs = 2000;
-  static const int receiveTimeoutMs = 4000;
+  // Optimized timeouts to prevent app freezing and provide fast UI responses/fallbacks
+  static const int connectTimeoutMs = 4000;
+  static const int receiveTimeoutMs = 8000;
 }
 
