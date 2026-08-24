@@ -171,9 +171,10 @@ async def chat_assistant(
                     f"Deadline: {s.application_deadline or 'Open'}"
                 ),
                 "similarity_score": 0.8,
-                "source_url": f"https://myscheme.gov.in/schemes/{s.id}",
+                # Use real official URLs from the scheme record
+                "source_url": getattr(s, "official_information_url", "") or getattr(s, "source_url", "") or "",
                 "source_title": f"{s.title} Official Guideline",
-                "official_app_url": "",
+                "official_app_url": getattr(s, "official_application_url", "") or getattr(s, "application_url", "") or "",
                 "last_verified_at": "2026-08-07",
                 "scheme_version": "v1",
                 "jurisdiction": s.jurisdiction,

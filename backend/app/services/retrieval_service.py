@@ -32,7 +32,7 @@ from app.services.embedding_service import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_TOP_K = 5
+DEFAULT_TOP_K = 8
 MIN_SIMILARITY_THRESHOLD = 0.05  # Filter out completely irrelevant chunks
 
 
@@ -120,8 +120,8 @@ async def retrieve_relevant_chunks(
             "content": chunk.content,
             "similarity_score": round(score, 4),
 
-            # Citation fields
-            "source_url": chunk.official_info_url or "https://myscheme.gov.in",
+            # Citation fields — use real URLs only, never fall back to myscheme.gov.in
+            "source_url": chunk.official_info_url or "",
             "source_title": f"{chunk.scheme_name or 'Official'} — {(chunk.section or 'Guideline').title()}",
             "source_id": chunk.source_id or "",
             "official_app_url": chunk.official_app_url or "",

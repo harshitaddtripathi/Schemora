@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 class SourceCitation(BaseModel):
     source_name: str
-    url: str
+    url: str = ""  # Empty when no official URL available for this scheme
     last_verified_at: str = "2026-08-07"
 
 
