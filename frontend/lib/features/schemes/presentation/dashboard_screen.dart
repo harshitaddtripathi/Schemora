@@ -26,8 +26,17 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _currentIndex = 0;
+  String? _categoryFilter;
 
-  void _navigateTo(int index) => setState(() => _currentIndex = index);
+  void _navigateTo(int index, {String? category}) {
+    setState(() {
+      _currentIndex = index;
+      if (index == 1) {
+        // Only update filter when navigating to Schemes tab
+        _categoryFilter = category;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +55,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         index: _currentIndex,
         children: [
           _HomeTab(onNavigate: _navigateTo),
-          _SchemesTab(),
+          _SchemesTab(initialCategory: _categoryFilter),
           _AiChatTab(),
           _SavedTab(),
           _ProfileTab(),
@@ -55,6 +64,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       bottomNavigationBar: _buildBottomNav(navItems),
     );
   }
+
 
   Widget _buildBottomNav(List<_NavItem> navItems) {
     return Container(
@@ -275,7 +285,7 @@ void _showLanguageSelectorModal(BuildContext context, WidgetRef ref) {
 // ── HOME LANDING TAB (ACCESSIBLE & ILLITERATE FRIENDLY) ─────────────────────
 
 class _HomeTab extends ConsumerStatefulWidget {
-  final void Function(int) onNavigate;
+  final void Function(int, {String? category}) onNavigate;
   const _HomeTab({required this.onNavigate});
 
   @override
@@ -570,7 +580,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                 borderRadius: BorderRadius.circular(16),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(16),
-                  onTap: () => widget.onNavigate(1),
+                  onTap: () => widget.onNavigate(1, category: cat['id'] as String),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -706,7 +716,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        isSpeakingThis ? 'रोकें' : 'सुनें',
+                                        isSpeakingThis ? AppTranslations.tr('stop_label', activeLang.code) : AppTranslations.tr('listen_label', activeLang.code),
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w800,
@@ -840,7 +850,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            isSpeakingThis ? 'रोकें' : 'सुनें',
+                                            isSpeakingThis ? AppTranslations.tr('stop_label', activeLang.code) : AppTranslations.tr('listen_label', activeLang.code),
                                             style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.w800,
@@ -948,7 +958,7 @@ class _AnnouncementModalSheet extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onSpeak,
                 icon: const Icon(Icons.volume_up_rounded, size: 16),
-                label: const Text('सुनें (Listen)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                label: Text(AppTranslations.tr('listen_label', activeLang.code), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF059669),
                   foregroundColor: Colors.white,
@@ -998,37 +1008,195 @@ class _AnnouncementModalSheet extends StatelessWidget {
 // SCHEMES TAB
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _SchemesTab extends ConsumerWidget {
+class _SchemesTab extends ConsumerStatefulWidget {
+  final String? initialCategory;
+  const _SchemesTab({this.initialCategory});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_SchemesTab> createState() => _SchemesTabState();
+}
+
+class _SchemesTabState extends ConsumerState<_SchemesTab> {
+  String? _activeCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    _activeCategory = widget.initialCategory;
+  }
+
+  @override
+  void didUpdateWidget(_SchemesTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialCategory != widget.initialCategory) {
+      setState(() => _activeCategory = widget.initialCategory);
+    }
+  }
+
+  // Human-readable label for each category ID
+  String _categoryLabel(String id) {
+    switch (id) {
+      case 'Agriculture': return '🌾 Farmer / Agriculture';
+      case 'Education': return '🎓 Student / Education';
+      case 'Women': return '👩 Women';
+      case 'Entrepreneurship': return '🏪 Business / Entrepreneurship';
+      case 'Health': return '❤️ Health';
+      case 'General': return '🏠 Housing / General';
+      default: return id;
+    }
+  }
+
+  // Map category ID to keywords used for filtering
+  String _categoryKeyword(String id) {
+    switch (id) {
+      case 'Agriculture': return 'agri';
+      case 'Education': return 'scholar';
+      case 'Women': return 'women';
+      case 'Entrepreneurship': return 'entrepreneur';
+      case 'Health': return 'health';
+      case 'General': return 'housing';
+      default: return id.toLowerCase();
+    }
+  }
+
+  List<SchemeModel> _applyFilter(List<SchemeModel> all) {
+    if (_activeCategory == null || _activeCategory!.isEmpty) return all;
+    final kw = _categoryKeyword(_activeCategory!);
+    return all.where((s) {
+      final title = s.title.toLowerCase();
+      final desc = s.shortDescription.toLowerCase();
+      final benefit = s.benefitSummary.toLowerCase();
+      final provider = s.provider.toLowerCase();
+      // Extra category-specific keywords
+      switch (_activeCategory) {
+        case 'Agriculture':
+          return title.contains('kisan') || title.contains('farm') || title.contains('agri') ||
+              title.contains('crop') || desc.contains('farmer') || desc.contains('agri') ||
+              provider.contains('agriculture');
+        case 'Education':
+          return title.contains('scholar') || title.contains('student') ||
+              title.contains('education') || title.contains('internship') ||
+              desc.contains('scholar') || desc.contains('student') ||
+              provider.contains('education');
+        case 'Women':
+          return title.contains('women') || title.contains('mahila') ||
+              title.contains('ladki') || title.contains('beti') ||
+              desc.contains('women') || desc.contains('mahila');
+        case 'Entrepreneurship':
+          return title.contains('entrepreneur') || title.contains('mudra') ||
+              title.contains('msme') || title.contains('startup') ||
+              title.contains('business') || title.contains('skill') ||
+              desc.contains('entrepreneur') || desc.contains('business') ||
+              provider.contains('msme');
+        case 'Health':
+          return title.contains('health') || title.contains('ayushman') ||
+              title.contains('janani') || title.contains('matri') ||
+              title.contains('medical') || desc.contains('health') ||
+              benefit.contains('health') || provider.contains('health');
+        case 'General':
+          return title.contains('housing') || title.contains('awas') ||
+              title.contains('pension') || title.contains('ration') ||
+              title.contains('ujjwala') || title.contains('svamitva') ||
+              desc.contains('housing') || desc.contains('general');
+        default:
+          return title.contains(kw) || desc.contains(kw) || benefit.contains(kw);
+      }
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasFilter = _activeCategory != null && _activeCategory!.isNotEmpty;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0.5,
-        title: const Text('All Schemes', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: Color(0xFF0F172A))),
+        title: Text(
+          hasFilter ? _categoryLabel(_activeCategory!) : 'All Schemes',
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 17, color: Color(0xFF0F172A)),
+        ),
         actions: [
           IconButton(icon: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF475569)), tooltip: 'AI Recommendations', onPressed: () => context.push('/recommendations')),
           const SizedBox(width: 4),
         ],
       ),
-      body: ref.watch(allSchemesProvider).when(
-        loading: () => const LoadingStateWidget(message: 'Loading schemes...'),
-        error: (err, _) => ErrorStateWidget(message: 'Failed to load: $err', onRetry: () => ref.invalidate(allSchemesProvider)),
-        data: (schemes) => ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          itemCount: schemes.length,
-          itemBuilder: (context, i) => _SchemeCard(
-            scheme: schemes[i],
-            isSaved: false,
-            selectedSector: 'All',
-            selectedState: '',
-            onSave: () {},
-            onTap: () => context.push('/catalog/${schemes[i].id}'),
-            onChecklist: () => context.push('/checklist/${schemes[i].id}'),
+      body: Column(
+        children: [
+          // Active filter chip
+          if (hasFilter)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+              color: Colors.white,
+              child: Row(
+                children: [
+                  const Icon(Icons.filter_list_rounded, size: 16, color: Color(0xFF475569)),
+                  const SizedBox(width: 8),
+                  const Text('Filtered by:', style: TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
+                  const SizedBox(width: 8),
+                  Chip(
+                    label: Text(
+                      _categoryLabel(_activeCategory!),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF1E40AF)),
+                    ),
+                    backgroundColor: const Color(0xFFEFF6FF),
+                    side: const BorderSide(color: Color(0xFFBFDBFE)),
+                    deleteIcon: const Icon(Icons.close_rounded, size: 14, color: Color(0xFF1E40AF)),
+                    onDeleted: () => setState(() => _activeCategory = null),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
+            ),
+          // Schemes list
+          Expanded(
+            child: ref.watch(allSchemesProvider).when(
+              loading: () => const LoadingStateWidget(message: 'Loading schemes...'),
+              error: (err, _) => ErrorStateWidget(message: 'Failed to load: $err', onRetry: () => ref.invalidate(allSchemesProvider)),
+              data: (schemes) {
+                final filtered = _applyFilter(schemes);
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.search_off_rounded, size: 56, color: Colors.grey.shade300),
+                        const SizedBox(height: 14),
+                        Text(
+                          'No schemes found for this category.',
+                          style: TextStyle(fontSize: 15, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 10),
+                        TextButton.icon(
+                          onPressed: () => setState(() => _activeCategory = null),
+                          icon: const Icon(Icons.clear_rounded, size: 16),
+                          label: const Text('Show all schemes'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, i) => _SchemeCard(
+                    scheme: filtered[i],
+                    isSaved: false,
+                    selectedSector: _activeCategory ?? 'All',
+                    selectedState: '',
+                    onSave: () {},
+                    onTap: () => context.push('/catalog/${filtered[i].id}'),
+                    onChecklist: () => context.push('/checklist/${filtered[i].id}'),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -1151,356 +1319,469 @@ class _ProfileTab extends ConsumerWidget {
     final profileType = ref.watch(selectedProfileTypeProvider);
     final profileAsync = ref.watch(currentProfileProvider);
     final authState = ref.watch(authProvider);
-
     final userPhone = authState.phoneNumber ?? '+91 9876543210';
-    final userEmail = 'user@schemora.gov.in';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0.5,
-        title: const Text(
-          'My Profile & Identity',
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: Color(0xFF0F172A)),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_note_rounded, color: AppTheme.primaryBlue),
-            tooltip: 'Edit Profile Details',
-            onPressed: () => context.push('/profile-form'),
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => _buildProfileBody(context, ref, null, profileType, userPhone, userEmail),
-        data: (profile) => _buildProfileBody(context, ref, profile, profileType, userPhone, userEmail),
+        error: (err, _) => _buildBody(context, ref, null, profileType, userPhone),
+        data: (profile) => _buildBody(context, ref, profile, profileType, userPhone),
       ),
     );
   }
 
-  Widget _buildProfileBody(
+  Widget _buildBody(
     BuildContext context,
     WidgetRef ref,
     ProfileModel? profile,
     ProfileType profileType,
     String phone,
-    String email,
   ) {
     final name = (profile != null && profile.fullName.isNotEmpty)
         ? profile.fullName
         : _getDefaultNameForType(profileType);
-
     final dob = (profile != null && profile.dateOfBirth.isNotEmpty)
         ? profile.dateOfBirth
         : _getDefaultDobForType(profileType);
-
     final gender = profile?.gender ?? 'Male';
     final state = profile?.state ?? 'Maharashtra';
     final socialCategory = profile?.socialCategory ?? 'OBC';
     final income = profile?.annualFamilyIncome != null
         ? '₹${profile!.annualFamilyIncome!.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}'
-        : '₹2,50,000 / annum';
-
+        : '₹2,50,000 / year';
     final educationLevel = profile?.educationLevel ?? _getDefaultEducationForType(profileType);
     final course = profile?.courseName ?? _getDefaultCourseForType(profileType);
     final institution = profile?.institutionName ?? _getDefaultInstitutionForType(profileType);
     final employment = profile?.employmentStatus ?? _getDefaultEmploymentForType(profileType);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── SECTION 1: ACCOUNT HEADER CARD ──────────────────────────────────
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF0F172A), Color(0xFF1E3A8A), Color(0xFF2563EB)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withAlpha(25), blurRadius: 12, offset: const Offset(0, 4)),
-              ],
-            ),
-            child: Column(
-              children: [
-                Row(
+    // Profile completion score
+    int filled = 0;
+    if (profile?.fullName.isNotEmpty ?? false) filled++;
+    if (profile?.dateOfBirth.isNotEmpty ?? false) filled++;
+    if (profile?.gender != null) filled++;
+    if (profile?.state != null) filled++;
+    if (profile?.socialCategory != null) filled++;
+    if (profile?.annualFamilyIncome != null) filled++;
+    final completionPct = (filled / 6.0).clamp(0.0, 1.0);
+    final completionInt = (completionPct * 100).round();
+
+    final (ptColor, ptIcon, ptLabel) = _profileTypeMeta(profileType);
+
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        // ── Hero Header ──────────────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                height: 160,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF0F172A), Color(0xFF1E3A8A), Color(0xFF2563EB)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Stack(
                   children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(35),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withAlpha(80), width: 2),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.person_rounded, color: Colors.white, size: 34),
+                    Positioned(
+                      top: -20, right: -20,
+                      child: Container(width: 120, height: 120, decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withAlpha(10))),
+                    ),
+                    Positioned(
+                      top: 48, right: 16,
+                      child: InkWell(
+                        onTap: () => context.push('/profile-form'),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(30),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white.withAlpha(60)),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.edit_rounded, color: Colors.white, size: 14),
+                              SizedBox(width: 6),
+                              Text('Edit Profile', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ],
+                ),
+              ),
+              // Avatar
+              Positioned(
+                bottom: -40,
+                left: 20,
+                child: Container(
+                  width: 84,
+                  height: 84,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(colors: [ptColor, ptColor.withAlpha(190)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                    border: Border.all(color: Colors.white, width: 4),
+                    boxShadow: [
+                      BoxShadow(color: ptColor.withAlpha(60), blurRadius: 16, offset: const Offset(0, 6)),
+                    ],
+                  ),
+                  child: Icon(ptIcon, color: Colors.white, size: 38),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 50)),
+
+        // ── User Identity Info ───────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Text(
-                            name,
-                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          Flexible(
+                            child: Text(
+                              name,
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0F172A), height: 1.2),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          const SizedBox(height: 3),
-                          Text(
-                            'Mobile: $phone',
-                            style: TextStyle(color: Colors.white.withAlpha(220), fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(height: 6),
+                          const SizedBox(width: 6),
+                          const Icon(Icons.verified_rounded, size: 18, color: Color(0xFF0284C7)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(phone, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(30),
+                              color: ptColor.withAlpha(20),
                               borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: ptColor.withAlpha(50)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.verified_user_rounded, color: Color(0xFF38BDF8), size: 14),
-                                const SizedBox(width: 4),
-                                Text(
-                                  profileType.displayName,
-                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800),
-                                ),
+                                Icon(ptIcon, size: 13, color: ptColor),
+                                const SizedBox(width: 5),
+                                Text(ptLabel, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: ptColor)),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFECFDF5),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFA7F3D0)),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.check_circle_rounded, size: 13, color: Color(0xFF059669)),
+                                SizedBox(width: 4),
+                                Text('e-KYC Verified', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF059669))),
                               ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit_rounded, color: Colors.white),
-                      tooltip: 'Edit Profile',
-                      onPressed: () => context.push('/profile-form'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Divider(color: Colors.white24, height: 1),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildHeaderBadge(Icons.fingerprint_rounded, 'Aadhaar e-KYC', 'Verified'),
-                    _buildHeaderBadge(Icons.lock_rounded, 'DigiLocker', 'Linked'),
-                    _buildHeaderBadge(Icons.account_balance_rounded, 'DBT Account', 'Active'),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // ── SECTION 2: PERSONAL & DEMOGRAPHIC DETAILS (SHOWN SEPARATELY) ────
-          _buildSectionTitle('PERSONAL & DEMOGRAPHIC DETAILS', Icons.badge_rounded, const Color(0xFF2563EB)),
-          const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-              boxShadow: [BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 8, offset: const Offset(0, 2))],
-            ),
-            child: Column(
-              children: [
-                _buildDetailRow(Icons.person_outline_rounded, 'Full Name', name),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.cake_outlined, 'Date of Birth', dob),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.wc_rounded, 'Gender', gender),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.location_on_outlined, 'Home State', state),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.people_outline_rounded, 'Social Category', socialCategory),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.currency_rupee_rounded, 'Annual Family Income', income),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // ── SECTION 3: ACADEMIC & CAREER BACKGROUND (SHOWN SEPARATELY) ──────
-          _buildSectionTitle('ACADEMIC & OCCUPATIONAL DETAILS', Icons.school_rounded, const Color(0xFF7C3AED)),
-          const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-              boxShadow: [BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 8, offset: const Offset(0, 2))],
-            ),
-            child: Column(
-              children: [
-                _buildDetailRow(Icons.menu_book_outlined, 'Education Qualification', educationLevel),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.edit_note_rounded, 'Course / Sector', course),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.account_balance_outlined, 'Institution / District', institution),
-                const Divider(height: 1, indent: 48),
-                _buildDetailRow(Icons.work_outline_rounded, 'Employment Status', employment),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // ── SECTION 4: VERIFIED DOCUMENTS VAULT SUMMARY (SHOWN SEPARATELY) ──
-          _buildSectionTitle('VERIFIED DOCUMENT VAULT', Icons.shield_rounded, const Color(0xFF059669)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-              boxShadow: [BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 8, offset: const Offset(0, 2))],
-            ),
-            child: Column(
-              children: [
-                _buildDocVaultItem('Aadhaar Card', '9999_8888_1234', 'Verified', const Color(0xFF059669)),
-                const SizedBox(height: 8),
-                _buildDocVaultItem('Income Certificate', 'INC-2026-9876', 'Verified', const Color(0xFF059669)),
-                const SizedBox(height: 8),
-                _buildDocVaultItem('Caste / Category Proof', 'CST-2026-4321', 'Verified', const Color(0xFF059669)),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () => context.push('/documents/upload'),
-                    icon: const Icon(Icons.folder_open_rounded, size: 16),
-                    label: const Text('Manage All Documents in Vault', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF059669),
-                      side: const BorderSide(color: Color(0xFF10B981)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-
-          const SizedBox(height: 20),
-
-          // ── SECTION 5: ACCOUNT ACTIONS & NAVIGATION (SHOWN SEPARATELY) ──────
-          _buildSectionTitle('QUICK ACTIONS & SETTINGS', Icons.settings_rounded, const Color(0xFF475569)),
-          const SizedBox(height: 8),
-          _PMenuItem(
-            icon: Icons.edit_note_rounded,
-            label: 'Edit Profile Information',
-            subtitle: 'Update your name, state, income, or course details',
-            onTap: () => context.push('/profile-form'),
-          ),
-          _PMenuItem(
-            icon: Icons.tune_rounded,
-            label: 'Change Profile Category',
-            subtitle: 'Switch between Student, Farmer, Entrepreneur, etc.',
-            onTap: () => context.push('/profile-type'),
-          ),
-          _PMenuItem(
-            icon: Icons.bookmark_outline_rounded,
-            label: 'Saved Schemes & Tracker',
-            subtitle: 'View your bookmarked schemes and application status',
-            onTap: () => context.push('/saved-schemes'),
-          ),
-          _PMenuItem(
-            icon: Icons.auto_awesome_rounded,
-            label: 'AI Recommendation Engine',
-            subtitle: 'See eligible schemes matching your profile',
-            onTap: () => context.push('/recommendations'),
-          ),
-          const SizedBox(height: 8),
-          const Divider(color: Color(0xFFE2E8F0)),
-          const SizedBox(height: 8),
-          _PMenuItem(
-            icon: Icons.logout_rounded,
-            label: 'Sign Out Account',
-            subtitle: 'Log out safely from this device',
-            isDestructive: true,
-            onTap: () {
-              ref.read(authProvider.notifier).logout();
-              context.go('/login');
-            },
-          ),
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title, IconData icon, Color color) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: color, letterSpacing: 0.8),
         ),
-      ],
-    );
-  }
 
-  Widget _buildHeaderBadge(IconData icon, String label, String status) {
-    return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: const Color(0xFF38BDF8), size: 14),
-            const SizedBox(width: 4),
-            Text(status, style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 11, fontWeight: FontWeight.w800)),
-          ],
+        const SliverToBoxAdapter(child: SizedBox(height: 18)),
+
+        // ── Primary Essential Card: Overview & View Full Details Button ───────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withAlpha(6), blurRadius: 10, offset: const Offset(0, 3)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryBlue.withAlpha(15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.badge_rounded, color: AppTheme.primaryBlue, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Profile Summary',
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                            ),
+                            Text(
+                              'Essential identity & eligibility criteria',
+                              style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(state, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF334155))),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                  const SizedBox(height: 14),
+
+                  // Quick snippet chips
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildSummaryPill(Icons.category_rounded, 'Category', socialCategory),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _buildSummaryPill(Icons.currency_rupee_rounded, 'Annual Income', income),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Profile completion bar
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Scheme Match Readiness: $completionInt%',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF475569)),
+                      ),
+                      Text(
+                        completionInt >= 80 ? '✓ Ready' : 'Incomplete',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: completionInt >= 80 ? const Color(0xFF059669) : const Color(0xFFD97706),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: completionPct,
+                      minHeight: 6,
+                      backgroundColor: const Color(0xFFF1F5F9),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        completionInt >= 80 ? const Color(0xFF059669) : const Color(0xFFD97706),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Prominent View Profile Details button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showProfileDetailsModal(
+                        context,
+                        name: name,
+                        phone: phone,
+                        dob: dob,
+                        gender: gender,
+                        state: state,
+                        socialCategory: socialCategory,
+                        income: income,
+                        educationLevel: educationLevel,
+                        course: course,
+                        institution: institution,
+                        employment: employment,
+                        profileType: profileType,
+                      ),
+                      icon: const Icon(Icons.visibility_rounded, size: 18),
+                      label: const Text('View Full Profile Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E3A8A),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-        const SizedBox(height: 2),
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.w600)),
-      ],
-    );
-  }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: const Color(0xFF64748B)),
-          const SizedBox(width: 14),
-          Expanded(
+        const SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+        // ── Quick Access Tools Grid ──────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
+                const _SectionHeader(icon: Icons.bolt_rounded, label: 'Services & Tools', color: Color(0xFF2563EB)),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _BigActionButton(
+                        icon: Icons.auto_awesome_rounded,
+                        label: 'AI Schemes\nFor You',
+                        color: const Color(0xFF7C3AED),
+                        onTap: () => context.push('/recommendations'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _BigActionButton(
+                        icon: Icons.bookmark_rounded,
+                        label: 'Saved\nSchemes',
+                        color: const Color(0xFF0284C7),
+                        onTap: () => context.push('/saved-schemes'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _BigActionButton(
+                        icon: Icons.folder_open_rounded,
+                        label: 'Document\nVault',
+                        color: const Color(0xFF059669),
+                        onTap: () => context.push('/documents/upload'),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+        // ── Account Settings & Preferences ───────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const _SectionHeader(icon: Icons.settings_rounded, label: 'Account & Settings', color: Color(0xFF475569)),
+                const SizedBox(height: 10),
+                _PMenuItem(
+                  icon: Icons.edit_note_rounded,
+                  label: 'Edit Profile Information',
+                  subtitle: 'Update qualification, income, address & more',
+                  onTap: () => context.push('/profile-form'),
+                ),
+                _PMenuItem(
+                  icon: Icons.tune_rounded,
+                  label: 'Switch Citizen Persona',
+                  subtitle: 'Current: $ptLabel',
+                  onTap: () => context.push('/profile-type'),
+                ),
+                _PMenuItem(
+                  icon: Icons.translate_rounded,
+                  label: 'App Language & Voice',
+                  subtitle: 'Choose from 16 Indian languages',
+                  onTap: () => _showLanguageSelectorModal(context, ref),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
+        // ── Sign Out Button ──────────────────────────────────────────────────
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  ref.read(authProvider.notifier).logout();
+                  context.go('/login');
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF1F2),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFFECDD3)),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout_rounded, color: Color(0xFFDC2626), size: 18),
+                      SizedBox(width: 8),
+                      Text(
+                        'Sign Out',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFFDC2626)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildDocVaultItem(String docTitle, String docId, String status, Color statusColor) {
+  Widget _buildSummaryPill(IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(10),
@@ -1508,97 +1789,380 @@ class _ProfileTab extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.insert_drive_file_rounded, size: 16, color: AppTheme.primaryBlue),
-          const SizedBox(width: 10),
+          Icon(icon, size: 16, color: const Color(0xFF64748B)),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(docTitle, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF0F172A))),
-                Text('ID: $docId', style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+                Text(label, style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8), fontWeight: FontWeight.w600)),
+                Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)), overflow: TextOverflow.ellipsis),
               ],
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: statusColor.withAlpha(20), borderRadius: BorderRadius.circular(6)),
-            child: Text(status, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: statusColor)),
           ),
         ],
       ),
     );
   }
 
-  String _getDefaultNameForType(ProfileType type) {
-    return switch (type) {
-      ProfileType.student => 'Aarav Sharma',
-      ProfileType.farmer => 'Ramesh Chandra Patil',
-      ProfileType.jobSeeker => 'Priya Verma',
-      ProfileType.entrepreneur => 'Vikramaditya Joshi',
-      ProfileType.womanFamily => 'Sunita Devi',
-      ProfileType.seniorCitizen => 'Harishchandra Kulkarni',
-      ProfileType.generalCitizen => 'Rajesh Kumar Singh',
-    };
+  // ── MODAL: Full Detailed Profile View ──────────────────────────────────────
+  void _showProfileDetailsModal(
+    BuildContext context, {
+    required String name,
+    required String phone,
+    required String dob,
+    required String gender,
+    required String state,
+    required String socialCategory,
+    required String income,
+    required String educationLevel,
+    required String course,
+    required String institution,
+    required String employment,
+    required ProfileType profileType,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.86,
+          decoration: const BoxDecoration(
+            color: Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            children: [
+              // Sheet Handle & Header
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 12, 16, 12),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                  border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+                ),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40, height: 4,
+                        decoration: BoxDecoration(color: const Color(0xFFCBD5E1), borderRadius: BorderRadius.circular(2)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.account_circle_rounded, color: AppTheme.primaryBlue, size: 22),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Full Profile & Identification Details',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          icon: const Icon(Icons.close_rounded, color: Color(0xFF64748B)),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Detailed Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Verified ID Badges
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFBFDBFE)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildModalBadge(Icons.fingerprint_rounded, 'Aadhaar e-KYC', 'Verified', const Color(0xFF059669)),
+                            Container(width: 1, height: 28, color: const Color(0xFFBFDBFE)),
+                            _buildModalBadge(Icons.lock_rounded, 'DigiLocker', 'Linked', const Color(0xFF0284C7)),
+                            Container(width: 1, height: 28, color: const Color(0xFFBFDBFE)),
+                            _buildModalBadge(Icons.account_balance_rounded, 'DBT Account', 'Active', const Color(0xFF059669)),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Section 1: Personal & Demographic
+                      _InfoCard(
+                        header: const _SectionHeader(icon: Icons.person_rounded, label: 'Personal & Demographic', color: Color(0xFF2563EB)),
+                        items: [
+                          _InfoRow(icon: Icons.badge_outlined, label: 'Full Name', value: name),
+                          _InfoRow(icon: Icons.cake_outlined, label: 'Date of Birth', value: dob),
+                          _InfoRow(icon: Icons.wc_rounded, label: 'Gender', value: gender),
+                          _InfoRow(icon: Icons.location_on_outlined, label: 'State of Domicile', value: state),
+                          _InfoRow(icon: Icons.people_outline_rounded, label: 'Social Category', value: socialCategory),
+                          _InfoRow(icon: Icons.currency_rupee_rounded, label: 'Annual Family Income', value: income),
+                        ],
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      // Section 2: Education & Occupation
+                      _InfoCard(
+                        header: const _SectionHeader(icon: Icons.school_rounded, label: 'Academic & Occupation', color: Color(0xFF7C3AED)),
+                        items: [
+                          _InfoRow(icon: Icons.menu_book_outlined, label: 'Qualification', value: educationLevel),
+                          _InfoRow(icon: Icons.work_outline_rounded, label: 'Field / Sector', value: course),
+                          _InfoRow(icon: Icons.account_balance_outlined, label: 'Institution / District', value: institution),
+                          _InfoRow(icon: Icons.badge_outlined, label: 'Employment Status', value: employment),
+                        ],
+                      ),
+
+                      const SizedBox(height: 22),
+
+                      // Edit button at bottom of sheet
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            context.push('/profile-form');
+                          },
+                          icon: const Icon(Icons.edit_rounded, size: 16),
+                          label: const Text('Update Profile Information', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppTheme.primaryBlue,
+                            side: const BorderSide(color: AppTheme.primaryBlue),
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  String _getDefaultDobForType(ProfileType type) {
-    return switch (type) {
-      ProfileType.student => '2004-06-15 (Age: 20)',
-      ProfileType.farmer => '1978-04-12 (Age: 46)',
-      ProfileType.jobSeeker => '2001-09-20 (Age: 23)',
-      ProfileType.entrepreneur => '1992-11-05 (Age: 32)',
-      ProfileType.womanFamily => '1986-08-25 (Age: 38)',
-      ProfileType.seniorCitizen => '1958-03-10 (Age: 66)',
-      ProfileType.generalCitizen => '1985-01-18 (Age: 39)',
-    };
+  Widget _buildModalBadge(IconData icon, String label, String status, Color color) {
+    return Column(
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(height: 3),
+        Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+        const SizedBox(height: 2),
+        Text(status, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: color)),
+      ],
+    );
   }
 
-  String _getDefaultEducationForType(ProfileType type) {
-    return switch (type) {
-      ProfileType.student => 'Undergraduate (B.Tech)',
-      ProfileType.farmer => 'Class 10 (Secondary)',
-      ProfileType.jobSeeker => 'Undergraduate / ITI Apprentice',
-      ProfileType.entrepreneur => 'Postgraduate (Management)',
-      ProfileType.womanFamily => 'Class 12 (Higher Secondary)',
-      ProfileType.seniorCitizen => 'Class 10 (Secondary)',
-      ProfileType.generalCitizen => 'Undergraduate',
-    };
-  }
+  (Color, IconData, String) _profileTypeMeta(ProfileType type) => switch (type) {
+    ProfileType.student       => (const Color(0xFF2563EB), Icons.school_rounded, 'Student'),
+    ProfileType.farmer        => (const Color(0xFF059669), Icons.agriculture_rounded, 'Farmer'),
+    ProfileType.jobSeeker     => (const Color(0xFF7C3AED), Icons.work_rounded, 'Job Seeker'),
+    ProfileType.entrepreneur  => (const Color(0xFFD97706), Icons.store_rounded, 'Entrepreneur'),
+    ProfileType.womanFamily   => (const Color(0xFFDB2777), Icons.female_rounded, 'Women & Family'),
+    ProfileType.seniorCitizen => (const Color(0xFF0EA5E9), Icons.elderly_rounded, 'Senior Citizen'),
+    ProfileType.generalCitizen=> (const Color(0xFF475569), Icons.person_rounded, 'General Citizen'),
+  };
 
-  String _getDefaultCourseForType(ProfileType type) {
-    return switch (type) {
-      ProfileType.student => 'B.Tech Computer Science',
-      ProfileType.farmer => 'Sugarcane & Rice Cultivation',
-      ProfileType.jobSeeker => 'Software & Digital Operations',
-      ProfileType.entrepreneur => 'Micro Retail Enterprise',
-      ProfileType.womanFamily => 'Maternity & Self-Help Group Aid',
-      ProfileType.seniorCitizen => 'Unorganized Pension Applicant',
-      ProfileType.generalCitizen => 'Housing & Subsidy Applicant',
-    };
-  }
+  String _getDefaultNameForType(ProfileType type) => switch (type) {
+    ProfileType.student        => 'Aarav Sharma',
+    ProfileType.farmer         => 'Ramesh Chandra Patil',
+    ProfileType.jobSeeker      => 'Priya Verma',
+    ProfileType.entrepreneur   => 'Vikramaditya Joshi',
+    ProfileType.womanFamily    => 'Sunita Devi',
+    ProfileType.seniorCitizen  => 'Harishchandra Kulkarni',
+    ProfileType.generalCitizen => 'Rajesh Kumar Singh',
+  };
 
-  String _getDefaultInstitutionForType(ProfileType type) {
-    return switch (type) {
-      ProfileType.student => 'COEP Technological University',
-      ProfileType.farmer => 'Kolhapur Farm District',
-      ProfileType.jobSeeker => 'Skill India Center Lucknow',
-      ProfileType.entrepreneur => 'Joshi Green Tech Solutions',
-      ProfileType.womanFamily => 'Nashik Primary Health Center',
-      ProfileType.seniorCitizen => 'Bengaluru Senior Center',
-      ProfileType.generalCitizen => 'Central Municipal Ward',
-    };
-  }
+  String _getDefaultDobForType(ProfileType type) => switch (type) {
+    ProfileType.student        => '15 Jun 2004 (Age 20)',
+    ProfileType.farmer         => '12 Apr 1978 (Age 46)',
+    ProfileType.jobSeeker      => '20 Sep 2001 (Age 23)',
+    ProfileType.entrepreneur   => '05 Nov 1992 (Age 32)',
+    ProfileType.womanFamily    => '25 Aug 1986 (Age 38)',
+    ProfileType.seniorCitizen  => '10 Mar 1958 (Age 66)',
+    ProfileType.generalCitizen => '18 Jan 1985 (Age 39)',
+  };
 
-  String _getDefaultEmploymentForType(ProfileType type) {
-    return switch (type) {
-      ProfileType.student => 'Full-Time Student',
-      ProfileType.farmer => 'Small & Marginal Farmer (Self-Employed)',
-      ProfileType.jobSeeker => 'Actively Seeking Employment',
-      ProfileType.entrepreneur => 'Self-Employed Business Owner',
-      ProfileType.womanFamily => 'Self-Help Group Member',
-      ProfileType.seniorCitizen => 'Retired Unorganized Sector',
-      ProfileType.generalCitizen => 'Part-Time / Self-Employed',
-    };
+  String _getDefaultEducationForType(ProfileType type) => switch (type) {
+    ProfileType.student        => 'Undergraduate (B.Tech)',
+    ProfileType.farmer         => 'Class 10 (Secondary)',
+    ProfileType.jobSeeker      => 'Undergraduate / ITI',
+    ProfileType.entrepreneur   => 'Postgraduate (MBA)',
+    ProfileType.womanFamily    => 'Class 12 (Higher Secondary)',
+    ProfileType.seniorCitizen  => 'Class 10 (Secondary)',
+    ProfileType.generalCitizen => 'Undergraduate',
+  };
+
+  String _getDefaultCourseForType(ProfileType type) => switch (type) {
+    ProfileType.student        => 'B.Tech Computer Science',
+    ProfileType.farmer         => 'Sugarcane & Rice Cultivation',
+    ProfileType.jobSeeker      => 'Software & Digital Operations',
+    ProfileType.entrepreneur   => 'Micro Retail Enterprise',
+    ProfileType.womanFamily    => 'Maternity & Self-Help Group',
+    ProfileType.seniorCitizen  => 'Pension Applicant',
+    ProfileType.generalCitizen => 'Housing & Subsidy Applicant',
+  };
+
+  String _getDefaultInstitutionForType(ProfileType type) => switch (type) {
+    ProfileType.student        => 'COEP Technological University',
+    ProfileType.farmer         => 'Kolhapur Farm District',
+    ProfileType.jobSeeker      => 'Skill India Center Lucknow',
+    ProfileType.entrepreneur   => 'Joshi Green Tech Solutions',
+    ProfileType.womanFamily    => 'Nashik Primary Health Center',
+    ProfileType.seniorCitizen  => 'Bengaluru Senior Center',
+    ProfileType.generalCitizen => 'Central Municipal Ward',
+  };
+
+  String _getDefaultEmploymentForType(ProfileType type) => switch (type) {
+    ProfileType.student        => 'Full-Time Student',
+    ProfileType.farmer         => 'Small & Marginal Farmer',
+    ProfileType.jobSeeker      => 'Seeking Employment',
+    ProfileType.entrepreneur   => 'Self-Employed Business Owner',
+    ProfileType.womanFamily    => 'Self-Help Group Member',
+    ProfileType.seniorCitizen  => 'Retired — Unorganized Sector',
+    ProfileType.generalCitizen => 'Part-Time / Self-Employed',
+  };
+}
+
+// ── Shared Profile Widgets ────────────────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _SectionHeader({required this.icon, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(color: color.withAlpha(18), borderRadius: BorderRadius.circular(8)),
+        child: Icon(icon, size: 16, color: color),
+      ),
+      const SizedBox(width: 10),
+      Text(label,
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: color)),
+    ]);
+  }
+}
+
+class _BigActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _BigActionButton({required this.icon, required this.label, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color.withAlpha(18),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withAlpha(50)),
+          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: color.withAlpha(25), shape: BoxShape.circle),
+              child: Icon(icon, size: 24, color: color),
+            ),
+            const SizedBox(height: 8),
+            Text(label, textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: color, height: 1.3)),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoCard extends StatelessWidget {
+  final Widget header;
+  final List<_InfoRow> items;
+  const _InfoCard({required this.header, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        header,
+        const SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+            boxShadow: [BoxShadow(color: Colors.black.withAlpha(5), blurRadius: 8, offset: const Offset(0, 2))],
+          ),
+          child: Column(
+            children: List.generate(items.length, (i) => Column(
+              children: [
+                items[i],
+                if (i < items.length - 1) const Divider(height: 1, indent: 52, endIndent: 16),
+              ],
+            )),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  const _InfoRow({required this.icon, required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(children: [
+        Container(
+          width: 36, height: 36,
+          decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, size: 18, color: const Color(0xFF64748B)),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(label,
+              style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8), fontWeight: FontWeight.w600, letterSpacing: 0.3)),
+            const SizedBox(height: 3),
+            Text(value,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
+          ]),
+        ),
+      ]),
+    );
   }
 }
 
@@ -1607,12 +2171,11 @@ class _PMenuItem extends StatelessWidget {
   final String label;
   final String subtitle;
   final VoidCallback onTap;
-  final bool isDestructive;
-  const _PMenuItem({required this.icon, required this.label, required this.subtitle, required this.onTap, this.isDestructive = false});
+  const _PMenuItem({required this.icon, required this.label, required this.subtitle, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? AppTheme.errorRed : AppTheme.primaryBlue;
+    const color = AppTheme.primaryBlue;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
@@ -1631,11 +2194,11 @@ class _PMenuItem extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isDestructive ? AppTheme.errorRed : const Color(0xFF0F172A))),
+                Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF0F172A))),
                 const SizedBox(height: 2),
                 Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
               ])),
-              Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey.shade400),
+              Icon(Icons.chevron_right_rounded, size: 22, color: Colors.grey.shade400),
             ]),
           ),
         ),
@@ -1643,6 +2206,7 @@ class _PMenuItem extends StatelessWidget {
     );
   }
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHARED: SCHEME CARD

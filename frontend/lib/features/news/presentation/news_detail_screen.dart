@@ -351,7 +351,7 @@ class _NewsDetailScreenState extends ConsumerState<NewsDetailScreen> {
                     onPressed: () => _toggleSpeak(news, activeLang),
                     icon: Icon(_isSpeaking ? Icons.stop_rounded : Icons.volume_up_rounded, size: 18),
                     label: Text(
-                      _isSpeaking ? 'रोकें (Stop)' : 'सुनें (Listen)',
+                      _isSpeaking ? AppTranslations.tr('stop_label', activeLang.code) : AppTranslations.tr('listen_label', activeLang.code),
                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
                     ),
                     style: ElevatedButton.styleFrom(

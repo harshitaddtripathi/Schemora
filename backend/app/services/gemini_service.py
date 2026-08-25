@@ -30,11 +30,12 @@ OUT_OF_SCOPE_KEYWORDS = [
 ]
 
 LANG_NAMES = {
+    "en": "English",
     "hi": "Hindi", "mr": "Marathi", "bn": "Bengali", "te": "Telugu",
     "ta": "Tamil", "gu": "Gujarati", "kn": "Kannada", "ml": "Malayalam",
     "pa": "Punjabi", "or": "Odia", "as": "Assamese", "ur": "Urdu",
     "sa": "Sanskrit", "ne": "Nepali", "sd": "Sindhi", "kok": "Konkani",
-    "mai": "Maithili", "doi": "Dogri",
+    "mai": "Maithili", "doi": "Dogri", "bho": "Bhojpuri",
 }
 
 LANG_FALLBACK_MESSAGES = {

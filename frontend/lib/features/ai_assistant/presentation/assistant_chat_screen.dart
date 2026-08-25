@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:schemora_frontend/core/providers/app_language_provider.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/utils/url_launcher_helper.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
@@ -213,16 +214,29 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize language from the global app language setting
+    final appLang = ref.read(appLanguageProvider);
+    _selectedLang = appLang.code;
     _messages.add(
       ChatMessageModel(
         id: 'msg-welcome',
-        text: _L.welcome('en', widget.schemeTitle),
+        text: _L.welcome(_selectedLang, widget.schemeTitle),
         isUser: false,
         timestamp: DateTime.now(),
       ),
     );
     // Listen for typed text to auto-detect language
     _controller.addListener(_onTextChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Keep _selectedLang in sync with the global app language
+    final appLang = ref.read(appLanguageProvider);
+    if (appLang.code != _selectedLang && !_isListening) {
+      setState(() => _selectedLang = appLang.code);
+    }
   }
 
   @override
@@ -512,7 +526,7 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
                     child: Tooltip(
                       message: isSpeaking
                           ? (msgLang == 'hi' ? 'बोलना बंद करें' : 'Stop speaking')
-                          : (msgLang == 'hi' ? 'सुनें' : 'Read aloud in $msgLang'),
+                          : AppTranslations.tr('listen_label', msgLang),
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(

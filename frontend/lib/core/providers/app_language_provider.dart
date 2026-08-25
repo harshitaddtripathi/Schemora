@@ -15,8 +15,8 @@ class LanguageInfo {
 }
 
 const List<LanguageInfo> kSupportedLanguages = [
-  LanguageInfo(code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'),
   LanguageInfo(code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧'),
+  LanguageInfo(code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'),
   LanguageInfo(code: 'mr', name: 'Marathi', nativeName: 'मराठी', flag: '🇮🇳'),
   LanguageInfo(code: 'gu', name: 'Gujarati', nativeName: 'ગુજરાતી', flag: '🇮🇳'),
   LanguageInfo(code: 'bn', name: 'Bengali', nativeName: 'বাংলা', flag: '🇮🇳'),
@@ -34,7 +34,7 @@ const List<LanguageInfo> kSupportedLanguages = [
 ];
 
 class AppLanguageNotifier extends StateNotifier<LanguageInfo> {
-  AppLanguageNotifier() : super(kSupportedLanguages.first); // Default: Hindi
+  AppLanguageNotifier() : super(kSupportedLanguages.first); // Default: English
 
   void setLanguageByCode(String code) {
     final found = kSupportedLanguages.firstWhere(
@@ -430,11 +430,47 @@ class AppTranslations {
       'sa': 'मम विवरणम्',
       'mai': 'हमर विवरण',
     },
+    'listen_label': {
+      'en': 'Listen',
+      'hi': 'सुनें',
+      'mr': 'ऐका',
+      'gu': 'સાંભળો',
+      'bn': 'শুনুন',
+      'ta': 'கேளுங்கள்',
+      'te': 'వినండి',
+      'kn': 'ಕೇಳಿ',
+      'ml': 'കേൾക്കൂ',
+      'pa': 'ਸੁਣੋ',
+      'or': 'ଶୁଣନ୍ତୁ',
+      'as': 'শুনক',
+      'ur': 'سنیں',
+      'bho': 'सुनीं',
+      'sa': 'श्रृणोतु',
+      'mai': 'सुनू',
+    },
+    'stop_label': {
+      'en': 'Stop',
+      'hi': 'रोकें',
+      'mr': 'थांबा',
+      'gu': 'રોકો',
+      'bn': 'থামুন',
+      'ta': 'நிறுத்து',
+      'te': 'ఆపు',
+      'kn': 'ನಿಲ್ಲಿಸಿ',
+      'ml': 'നിർത്തൂ',
+      'pa': 'ਰੋਕੋ',
+      'or': 'ରୋକନ୍ତୁ',
+      'as': 'ৰওক',
+      'ur': 'روکیں',
+      'bho': 'रोकीं',
+      'sa': 'विरमतु',
+      'mai': 'रोकू',
+    },
   };
 
   static String tr(String key, String langCode) {
     final keyMap = _data[key];
     if (keyMap == null) return key;
-    return keyMap[langCode] ?? keyMap['hi'] ?? keyMap['en'] ?? key;
+    return keyMap[langCode] ?? keyMap['en'] ?? keyMap['hi'] ?? key;
   }
 }
