@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/features/documents/data/document_repository.dart';
 import 'package:schemora_frontend/features/documents/domain/document_model.dart';
@@ -228,6 +229,11 @@ class _DocumentUploadScreenState extends ConsumerState<DocumentUploadScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0.5,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+          tooltip: 'Go Back',
+          onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
+        ),
         title: const Row(
           children: [
             Icon(Icons.shield_outlined, color: AppTheme.primaryBlue, size: 22),

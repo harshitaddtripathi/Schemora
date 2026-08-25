@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/documents/data/document_repository.dart';
@@ -40,6 +41,11 @@ class _SchemeChecklistScreenState extends ConsumerState<SchemeChecklistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Go Back',
+          onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
+        ),
         title: const Text('Application Checklist'),
         actions: const [
           DashboardButton(),

@@ -179,6 +179,11 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Go Back',
+          onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
+        ),
         title: const Text('Scheme Details & Application'),
         actions: [
           const DashboardButton(),

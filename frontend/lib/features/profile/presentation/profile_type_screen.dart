@@ -74,6 +74,11 @@ class ProfileTypeScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Go Back',
+          onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
+        ),
         title: const Text('Choose Profile'),
         centerTitle: true,
         backgroundColor: Colors.white,

@@ -164,6 +164,8 @@ class VoiceAssistantService {
       debugPrint('TTS stop error: $e');
     }
   }
+
+  Future<void> stop() async => stopSpeaking();
 }
 
 final voiceAssistantServiceProvider = Provider<VoiceAssistantService>((ref) {

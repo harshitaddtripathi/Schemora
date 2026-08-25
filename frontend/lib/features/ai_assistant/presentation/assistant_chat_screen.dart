@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:schemora_frontend/core/theme/app_theme.dart';
 import 'package:schemora_frontend/core/utils/url_launcher_helper.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
@@ -398,6 +399,11 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Go Back',
+          onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
+        ),
         title: Text(_L.appBarTitle(lang, widget.schemeTitle)),
         actions: [
           const DashboardButton(),

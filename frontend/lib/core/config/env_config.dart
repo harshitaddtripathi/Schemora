@@ -9,7 +9,7 @@ class EnvConfig {
   // ---------------------------------------------------------------------------
   // ⚠️ PHYSICAL DEVICE: Use PC's LAN IP so the phone can reach the backend over WiFi.
   // For emulator use: 10.0.2.2  |  For web/desktop use: 127.0.0.1
-  static const String devHostIp = '192.168.3.155'; // PC's LAN IP
+  static const String devHostIp = '192.168.3.160'; // PC's LAN IP
   static const String devPort = '8000';
 
   // Production or runtime override injected via --dart-define=API_BASE_URL=...

@@ -19,9 +19,13 @@ class RecommendationScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Go Back',
+          onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
+        ),
         title: Text('Matched Schemes (${profileType.displayName})'),
         centerTitle: true,
-        automaticallyImplyLeading: false,
         actions: [
           const DashboardButton(),
           IconButton(

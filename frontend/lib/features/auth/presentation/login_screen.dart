@@ -150,8 +150,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Positioned(
+              top: 8,
+              left: 12,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+                tooltip: 'Go Back',
+                onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
+              ),
+            ),
+            Center(
+              child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 32.0),
             child: Container(
               constraints: const BoxConstraints(maxWidth: 420),
@@ -373,8 +384,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             ),
           ),
         ),
-      ),
-    );
+      ],
+    ),
+  ),
+);
   }
 }
 

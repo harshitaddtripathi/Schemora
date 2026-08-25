@@ -15,10 +15,19 @@ import 'package:schemora_frontend/features/saved_schemes/presentation/saved_sche
 import 'package:schemora_frontend/features/admin/presentation/admin_login_screen.dart';
 import 'package:schemora_frontend/features/admin/presentation/admin_dashboard_screen.dart';
 
+import 'package:schemora_frontend/features/news/presentation/news_detail_screen.dart';
+
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
     routes: [
+      GoRoute(
+        path: '/news/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return NewsDetailScreen(newsId: id);
+        },
+      ),
       // /health-diagnostic is kept for developer use only — not shown to users on startup.
       GoRoute(
         path: '/health-diagnostic',
