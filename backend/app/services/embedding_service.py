@@ -30,6 +30,7 @@ GEMINI_EMBEDDING_URL = (
 # Singleton cache: content_hash -> embedding list
 # Avoids re-embedding identical text within the same process lifetime
 _embedding_cache: Dict[str, List[float]] = {}
+_api_disabled: bool = False
 
 
 def _get_api_key() -> str:
@@ -88,8 +89,12 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
     """Generate a semantic embedding for `text` using the Gemini API.
 
     Returns a list of floats (768 dimensions for text-embedding-004),
-    or None if the API call fails.
+    or None if the API call fails or is unconfigured.
     """
+    global _api_disabled
+    if _api_disabled:
+        return None
+
     text = text.strip()
     if not text:
         return None
@@ -101,7 +106,8 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
 
     api_key = _get_api_key()
     if not api_key or len(api_key) < 10:
-        logger.debug("No Gemini API key — using TF-IDF fallback for embeddings")
+        _api_disabled = True
+        logger.debug("No valid Gemini API key — using fast TF-IDF fallback for embeddings")
         return None
 
     model = _get_embedding_model()
@@ -135,6 +141,10 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
             else:
                 logger.warning("Gemini embedding response missing values")
                 return None
+        elif resp.status_code in (401, 403):
+            logger.warning(f"Gemini embedding API error {resp.status_code} (invalid key) — disabling remote embedding calls for process session.")
+            _api_disabled = True
+            return None
         else:
             logger.warning(f"Gemini embedding API error {resp.status_code}: {resp.text[:200]}")
             return None

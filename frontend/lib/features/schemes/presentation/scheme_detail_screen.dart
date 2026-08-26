@@ -7,6 +7,7 @@ import 'package:schemora_frontend/core/utils/url_launcher_helper.dart';
 import 'package:schemora_frontend/core/widgets/common_states.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type.dart';
+import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
 
@@ -213,8 +214,12 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
             }
 
             final scheme = snapshot.data!;
-            final profileType = _detectSchemeProfileType(scheme);
-            final mockData = _getMockDataForSchemeType(profileType, scheme);
+            final userProfileType = ref.watch(selectedProfileTypeProvider);
+            final schemeProfileType = _detectSchemeProfileType(scheme);
+            final isProfileMismatch = (userProfileType != schemeProfileType && schemeProfileType != ProfileType.generalCitizen);
+            final mismatchReason = isProfileMismatch ? userProfileType.getIneligibilityReason(schemeProfileType) : '';
+            final activeProfileForForm = isProfileMismatch ? userProfileType : schemeProfileType;
+            final mockData = _getMockDataForSchemeType(activeProfileForForm, scheme);
             final directPortal = SchemeUrlResolver.getDirectPortal(scheme);
             final officialUrl = directPortal.url;
             final sourceName = directPortal.sourceName;
@@ -395,10 +400,12 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
 
                         _buildGuidelineStep(
                           stepNumber: '1',
-                          title: 'Verify Scheme Eligibility',
-                          description: 'Check your age, domicile state (${scheme.state ?? "Central"}), and income requirements.',
-                          statusIcon: Icons.check_circle_rounded,
-                          statusColor: AppTheme.successGreen,
+                          title: isProfileMismatch ? 'Verify Scheme Eligibility — Failed' : 'Verify Scheme Eligibility',
+                          description: isProfileMismatch
+                              ? 'Ineligible: $mismatchReason'
+                              : 'Check your age, domicile state (${scheme.state ?? "Central"}), and income requirements.',
+                          statusIcon: isProfileMismatch ? Icons.cancel_rounded : Icons.check_circle_rounded,
+                          statusColor: isProfileMismatch ? const Color(0xFFDC2626) : AppTheme.successGreen,
                         ),
                         const SizedBox(height: 12),
                         _buildGuidelineStep(
@@ -433,9 +440,12 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
                   // ── Auto-Filled Mock Data Application Section ───────────
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.amber.shade50,
+                      color: isProfileMismatch ? const Color(0xFFFEF2F2) : Colors.amber.shade50,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.amber.shade400, width: 1.5),
+                      border: Border.all(
+                        color: isProfileMismatch ? const Color(0xFFFCA5A5) : Colors.amber.shade400,
+                        width: 1.5,
+                      ),
                     ),
                     padding: const EdgeInsets.all(18),
                     child: Column(
@@ -446,39 +456,60 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.amber.shade700,
+                                color: isProfileMismatch ? const Color(0xFFDC2626) : Colors.amber.shade700,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 20),
+                              child: Icon(
+                                isProfileMismatch ? Icons.gavel_rounded : Icons.auto_awesome_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    'Auto-Filled Scheme Application Data',
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF78350F)),
+                                  Text(
+                                    isProfileMismatch
+                                        ? 'Auto-Filled Profile & Eligibility Evaluation'
+                                        : 'Auto-Filled Scheme Application Data',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: isProfileMismatch ? const Color(0xFF991B1B) : const Color(0xFF78350F),
+                                    ),
                                   ),
                                   Text(
-                                    'Pre-populated with mock data tailored for ${profileType.displayName}',
-                                    style: TextStyle(fontSize: 12, color: Colors.amber.shade900),
+                                    isProfileMismatch
+                                        ? 'Evaluated against active profile: ${userProfileType.displayName}'
+                                        : 'Pre-populated with mock data tailored for ${activeProfileForForm.displayName}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isProfileMismatch ? const Color(0xFFB91C1C) : Colors.amber.shade900,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                             Switch(
                               value: _isAutoFilledApplied,
-                              activeColor: Colors.amber.shade800,
+                              activeColor: isProfileMismatch ? const Color(0xFFDC2626) : Colors.amber.shade800,
                               onChanged: (val) => setState(() => _isAutoFilledApplied = val),
                             ),
                           ],
                         ),
                         if (_isAutoFilledApplied) ...[
                           const Divider(height: 24),
-                          const Text(
-                            'The following form fields have been automatically populated for instant eligibility verification:',
-                            style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Color(0xFF92400E)),
+                          Text(
+                            isProfileMismatch
+                                ? 'Your active registered profile details evaluated against this scheme:'
+                                : 'The following form fields have been automatically populated for instant eligibility verification:',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic,
+                              color: isProfileMismatch ? const Color(0xFF991B1B) : const Color(0xFF92400E),
+                            ),
                           ),
                           const SizedBox(height: 14),
                           ...mockData.entries.map((entry) => Padding(
@@ -497,7 +528,9 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(color: Colors.amber.shade300),
+                                          border: Border.all(
+                                            color: isProfileMismatch ? const Color(0xFFFCA5A5) : Colors.amber.shade300,
+                                          ),
                                         ),
                                         child: Text(
                                           entry.value,
@@ -510,26 +543,59 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
                                 ),
                               )),
                           const SizedBox(height: 14),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppTheme.successGreen.withAlpha(25),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.successGreen.withAlpha(80)),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.check_circle_rounded, color: AppTheme.successGreen, size: 20),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Eligibility Status: 100% Matched with Auto-Filled Profile!',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.successGreen, fontSize: 13),
+                          if (isProfileMismatch)
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEF2F2),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: const Color(0xFFFCA5A5)),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(Icons.cancel_rounded, color: Color(0xFFDC2626), size: 22),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Eligibility Status: Ineligible (Profile Mismatch)',
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF991B1B), fontSize: 13),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Valid Reason: $mismatchReason',
+                                          style: const TextStyle(fontSize: 12, color: Color(0xFF7F1D1D), height: 1.4),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppTheme.successGreen.withAlpha(25),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppTheme.successGreen.withAlpha(80)),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.check_circle_rounded, color: AppTheme.successGreen, size: 20),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Eligibility Status: 100% Matched with Auto-Filled Profile!',
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.successGreen, fontSize: 13),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
                         ],
                       ],
                     ),

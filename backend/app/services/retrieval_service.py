@@ -6,7 +6,8 @@ Strategy:
   1. Embed the user query (Gemini dense embedding OR TF-IDF fallback).
   2. Load all stored chunk embeddings from the DB.
   3. Compute cosine similarity between query and each chunk.
-  4. Return top-K chunks with metadata for the Gemini prompt.
+  4. Apply keyword matching boost for scheme title, category, and state.
+  5. Return top-K chunks with metadata for the Gemini prompt.
 
 Filtering:
   - scheme_id: restrict to a specific scheme's chunks
@@ -15,6 +16,7 @@ Filtering:
   - section: restrict to specific section type
 """
 
+import re
 import logging
 from typing import Any, Dict, List, Optional, Union
 
@@ -34,6 +36,36 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TOP_K = 8
 MIN_SIMILARITY_THRESHOLD = 0.05  # Filter out completely irrelevant chunks
+
+
+def _compute_keyword_boost(query: str, chunk: KnowledgeChunk) -> float:
+    """Calculate a keyword matching boost to enhance retrieval quality,
+    especially when dense embeddings are unavailable (offline TF-IDF mode).
+    """
+    q_words = [w.lower() for w in re.findall(r"\w+", query) if len(w) > 2]
+    if not q_words:
+        return 0.0
+
+    boost = 0.0
+    scheme_name = (chunk.scheme_name or "").lower()
+    category = (chunk.category or "").lower()
+    section = (chunk.section or "").lower()
+    content = (chunk.content or "").lower()
+    state = (chunk.state or "").lower()
+
+    for w in q_words:
+        if w in scheme_name:
+            boost += 0.12
+        if w in category:
+            boost += 0.10
+        if w in section:
+            boost += 0.05
+        if state and w in state:
+            boost += 0.10
+        if w in content:
+            boost += 0.02
+
+    return min(0.35, boost)
 
 
 async def retrieve_relevant_chunks(
@@ -91,25 +123,28 @@ async def retrieve_relevant_chunks(
     scored = []
     for chunk in chunks:
         stored = json_to_embedding(chunk.embedding_json)
-        if stored is None:
-            continue
 
-        # Match embedding types: both dense or both TF-IDF
-        chunk_is_dense = is_dense_embedding(stored)
-        query_is_dense = is_dense_embedding(query_embedding)
+        # Base vector similarity score
+        score = 0.0
+        if stored is not None:
+            chunk_is_dense = is_dense_embedding(stored)
+            query_is_dense = is_dense_embedding(query_embedding)
 
-        if query_is_dense and chunk_is_dense:
-            score = cosine_similarity_dense(query_embedding, stored)
-        elif not query_is_dense and not chunk_is_dense:
-            score = cosine_similarity_tfidf(query_embedding, stored)
-        else:
-            # Mixed types — fall back to TF-IDF on chunk content
-            from app.services.embedding_service import _tfidf_vector
-            q_tfidf = _tfidf_vector(query) if query_is_dense else query_embedding
-            c_tfidf = _tfidf_vector(chunk.content)
-            score = cosine_similarity_tfidf(q_tfidf, c_tfidf)
+            if query_is_dense and chunk_is_dense:
+                score = cosine_similarity_dense(query_embedding, stored)
+            elif not query_is_dense and not chunk_is_dense:
+                score = cosine_similarity_tfidf(query_embedding, stored)
+            else:
+                from app.services.embedding_service import _tfidf_vector
+                q_tfidf = _tfidf_vector(query) if query_is_dense else query_embedding
+                c_tfidf = _tfidf_vector(chunk.content)
+                score = cosine_similarity_tfidf(q_tfidf, c_tfidf)
 
-        if score < MIN_SIMILARITY_THRESHOLD:
+        # Keyword matching boost for offline/TF-IDF mode & term alignment
+        kw_boost = _compute_keyword_boost(query, chunk)
+        total_score = min(1.0, score + kw_boost)
+
+        if total_score < MIN_SIMILARITY_THRESHOLD:
             continue
 
         scored.append({
@@ -118,7 +153,7 @@ async def retrieve_relevant_chunks(
             "scheme_name": chunk.scheme_name or "",
             "section": chunk.section or "general",
             "content": chunk.content,
-            "similarity_score": round(score, 4),
+            "similarity_score": round(total_score, 4),
 
             # Citation fields — use real URLs only, never fall back to myscheme.gov.in
             "source_url": chunk.official_info_url or "",

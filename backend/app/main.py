@@ -65,6 +65,22 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"knowledge_chunks auto-migration skipped: {e}")
 
+        # Auto-index knowledge base if knowledge_chunks table is empty
+        try:
+            from app.core.database import AsyncSessionLocal
+            from app.services.knowledge_base_service import index_all_schemes, get_knowledge_base_status
+            async with AsyncSessionLocal() as db:
+                status_info = await get_knowledge_base_status(db)
+                if not status_info.get("is_ready"):
+                    logger.info("Knowledge base is empty — running automatic dataset indexing on startup...")
+                    idx_res = await index_all_schemes(db)
+                    logger.info(
+                        f"Startup indexing complete: {idx_res.get('indexed_schemes')} schemes, "
+                        f"{idx_res.get('total_chunks')} chunks indexed."
+                    )
+        except Exception as e:
+            logger.warning(f"Startup knowledge base auto-indexing skipped: {e}")
+
     yield
 
 

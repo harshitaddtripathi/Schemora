@@ -1108,6 +1108,8 @@ class _SchemesTabState extends ConsumerState<_SchemesTab> {
   Widget build(BuildContext context) {
     final hasFilter = _activeCategory != null && _activeCategory!.isNotEmpty;
 
+    final activeProfileType = ref.watch(selectedProfileTypeProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
       appBar: AppBar(
@@ -1148,6 +1150,37 @@ class _SchemesTabState extends ConsumerState<_SchemesTab> {
                     onDeleted: () => setState(() => _activeCategory = null),
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     visualDensity: VisualDensity.compact,
+                  ),
+                ],
+              ),
+            ),
+
+          if (hasFilter && _activeCategory != 'Education' && _activeCategory != 'General' && activeProfileType == ProfileType.student)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFFBEB),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFFDE68A)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_rounded, color: Color(0xFFD97706), size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: const TextStyle(fontSize: 12, color: Color(0xFF92400E)),
+                        children: [
+                          const TextSpan(text: 'Notice: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: 'Viewing ${_categoryLabel(_activeCategory!)} schemes. Your active profile is '),
+                          const TextSpan(text: 'Student / Learner. ', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const TextSpan(text: 'Schemes for this category are listed below with clear eligibility status & reasons.'),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -2212,7 +2245,70 @@ class _PMenuItem extends StatelessWidget {
 // SHARED: SCHEME CARD
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _SchemeCard extends StatelessWidget {
+ProfileType _detectSchemeTargetType(SchemeModel scheme) {
+  final text = '${scheme.title} ${scheme.shortDescription} ${scheme.benefitSummary} ${scheme.provider}'.toLowerCase();
+
+  if (text.contains('kisan') ||
+      text.contains('fasal') ||
+      text.contains('bima') ||
+      text.contains('raitha') ||
+      text.contains('crop') ||
+      text.contains('farm') ||
+      text.contains('agri')) {
+    return ProfileType.farmer;
+  }
+  if (text.contains('mudra') ||
+      text.contains('svanidhi') ||
+      text.contains('pmegp') ||
+      text.contains('business') ||
+      text.contains('enterprise') ||
+      text.contains('msme') ||
+      text.contains('loan')) {
+    return ProfileType.entrepreneur;
+  }
+  if (text.contains('scholarship') ||
+      text.contains('mysy') ||
+      text.contains('vidya') ||
+      text.contains('student') ||
+      text.contains('college') ||
+      text.contains('post matric') ||
+      text.contains('internship')) {
+    return ProfileType.student;
+  }
+  if (text.contains('pudhumai') ||
+      text.contains('ladki') ||
+      text.contains('bahin') ||
+      text.contains('gruha') ||
+      text.contains('lakshmi') ||
+      text.contains('sumangala') ||
+      text.contains('sukanya') ||
+      text.contains('matru') ||
+      text.contains('women') ||
+      text.contains('female') ||
+      text.contains('girl')) {
+    return ProfileType.womanFamily;
+  }
+  if (text.contains('pension') ||
+      text.contains('apy') ||
+      text.contains('ignoaps') ||
+      text.contains('senior') ||
+      text.contains('scss') ||
+      text.contains('old age')) {
+    return ProfileType.seniorCitizen;
+  }
+  if (text.contains('kaushal') ||
+      text.contains('pmkvy') ||
+      text.contains('naps') ||
+      text.contains('skill') ||
+      text.contains('apprentice') ||
+      text.contains('worker') ||
+      text.contains('job')) {
+    return ProfileType.jobSeeker;
+  }
+  return ProfileType.generalCitizen;
+}
+
+class _SchemeCard extends ConsumerWidget {
   final SchemeModel scheme;
   final bool isSaved;
   final String selectedSector;
@@ -2232,16 +2328,24 @@ class _SchemeCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isCentral = scheme.jurisdiction.toLowerCase() == 'central';
     final schemeTheme = SchemeImageHelper.getSchemeTheme(title: scheme.title, category: selectedSector);
+
+    final userProfileType = ref.watch(selectedProfileTypeProvider);
+    final schemeTargetType = _detectSchemeTargetType(scheme);
+    final isProfileMismatch = (userProfileType != schemeTargetType && schemeTargetType != ProfileType.generalCitizen);
+    final mismatchReason = isProfileMismatch ? userProfileType.getIneligibilityReason(schemeTargetType) : '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isProfileMismatch ? const Color(0xFFFCA5A5) : const Color(0xFFE2E8F0),
+          width: isProfileMismatch ? 1.5 : 1.0,
+        ),
         boxShadow: [BoxShadow(color: Colors.black.withAlpha(6), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: ClipRRect(
@@ -2284,10 +2388,34 @@ class _SchemeCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(14),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFFFDE68A))),
-                      child: Text(scheme.benefitType, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFFB45309))),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFFFDE68A))),
+                          child: Text(scheme.benefitType, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFFB45309))),
+                        ),
+                        const Spacer(),
+                        if (isProfileMismatch)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFEF2F2),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: const Color(0xFFFCA5A5)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.cancel_rounded, size: 12, color: Color(0xFFDC2626)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Ineligible (${userProfileType == ProfileType.student ? 'Student' : userProfileType.displayName})',
+                                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFFDC2626)),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     Text(scheme.title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF0F172A), height: 1.3)),
@@ -2303,6 +2431,30 @@ class _SchemeCard extends StatelessWidget {
                         Expanded(child: Text(scheme.benefitSummary, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)), maxLines: 2, overflow: TextOverflow.ellipsis)),
                       ]),
                     ),
+                    if (isProfileMismatch) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF2F2),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFFCA5A5)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFFDC2626)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Ineligibility Reason: $mismatchReason',
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF991B1B), height: 1.3),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     Row(children: [
                       Icon(Icons.verified_rounded, size: 13, color: Colors.blue.shade500),
@@ -2316,8 +2468,16 @@ class _SchemeCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       ElevatedButton(
                         onPressed: onTap,
-                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, elevation: 0, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), visualDensity: VisualDensity.compact, minimumSize: Size.zero),
-                        child: const Text('Details', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isProfileMismatch ? const Color(0xFFDC2626) : AppTheme.primaryBlue,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          visualDensity: VisualDensity.compact,
+                          minimumSize: Size.zero,
+                        ),
+                        child: Text(isProfileMismatch ? 'View Reason' : 'Details', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
                       ),
                     ]),
                   ]),

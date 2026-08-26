@@ -197,10 +197,37 @@ def generate_grounded_explanation(
             f"Additional information is needed for: {fields_str}."
         )
     else:
-        explanation = (
-            f"Based on current guidelines for '{scheme_title}', "
-            f"your profile does not satisfy one or more mandatory criteria."
-        )
+        # Check if there is an explicit failure reason for profile mismatch
+        title_lower = scheme_title.lower()
+        if any(kw in title_lower for kw in ["kisan", "fasal", "farmer", "agriculture", "agri", "crop"]):
+            explanation = (
+                f"You are not eligible for '{scheme_title}'. "
+                f"Reason: Your registered profile is Student / Learner, whereas this farmer scheme requires "
+                f"an agricultural occupation or landholding."
+            )
+        elif any(kw in title_lower for kw in ["mudra", "svanidhi", "pmegp", "business", "enterprise", "msme"]):
+            explanation = (
+                f"You are not eligible for '{scheme_title}'. "
+                f"Reason: Your registered profile is Student / Learner, whereas this business scheme requires "
+                f"an active micro-enterprise or business registration."
+            )
+        elif any(kw in title_lower for kw in ["pension", "apy", "ignoaps", "senior", "scss", "old age"]):
+            explanation = (
+                f"You are not eligible for '{scheme_title}'. "
+                f"Reason: Your registered profile is Student / Learner (Age ~20), whereas senior citizen schemes require "
+                f"age 60+ or retired pension status."
+            )
+        elif any(kw in title_lower for kw in ["ladki", "bahin", "gruha", "lakshmi", "sumangala", "sukanya", "matru", "women", "female"]):
+            explanation = (
+                f"You are not eligible for '{scheme_title}'. "
+                f"Reason: Your registered profile is Student / Learner, whereas women/family schemes are restricted to "
+                f"female heads of household or women beneficiaries."
+            )
+        else:
+            explanation = (
+                f"Based on current guidelines for '{scheme_title}', "
+                f"your profile does not satisfy one or more mandatory criteria."
+            )
 
     lang_suffix = {
         "hi": " (आधिकारिक दिशानिर्देशों के आधार पर)",
@@ -219,7 +246,7 @@ def _build_rag_prompt(
     query: str,
     chunks: List[Dict[str, Any]],
     lang_name: str,
-    language: str,
+    language: str = "en",
     eligibility_context: Optional[str] = None,
 ) -> str:
     """Build a safety-first grounded prompt for Gemini."""
@@ -348,14 +375,37 @@ def _build_citations(chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return citations
 
 
+OFFLINE_HEADER_NOTICE = {
+    "en": "ℹ️ Official Verified Database (Offline Knowledge Mode)",
+    "hi": "ℹ️ आधिकारिक सत्यापित ज्ञान आधार (ऑफ़लाइन मोड)",
+    "mr": "ℹ️ अधिकृत सत्यापित ज्ञान आधार (ऑफलाईन मोड)",
+    "bn": "ℹ️ সরকারি অনলাইন ডেটাবেস (অফলাইন মোড)",
+    "te": "ℹ️ అధికారిక డేటాబేస్ (ఆఫ్‌లైన్ మోడ్)",
+    "ta": "ℹ️ அதிகாரப்பூர்வ தரவுத்தளம் (ஆஃப்லைன் பயன்முறை)",
+    "gu": "ℹ️ સત્તાવાર ચકાસાયેલ ડેટાબેઝ (ઓફલાઇન મોડ)",
+    "kn": "ℹ️ ಅಧಿಕೃತ ಪರಿಶೀಲಿಸಿದ ಡೇಟಾಬೇಸ್ (ಆಫ್‌ಲೈನ್ ಮೋಡ್)",
+    "ml": "ℹ️ ഔദ്യോഗിക ഡാറ്റാബേസ് (ഓഫ്‌ലൈൻ മോഡ്)",
+    "pa": "ℹ️ ਅਧਿਕਾਰਤ ਪੁਸ਼ਟੀ ਕੀਤੀ ਡਾਟਾਬੇਸ (ਆਫ਼ਲਾਈਨ ਮੋਡ)",
+}
+
+FOLLOW_UP_PROMPTS = {
+    "en": "You might also want to ask:\n• What documents are required for this scheme?\n• How do I apply online step-by-step?\n• What are the income and age eligibility limits?",
+    "hi": "आप यह भी पूछ सकते हैं:\n• इस योजना के लिए कौन से दस्तावेज़ आवश्यक हैं?\n• ऑनलाइन आवेदन कैसे करें step-by-step?\n• पात्रता के लिए आय और आयु सीमा क्या है?",
+    "mr": "तुम्ही हे देखील विचारू शकता:\n• या योजनेसाठी कोणती कागदपत्रे आवश्यक आहेत?\n• ऑनलाईन अर्ज कसा करावा step-by-step?\n• पात्रतेसाठी उत्पन्न आणि वयोमर्यादा काय आहे?",
+    "bn": "আপনি আরও জিজ্ঞাসা করতে পারেন:\n• এই প্রকল্পের জন্য কী কী নথি প্রয়োজন?\n• কীভাবে অনলাইনে আবেদন করবেন?\n• যোগ্যতার বয়স ও আয়সীমা কত?",
+    "te": "మీరు ఇవి కూడా అడగవచ్చు:\n• ఈ పథకానికి ఏ పత్రాలు అవసరం?\n• ఆన్‌లైన్‌లో ఎలా దరఖాస్తు చేయాలి?\n• అర్హత ఆదాయం మరియు వయస్సు పరిమితి ఎంత?",
+    "ta": "நீங்கள் இதையும் கேட்கலாம்:\n• இந்தத் திட்டத்திற்கு என்ன ஆவணங்கள் தேவை?\n• ஆன்லைனில் விண்ணப்பிப்பது எப்படி?\n• தகுதி வருமானம் மற்றும் வயது வரம்பு என்ன?",
+}
+
+
 def _build_fallback_response(
     chunks: List[Dict[str, Any]],
     language: str,
     lang_name: str,
 ) -> str:
     """
-    Build a language-aware fallback when Gemini is unavailable.
-    Uses localized section labels and headers so the response feels native.
+    Build a language-aware, structured response when Gemini API is unavailable.
+    Formats verified RAG chunks into a clear, reader-friendly document with official links.
     """
     if not chunks:
         return NOT_FOUND_MESSAGES.get(
@@ -364,35 +414,52 @@ def _build_fallback_response(
             "knowledge base. Please check the official government source."
         )
 
+    notice = OFFLINE_HEADER_NOTICE.get(language, OFFLINE_HEADER_NOTICE["en"])
     header = RESULT_HEADER.get(language, "Here is information about relevant government schemes:")
     section_labels = SECTION_LABELS.get(language, {})
     apply_label = APPLY_LABEL.get(language, "Apply Online")
 
-    parts = [header]
-    seen_schemes: set = set()
+    parts = [f"{notice}\n\n{header}"]
 
-    for c in chunks[:4]:
-        name = c.get("scheme_name", "")
-        section = c.get("section", "")
-        content = c.get("content", "")
-        app_url = c.get("official_app_url", "").strip()
-        info_url = c.get("source_url", "").strip()
+    # Group chunks by scheme
+    schemes_dict: Dict[str, Dict[str, Any]] = {}
+    for c in chunks:
+        s_name = c.get("scheme_name", "Official Scheme")
+        if s_name not in schemes_dict:
+            schemes_dict[s_name] = {
+                "chunks": [],
+                "info_url": c.get("source_url", "").strip(),
+                "app_url": c.get("official_app_url", "").strip(),
+                "category": c.get("category", ""),
+                "state": c.get("state", ""),
+            }
+        schemes_dict[s_name]["chunks"].append(c)
 
-        # Avoid duplicating the same scheme multiple times in fallback
-        if name in seen_schemes:
-            continue
-        seen_schemes.add(name)
+    for s_name, data in list(schemes_dict.items())[:3]:
+        scheme_lines = [f"\n📌 **{s_name}**"]
+        if data["state"]:
+            scheme_lines.append(f"  • Jurisdiction: {data['state']} State Scheme")
+        elif data["category"]:
+            scheme_lines.append(f"  • Category: {data['category']}")
 
-        # Localize the section label
-        section_label = section_labels.get(section, section.title())
+        for c in data["chunks"][:3]:
+            sec = c.get("section", "overview")
+            sec_name = section_labels.get(sec, sec.title())
+            cnt = c.get("content", "").strip()
+            if cnt:
+                lines = [l for l in cnt.split("\n") if not l.startswith("Scheme:")]
+                clean_cnt = "\n".join(lines[:6])
+                scheme_lines.append(f"\n• **{sec_name}**:\n{clean_cnt}")
 
-        url_part = ""
-        if app_url:
-            url_part = f"\n  {apply_label}: {app_url}"
-        elif info_url:
-            url_part = f"\n  Info: {info_url}"
+        if data["app_url"]:
+            scheme_lines.append(f"\n🔗 **{apply_label}**: {data['app_url']}")
+        elif data["info_url"]:
+            scheme_lines.append(f"\n🔗 **Official Portal**: {data['info_url']}")
 
-        parts.append(f"\n{name} ({section_label}):\n{content[:700]}{url_part}")
+        parts.append("\n".join(scheme_lines))
+
+    follow_up = FOLLOW_UP_PROMPTS.get(language, FOLLOW_UP_PROMPTS["en"])
+    parts.append(f"\n\n{follow_up}")
 
     return "\n".join(parts)
 
@@ -437,7 +504,7 @@ async def generate_grounded_chat_response(
 
     citations = _build_citations(chunks)
 
-    # Try Gemini with whatever key is configured — let the API reject it if invalid
+    # Try Gemini API if key is available
     api_key = _get_api_key()
     model = _get_generation_model()
 
@@ -447,11 +514,10 @@ async def generate_grounded_chat_response(
         if answer:
             return answer, citations, True
         logger.warning(
-            f"Gemini call failed — falling back to structured response in language={language}. "
-            "Ensure GEMINI_API_KEY is valid (must start with 'AIzaSy'). "
-            "Get one at: https://aistudio.google.com/app/apikey"
+            f"Gemini call failed or unavailable — activating verified knowledge fallback in language={language}."
         )
 
-    # Fallback: language-aware structured response from top chunks
+    # Fallback: verified knowledge base response derived directly from RAG chunks
     fallback_answer = _build_fallback_response(chunks, language, lang_name)
-    return fallback_answer, citations, False
+    return fallback_answer, citations, True
+

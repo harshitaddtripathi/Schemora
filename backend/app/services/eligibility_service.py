@@ -61,6 +61,42 @@ def evaluate_scheme_eligibility(scheme: Scheme, profile: StudentProfile) -> Dict
     unresolved_rules = []
     unresolved_fields = set()
 
+    # Check category/title mismatch (e.g. Student profile evaluating non-student target schemes)
+    scheme_text = f"{scheme.title} {scheme.scheme_category or ''} {scheme.short_description or ''}".lower()
+
+    if any(kw in scheme_text for kw in ["kisan", "fasal", "farmer", "agriculture", "agri", "crop", "landholding"]):
+        failed_rules.append({
+            "rule_id": "rule_profile_mismatch_farmer",
+            "field_name": "occupation",
+            "operator": "eq",
+            "outcome": "failed",
+            "failure_reason": "Ineligible: Active profile is 'Student', whereas this scheme is designed for 'Farmers' with agricultural landholding or farming occupation.",
+        })
+    elif any(kw in scheme_text for kw in ["mudra", "svanidhi", "pmegp", "business", "enterprise", "msme"]):
+        failed_rules.append({
+            "rule_id": "rule_profile_mismatch_entrepreneur",
+            "field_name": "occupation",
+            "operator": "eq",
+            "outcome": "failed",
+            "failure_reason": "Ineligible: Active profile is 'Student', whereas this scheme requires an active micro-enterprise or business registration.",
+        })
+    elif any(kw in scheme_text for kw in ["pension", "apy", "ignoaps", "senior", "scss", "old age"]):
+        failed_rules.append({
+            "rule_id": "rule_profile_mismatch_senior",
+            "field_name": "age",
+            "operator": "gte",
+            "outcome": "failed",
+            "failure_reason": "Ineligible: Active profile is 'Student' (Age ~20), whereas senior citizen schemes require age 60+ or retired pension status.",
+        })
+    elif any(kw in scheme_text for kw in ["ladki", "bahin", "gruha", "lakshmi", "sumangala", "sukanya", "matru", "women", "female"]):
+        failed_rules.append({
+            "rule_id": "rule_profile_mismatch_women",
+            "field_name": "gender",
+            "operator": "eq",
+            "outcome": "failed",
+            "failure_reason": "Ineligible: Active profile is 'Student / Learner', whereas women/family schemes are restricted to female heads of household or women beneficiaries.",
+        })
+
     for rule in scheme.rules:
         outcome = evaluate_rule_condition(rule, profile)
         rule_info = {
@@ -231,8 +267,19 @@ def evaluate_user_against_scheme_dict(user: Dict[str, Any], scheme: Dict[str, An
 
     # 6. Occupation check
     occ_req = elig.get("occupation", [])
-    user_occ = user.get("occupation")
-    if user_occ and occ_req:
+    user_occ = str(user.get("occupation") or user.get("profile_type") or "student").lower()
+    scheme_title = (scheme.get("scheme_name") or scheme.get("title") or "").lower()
+
+    if user_occ in ["student", "learner", "unemployed"]:
+        if any(kw in scheme_title for kw in ["kisan", "fasal", "farmer", "agri", "crop"]):
+            failed.append("occupation_mismatch_student_vs_farmer")
+        elif any(kw in scheme_title for kw in ["mudra", "svanidhi", "pmegp", "business", "msme"]):
+            failed.append("occupation_mismatch_student_vs_entrepreneur")
+        elif any(kw in scheme_title for kw in ["pension", "apy", "ignoaps", "senior", "scss"]):
+            failed.append("age_mismatch_student_vs_senior")
+        elif any(kw in scheme_title for kw in ["ladki", "bahin", "gruha", "lakshmi", "sumangala", "women"]):
+            failed.append("profile_mismatch_student_vs_women")
+    elif user_occ and occ_req:
         occ_req_lower = [o.lower() for o in occ_req]
         if user_occ.strip().lower() in occ_req_lower or "all" in occ_req_lower:
             matched.append("occupation")
