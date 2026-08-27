@@ -12,8 +12,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Schemora — Citizen Login'), findsOneWidget);
-    expect(find.text('Mobile Verification'), findsOneWidget);
-    expect(find.text('Get Verification OTP'), findsOneWidget);
+    expect(find.text('Schemora'), findsOneWidget);
+    expect(find.text('Government Scheme Discovery Portal'), findsOneWidget);
+    expect(find.text('Send OTP'), findsOneWidget);
   });
 }

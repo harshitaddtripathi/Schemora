@@ -119,15 +119,8 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
     }
 
     try:
-        if api_key.startswith("AIzaSy"):
-            url = f"{url_template}?key={api_key}"
-            headers = {"Content-Type": "application/json"}
-        else:
-            url = url_template
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}",
-            }
+        url = f"{url_template}?key={api_key}"
+        headers = {"Content-Type": "application/json"}
 
         async with httpx.AsyncClient(timeout=4.0) as client:
             resp = await client.post(url, json=payload, headers=headers)

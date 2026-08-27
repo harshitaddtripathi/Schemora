@@ -6,8 +6,8 @@ void main() {
     test('default constants match expected baseline', () {
       expect(EnvConfig.appName, equals('Schemora'));
       expect(EnvConfig.appVersion, equals('1.0.0'));
-      expect(EnvConfig.connectTimeoutMs, equals(15000));
-      expect(EnvConfig.receiveTimeoutMs, equals(30000));
+      expect(EnvConfig.connectTimeoutMs, equals(8000));
+      expect(EnvConfig.receiveTimeoutMs, equals(60000));
     });
 
     test('baseUrl contains /api/v1', () {

@@ -39,8 +39,8 @@ class Settings(BaseSettings):
 
     # External APIs
     GEMINI_API_KEY: str = ""
-    GEMINI_GENERATION_MODEL: str = "gemini-1.5-pro"
-    GEMINI_EMBEDDING_MODEL: str = "text-embedding-004"
+    GEMINI_GENERATION_MODEL: str = "gemini-2.5-flash"
+    GEMINI_EMBEDDING_MODEL: str = "gemini-embedding-001"
 
     FIREBASE_PROJECT_ID: str = ""
     FIREBASE_CLIENT_EMAIL: str = ""

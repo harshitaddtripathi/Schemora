@@ -149,13 +149,10 @@ def _get_generation_model() -> str:
 def _build_headers_and_url(api_key: str, model: str) -> Tuple[str, Dict[str, str]]:
     """Build the correct URL and headers based on key type."""
     base = f"{GEMINI_BASE_URL}/{model}:generateContent"
-    if api_key.startswith("AIzaSy"):
+    if api_key.startswith("AIzaSy") or api_key.startswith("AQ"):
         return f"{base}?key={api_key}", {"Content-Type": "application/json"}
     else:
-        return base, {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
+        return f"{base}?key={api_key}", {"Content-Type": "application/json"}
 
 
 def is_out_of_scope(query: str) -> bool:

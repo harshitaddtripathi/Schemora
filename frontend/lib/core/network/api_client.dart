@@ -37,8 +37,38 @@ final dioProvider = Provider<Dio>((ref) {
         debugPrint('[HTTP RESPONSE] ${response.statusCode} ${response.requestOptions.uri}');
         return handler.next(response);
       },
-      onError: (DioException error, handler) {
+      onError: (DioException error, handler) async {
         debugPrint('[HTTP ERROR] ${error.type} ${error.requestOptions.uri}: ${error.message}');
+
+        // Auto-fallback for connection errors (unreachable LAN IP / firewall / USB / emulator)
+        if (error.type == DioExceptionType.connectionTimeout ||
+            error.type == DioExceptionType.connectionError) {
+          final candidates = [
+            EnvConfig.devHostIp,
+            '10.0.2.2',
+            '127.0.0.1',
+          ];
+
+          for (final candidateHost in candidates) {
+            final testBaseUrl = 'http://$candidateHost:${EnvConfig.devPort}/api/v1/';
+            if (error.requestOptions.baseUrl == testBaseUrl) continue; // Skip same failing URL
+
+            try {
+              debugPrint('[HTTP RETRY] Trying fallback host: $candidateHost');
+              final retryOptions = error.requestOptions.copyWith(
+                baseUrl: testBaseUrl,
+              );
+
+              final response = await dio.fetch(retryOptions);
+              EnvConfig.setResolvedHost(candidateHost);
+              debugPrint('[HTTP RETRY SUCCESS] Successfully connected to fallback host: $candidateHost');
+              return handler.resolve(response);
+            } catch (_) {
+              // Try next candidate
+            }
+          }
+        }
+
         return handler.next(error);
       },
     ),

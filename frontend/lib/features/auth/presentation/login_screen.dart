@@ -818,9 +818,11 @@ class _DemoHint extends StatelessWidget {
         children: [
           const Icon(Icons.info_outline_rounded, size: 15, color: Color(0xFF0284C7)),
           const SizedBox(width: 8),
-          Text(
-            hint,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF0369A1), fontWeight: FontWeight.w500),
+          Flexible(
+            child: Text(
+              hint,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF0369A1), fontWeight: FontWeight.w500),
+            ),
           ),
         ],
       ),

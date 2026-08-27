@@ -62,7 +62,8 @@ def evaluate_scheme_eligibility(scheme: Scheme, profile: StudentProfile) -> Dict
     unresolved_fields = set()
 
     # Check category/title mismatch (e.g. Student profile evaluating non-student target schemes)
-    scheme_text = f"{scheme.title} {scheme.scheme_category or ''} {scheme.short_description or ''}".lower()
+    cat_str = getattr(scheme, "scheme_category", "") or getattr(scheme, "benefit_type", "") or ""
+    scheme_text = f"{scheme.title} {cat_str} {scheme.short_description or ''}".lower()
 
     if any(kw in scheme_text for kw in ["kisan", "fasal", "farmer", "agriculture", "agri", "crop", "landholding"]):
         failed_rules.append({
@@ -270,7 +271,13 @@ def evaluate_user_against_scheme_dict(user: Dict[str, Any], scheme: Dict[str, An
     user_occ = str(user.get("occupation") or user.get("profile_type") or "student").lower()
     scheme_title = (scheme.get("scheme_name") or scheme.get("title") or "").lower()
 
-    if user_occ in ["student", "learner", "unemployed"]:
+    if user_occ and occ_req:
+        occ_req_lower = [o.lower() for o in occ_req]
+        if user_occ.strip().lower() in occ_req_lower or "all" in occ_req_lower:
+            matched.append("occupation")
+        else:
+            failed.append("occupation")
+    elif user_occ in ["student", "learner", "unemployed"]:
         if any(kw in scheme_title for kw in ["kisan", "fasal", "farmer", "agri", "crop"]):
             failed.append("occupation_mismatch_student_vs_farmer")
         elif any(kw in scheme_title for kw in ["mudra", "svanidhi", "pmegp", "business", "msme"]):
@@ -279,12 +286,6 @@ def evaluate_user_against_scheme_dict(user: Dict[str, Any], scheme: Dict[str, An
             failed.append("age_mismatch_student_vs_senior")
         elif any(kw in scheme_title for kw in ["ladki", "bahin", "gruha", "lakshmi", "sumangala", "women"]):
             failed.append("profile_mismatch_student_vs_women")
-    elif user_occ and occ_req:
-        occ_req_lower = [o.lower() for o in occ_req]
-        if user_occ.strip().lower() in occ_req_lower or "all" in occ_req_lower:
-            matched.append("occupation")
-        else:
-            failed.append("occupation")
     elif occ_req:
         unknown.append("occupation")
 
