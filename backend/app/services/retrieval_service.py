@@ -65,16 +65,22 @@ INTENT_PATTERNS = {
         r"\bdoc.*needed?\b",  # "documents needed"
     ],
     "APPLICATION_PROCESS": [
-        r"\bhow.*(?:do|can|should|to).*apply\b",  # "how do I apply" — NOT just "apply"
-        r"\bapplication.*process\b",
-        r"\bstep.*(?:apply|fill|submit)\b",
+        r"\bhow.*(?:do|can|should|to).*apply\b",
+        r"\bprocess\b",
+        r"\bprocedure\b",
+        r"\bfill\b",
+        r"\bfilling\b",
         r"\bhow.*fill\b",
+        r"\bapplication.*process\b",
+        r"\bstep.*(?:apply|fill|submit|register)\b",
         r"\bsubmit.*application\b",
-        r"\bregister.*(?:on|at|in)\b",
+        r"\bregister.*(?:on|at|in|for)?\b",
         r"\bsteps?.*scholarship\b",
         r"\bsteps?.*apply\b",
         r"\bapply.*online\b",
         r"\bapplication.*form\b",
+        r"\bscholarship.*form\b",
+        r"\bhow.*to.*(?:fill|apply|register|submit)\b",
     ],
     "ELIGIBILITY": [
         r"\bam i (?:eligible|qualified|fit)\b",
@@ -104,8 +110,8 @@ INTENT_PATTERNS = {
 
 # Map intent to preferred sections for scoring boost
 INTENT_SECTION_BOOST = {
-    "REQUIRED_DOCUMENTS": {"documents": 0.30, "application": 0.10},
-    "APPLICATION_PROCESS": {"application": 0.30, "documents": 0.10, "deadlines": 0.10},
+    "REQUIRED_DOCUMENTS": {"documents": 0.35, "application": 0.15, "overview": 0.05},
+    "APPLICATION_PROCESS": {"application": 0.35, "documents": 0.15, "overview": 0.10},
     "ELIGIBILITY": {"eligibility": 0.25, "overview": 0.10},
     "BENEFITS": {"benefits": 0.30, "overview": 0.10},
     "DEADLINE": {"deadlines": 0.30, "application": 0.10},
@@ -117,7 +123,7 @@ INTENT_SECTION_BOOST = {
 # Map intent to query expansion terms (improves TF-IDF recall)
 INTENT_QUERY_EXPANSIONS = {
     "REQUIRED_DOCUMENTS": " required documents certificate aadhaar marksheet income",
-    "APPLICATION_PROCESS": " apply application process portal steps online register",
+    "APPLICATION_PROCESS": " apply application process portal steps online register procedure fill form guidelines",
     "ELIGIBILITY": " eligible eligibility criteria who can apply conditions requirements",
     "BENEFITS": " benefits financial assistance amount scholarship grant stipend",
     "DEADLINE": " deadline date window opens closes application cycle",

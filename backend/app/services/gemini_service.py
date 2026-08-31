@@ -309,12 +309,18 @@ USER QUESTION: {query}
 RESPONSE INSTRUCTIONS (respond entirely in {lang_name}):
 - Read ALL the Knowledge Base sources carefully before answering.
 - Directly answer the user's question with specifics from the knowledge base.
+- For general application process or form filling questions (e.g. "process to fill a scholarship form"):
+  1. First provide a clear 4-step summary of the standard scholarship application workflow:
+     • Step 1: Register on the Official Portal (e.g., National Scholarship Portal or State Portals like MahaDBT)
+     • Step 2: Fill Student Profile & Academic Details
+     • Step 3: Upload Required Documents (Marksheets, Income Certificate, Caste Certificate, Aadhaar, Bank Details)
+     • Step 4: Submit Application & Track Status for Institution / Nodal Verification
+  2. Then list the specific application steps and official application URLs for the schemes in the knowledge base.
 - For scheme/scholarship discovery: Name each relevant scheme, its category, and who can apply.
 - For documents: Provide a complete numbered list of all required documents.
 - For application steps: Provide all steps in order as Step 1, Step 2, etc.
-- For eligibility: List each criterion. State which ones require verification.
-- For benefits: State exact amounts and frequency if available. Note if verification required.
-- Include the official application URL from the context if available.
+- For eligibility: List each criterion clearly.
+- Include official application URLs from the context prominently.
 - End with: "You might also want to ask:" followed by 2-3 relevant follow-up questions.
 """
     return prompt
