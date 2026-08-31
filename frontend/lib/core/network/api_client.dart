@@ -43,6 +43,8 @@ final dioProvider = Provider<Dio>((ref) {
         // Auto-fallback for connection errors (unreachable LAN IP / firewall / USB / emulator)
         if (error.type == DioExceptionType.connectionTimeout ||
             error.type == DioExceptionType.connectionError) {
+          EnvConfig.resetResolvedHost();
+
           final candidates = [
             '127.0.0.1',           // USB ADB reverse port forwarding (Instant, bypasses Wi-Fi firewall)
             EnvConfig.devHostIp,   // Active Wi-Fi IP (192.168.3.148)

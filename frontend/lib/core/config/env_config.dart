@@ -20,6 +20,11 @@ class EnvConfig {
     _resolvedHost = host;
   }
 
+  /// Resets remembered host back to 127.0.0.1 default.
+  static void resetResolvedHost() {
+    _resolvedHost = null;
+  }
+
   // Production or runtime override injected via --dart-define=API_BASE_URL=...
   static const String _overrideBaseUrl =
       String.fromEnvironment('API_BASE_URL', defaultValue: '');
