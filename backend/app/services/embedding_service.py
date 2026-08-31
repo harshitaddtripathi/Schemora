@@ -1,13 +1,17 @@
 """Embedding service for Schemora RAG pipeline.
 
-Generates semantic vector embeddings using the Gemini text-embedding-004 API.
+Generates semantic vector embeddings using the Gemini embeddings API.
 Falls back to a lightweight TF-IDF representation when Gemini is unavailable
-(expired OAuth2 token, network error, quota exceeded).
+(network error, quota exceeded).
 
 Architecture decision: We store embeddings as JSON float arrays in the
 existing SQLite `embedding_json` column. Cosine similarity is computed in
-Python at query time. This is fast enough for the current dataset size
-(~20 schemes × ~7 chunks = ~140 chunks).
+Python at query time.
+
+Fix history:
+  2026-08-29: Removed permanent _api_disabled global flag that silently blocked
+              all embedding calls after a single transient failure. Replaced with
+              a cooldown-based backoff. Increased timeout from 4s to 12s.
 """
 
 import os
@@ -15,6 +19,7 @@ import json
 import math
 import re
 import logging
+import time
 import httpx
 from typing import List, Dict, Optional, Union
 
@@ -30,7 +35,14 @@ GEMINI_EMBEDDING_URL = (
 # Singleton cache: content_hash -> embedding list
 # Avoids re-embedding identical text within the same process lifetime
 _embedding_cache: Dict[str, List[float]] = {}
-_api_disabled: bool = False
+
+# Cooldown mechanism instead of permanent disable:
+# After _MAX_CONSECUTIVE_FAILURES consecutive failures, back off for _COOLDOWN_SECONDS.
+# This allows the embedding API to recover from transient outages.
+_consecutive_failures: int = 0
+_cooldown_until: float = 0.0
+_MAX_CONSECUTIVE_FAILURES: int = 3
+_COOLDOWN_SECONDS: float = 30.0
 
 
 def _get_api_key() -> str:
@@ -88,11 +100,19 @@ def is_dense_embedding(data: Union[Dict, List, None]) -> bool:
 async def generate_embedding(text: str) -> Optional[List[float]]:
     """Generate a semantic embedding for `text` using the Gemini API.
 
-    Returns a list of floats (768 dimensions for text-embedding-004),
+    Returns a list of floats (3072 dimensions for gemini-embedding-001),
     or None if the API call fails or is unconfigured.
+
+    Uses a cooldown-based backoff instead of a permanent disable flag.
+    This allows recovery from transient failures without restarting the server.
     """
-    global _api_disabled
-    if _api_disabled:
+    global _consecutive_failures, _cooldown_until
+
+    # Check cooldown
+    now = time.monotonic()
+    if _cooldown_until > now:
+        remaining = _cooldown_until - now
+        logger.debug(f"Embedding API in cooldown for {remaining:.0f}s more — using TF-IDF")
         return None
 
     text = text.strip()
@@ -106,8 +126,7 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
 
     api_key = _get_api_key()
     if not api_key or len(api_key) < 10:
-        _api_disabled = True
-        logger.debug("No valid Gemini API key — using fast TF-IDF fallback for embeddings")
+        logger.debug("No valid Gemini API key — using TF-IDF fallback for embeddings")
         return None
 
     model = _get_embedding_model()
@@ -115,14 +134,15 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
 
     payload = {
         "model": f"models/{model}",
-        "content": {"parts": [{"text": text[:2000]}]},  # API limit
+        "content": {"parts": [{"text": text[:2000]}]},  # API text limit
     }
 
     try:
         url = f"{url_template}?key={api_key}"
         headers = {"Content-Type": "application/json"}
 
-        async with httpx.AsyncClient(timeout=4.0) as client:
+        # Increased timeout: 12s to handle slower API responses during bulk indexing
+        async with httpx.AsyncClient(timeout=12.0) as client:
             resp = await client.post(url, json=payload, headers=headers)
 
         if resp.status_code == 200:
@@ -130,20 +150,51 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
             embedding = data.get("embedding", {}).get("values", [])
             if embedding:
                 _embedding_cache[cache_key] = embedding
+                _consecutive_failures = 0  # Reset on success
+                logger.debug(f"Gemini embedding OK: dim={len(embedding)}")
                 return embedding
             else:
-                logger.warning("Gemini embedding response missing values")
+                logger.warning("Gemini embedding response missing 'values' field")
+                _consecutive_failures += 1
                 return None
         elif resp.status_code in (401, 403):
-            logger.warning(f"Gemini embedding API error {resp.status_code} (invalid key) — disabling remote embedding calls for process session.")
-            _api_disabled = True
+            # Hard auth failure — these won't recover without a key change.
+            # Use a longer cooldown (5 min) but don't permanently disable.
+            _consecutive_failures += 1
+            _cooldown_until = time.monotonic() + 300.0
+            logger.warning(
+                f"Gemini embedding auth error {resp.status_code} — "
+                f"cooling down for 5 minutes. Check GEMINI_API_KEY."
+            )
+            return None
+        elif resp.status_code == 429:
+            # Rate limit — back off for 60 seconds
+            _consecutive_failures += 1
+            _cooldown_until = time.monotonic() + 60.0
+            logger.warning("Gemini embedding rate-limited (429) — cooling down for 60s")
             return None
         else:
+            _consecutive_failures += 1
             logger.warning(f"Gemini embedding API error {resp.status_code}: {resp.text[:200]}")
+            if _consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+                _cooldown_until = time.monotonic() + _COOLDOWN_SECONDS
+                logger.warning(
+                    f"Gemini embedding: {_consecutive_failures} consecutive failures — "
+                    f"cooling down for {_COOLDOWN_SECONDS}s"
+                )
             return None
 
+    except httpx.TimeoutException:
+        _consecutive_failures += 1
+        logger.warning(f"Gemini embedding request timed out (attempt {_consecutive_failures})")
+        if _consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+            _cooldown_until = time.monotonic() + _COOLDOWN_SECONDS
+        return None
     except Exception as e:
+        _consecutive_failures += 1
         logger.error(f"Gemini embedding call failed: {e}")
+        if _consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+            _cooldown_until = time.monotonic() + _COOLDOWN_SECONDS
         return None
 
 

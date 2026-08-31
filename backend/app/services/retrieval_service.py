@@ -3,17 +3,29 @@
 Retrieves the most semantically relevant knowledge chunks for a user query.
 
 Strategy:
-  1. Embed the user query (Gemini dense embedding OR TF-IDF fallback).
-  2. Load all stored chunk embeddings from the DB.
-  3. Compute cosine similarity between query and each chunk.
-  4. Apply keyword matching boost for scheme title, category, and state.
-  5. Return top-K chunks with metadata for the Gemini prompt.
+  1. Detect query intent (SCHEME_DISCOVERY, ELIGIBILITY, APPLICATION_PROCESS, etc.)
+  2. Expand query with synonyms based on intent.
+  3. Embed the user query (Gemini dense embedding OR TF-IDF fallback).
+  4. Load all stored chunk embeddings from the DB.
+  5. Compute cosine similarity between query and each chunk.
+  6. Apply section-affinity boost based on detected intent.
+  7. Apply keyword matching boost for scheme title, category, and state.
+  8. Return top-K chunks with metadata for the Gemini prompt.
 
 Filtering:
   - scheme_id: restrict to a specific scheme's chunks
   - state: restrict to state-specific or central schemes
   - category: restrict to a scheme category (Scholarship, Agriculture, etc.)
   - section: restrict to specific section type
+
+Intent detection ensures that:
+  - "What documents do I need?" → boosts 'documents' section chunks
+  - "How do I apply?" → boosts 'application' section chunks
+  - "What benefits?" → boosts 'benefits' section chunks
+  - "Am I eligible?" → boosts 'eligibility' section chunks
+  - "Tell me OBC schemes" → boosts 'overview'+'eligibility' section chunks
+
+This dramatically improves retrieval quality without requiring semantic embeddings.
 """
 
 import re
@@ -35,16 +47,165 @@ from app.services.embedding_service import (
 logger = logging.getLogger(__name__)
 
 DEFAULT_TOP_K = 8
-MIN_SIMILARITY_THRESHOLD = 0.05  # Filter out completely irrelevant chunks
+MIN_SIMILARITY_THRESHOLD = 0.03  # Lowered: TF-IDF scores are naturally low
 
+
+# ── Intent Detection ──────────────────────────────────────────────────────────
+
+INTENT_PATTERNS = {
+    # REQUIRED_DOCUMENTS checked FIRST — before APPLICATION_PROCESS
+    # so "what documents are required" doesn't match 'required' → APPLICATION_PROCESS
+    "REQUIRED_DOCUMENTS": [
+        r"\bdocuments?\b", r"\bpaper\b", r"\bcertificate\b",
+        r"\bchecklist\b", r"\bupload\b", r"\bproof\b", r"\bkyc\b",
+        r"\bpapers?\b",
+        r"\bwhat.*need\b",   # "what do I need"
+        r"\bwhat.*require\b",  # "what are the requirements / required docs"
+        r"\brequired.*doc\b",  # "required documents"
+        r"\bdoc.*needed?\b",  # "documents needed"
+    ],
+    "APPLICATION_PROCESS": [
+        r"\bhow.*(?:do|can|should|to).*apply\b",  # "how do I apply" — NOT just "apply"
+        r"\bapplication.*process\b",
+        r"\bstep.*(?:apply|fill|submit)\b",
+        r"\bhow.*fill\b",
+        r"\bsubmit.*application\b",
+        r"\bregister.*(?:on|at|in)\b",
+        r"\bsteps?.*scholarship\b",
+        r"\bsteps?.*apply\b",
+        r"\bapply.*online\b",
+        r"\bapplication.*form\b",
+    ],
+    "ELIGIBILITY": [
+        r"\bam i (?:eligible|qualified|fit)\b",
+        r"\bcan i (?:get|apply|qualify|receive)\b",
+        r"\bwho (?:can|is|are) eligible\b",
+        r"\beligib\b", r"\bqualif\b", r"\bcriteria\b",
+        r"\bfor whom\b",
+    ],
+    "BENEFITS": [
+        r"\bbenefit\b", r"\bamount\b", r"\bstipend\b",
+        r"\bgrant\b", r"\bhow much\b", r"\brupees?\b", r"\binr\b",
+        r"\bfinancial.*help\b", r"\bfinancial.*assist\b", r"\bfinancial.*support\b",
+        r"\bprovide\b", r"\bgive.*money\b", r"\bget.*money\b",
+        r"\bcan.*i get\b",  # "can I get financial help"
+        r"\bsupport.*studying\b", r"\bhelp.*studying\b",
+        r"\bscholarship.*amount\b", r"\bmoney.*stud\b",
+    ],
+    "DEADLINE": [
+        r"\bdeadline\b", r"\blast date\b",
+        r"\bwindow\b", r"\bapply.*by\b", r"\bopen.*till\b",
+        r"\bwhen.*apply\b", r"\bclose.*date\b",
+    ],
+    "STATUS": [
+        r"\bstatus\b", r"\btrack\b", r"\breminder\b", r"\bbookmark\b",
+    ],
+}
+
+# Map intent to preferred sections for scoring boost
+INTENT_SECTION_BOOST = {
+    "REQUIRED_DOCUMENTS": {"documents": 0.30, "application": 0.10},
+    "APPLICATION_PROCESS": {"application": 0.30, "documents": 0.10, "deadlines": 0.10},
+    "ELIGIBILITY": {"eligibility": 0.25, "overview": 0.10},
+    "BENEFITS": {"benefits": 0.30, "overview": 0.10},
+    "DEADLINE": {"deadlines": 0.30, "application": 0.10},
+    "STATUS": {"notes": 0.20, "deadlines": 0.10},
+    "SCHEME_DISCOVERY": {"overview": 0.20, "eligibility": 0.10, "benefits": 0.10},
+    "GENERAL": {"overview": 0.10},
+}
+
+# Map intent to query expansion terms (improves TF-IDF recall)
+INTENT_QUERY_EXPANSIONS = {
+    "REQUIRED_DOCUMENTS": " required documents certificate aadhaar marksheet income",
+    "APPLICATION_PROCESS": " apply application process portal steps online register",
+    "ELIGIBILITY": " eligible eligibility criteria who can apply conditions requirements",
+    "BENEFITS": " benefits financial assistance amount scholarship grant stipend",
+    "DEADLINE": " deadline date window opens closes application cycle",
+    "SCHEME_DISCOVERY": " scheme scholarship overview category description",
+}
+
+# Social category synonyms for better OBC/SC/ST retrieval
+SOCIAL_CATEGORY_SYNONYMS = {
+    "obc": "OBC other backward class caste backward",
+    "sc": "SC scheduled caste dalit",
+    "st": "ST scheduled tribe tribal adivasi",
+    "general": "general open category",
+    "ews": "EWS economically weaker section",
+    "minority": "minority religion muslim christian sikh",
+}
+
+
+def detect_intent(query: str) -> str:
+    """Detect the primary intent of the user's query.
+
+    Priority order: REQUIRED_DOCUMENTS > APPLICATION_PROCESS > ELIGIBILITY >
+    BENEFITS > DEADLINE > STATUS > SCHEME_DISCOVERY > GENERAL
+
+    Important edge cases handled:
+    - "Which scholarships can I apply for?" → SCHEME_DISCOVERY (not APPLICATION_PROCESS)
+      because 'which' + 'scholarship' indicates discovery, not a process question.
+    - "What documents are required?" → REQUIRED_DOCUMENTS (not APPLICATION_PROCESS)
+      because REQUIRED_DOCUMENTS is checked first.
+    - "Can I get financial help for studying?" → BENEFITS (not ELIGIBILITY)
+      because BENEFITS patterns match 'can i get'.
+    """
+    q = query.lower()
+
+    # Special case: "which scholarships/schemes can I apply for?" -> SCHEME_DISCOVERY
+    if re.search(r"\bwhich\b", q) and re.search(r"\b(?:scholarships?|schemes?|programs?|yojana)\b", q):
+        return "SCHEME_DISCOVERY"
+
+    # Special case: "list scholarships", "tell me schemes", "show me programs"
+    if re.search(r"\b(?:list|tell|show|find|what are).*(?:scholarships?|schemes?|programs?)\b", q):
+        return "SCHEME_DISCOVERY"
+
+    for intent, patterns in INTENT_PATTERNS.items():
+        for pat in patterns:
+            if re.search(pat, q):
+                return intent
+    # Fallback: if it mentions specific scheme/scholarship keywords
+    if any(w in q for w in ["scheme", "scholarship", "program", "yojana", "nidhi", "prakalpa"]):
+        return "SCHEME_DISCOVERY"
+    return "GENERAL"
+
+
+def expand_query(query: str, intent: str) -> str:
+    """Expand query with relevant terms based on intent and social category mentions."""
+    q_lower = query.lower()
+
+    # Social category expansion
+    for category, synonyms in SOCIAL_CATEGORY_SYNONYMS.items():
+        if category in q_lower:
+            query = f"{query} {synonyms}"
+            break
+
+    # Intent-based expansion
+    expansion = INTENT_QUERY_EXPANSIONS.get(intent, "")
+    if expansion:
+        query = f"{query}{expansion}"
+
+    return query
+
+
+# ── Keyword Boost ─────────────────────────────────────────────────────────────
 
 def _compute_keyword_boost(query: str, chunk: KnowledgeChunk) -> float:
-    """Calculate a keyword matching boost to enhance retrieval quality,
-    especially when dense embeddings are unavailable (offline TF-IDF mode).
+    """Calculate a keyword matching boost to enhance retrieval quality.
+
+    Works for both TF-IDF and dense embedding modes.
+    Intent-aware section boosts are applied separately.
     """
     q_words = [w.lower() for w in re.findall(r"\w+", query) if len(w) > 2]
     if not q_words:
         return 0.0
+
+    # Exclude common stop words from boosting
+    stop_words = {
+        "the", "and", "for", "are", "that", "with", "from", "this",
+        "can", "have", "about", "what", "how", "tell", "show", "give",
+        "please", "need", "want", "like", "does", "should", "which",
+    }
+    q_words = [w for w in q_words if w not in stop_words]
 
     boost = 0.0
     scheme_name = (chunk.scheme_name or "").lower()
@@ -65,8 +226,10 @@ def _compute_keyword_boost(query: str, chunk: KnowledgeChunk) -> float:
         if w in content:
             boost += 0.02
 
-    return min(0.35, boost)
+    return min(0.40, boost)
 
+
+# ── Main Retrieval ────────────────────────────────────────────────────────────
 
 async def retrieve_relevant_chunks(
     db: AsyncSession,
@@ -78,6 +241,12 @@ async def retrieve_relevant_chunks(
     top_k: int = DEFAULT_TOP_K,
 ) -> List[Dict[str, Any]]:
     """Retrieve the most relevant knowledge chunks for a user query.
+
+    Improvements over v1:
+      - Intent detection: automatically identifies query type.
+      - Query expansion: adds relevant terms to improve TF-IDF recall.
+      - Section-affinity boosting: rewards chunks from sections matching intent.
+      - Lowered MIN_SIMILARITY_THRESHOLD for better recall with TF-IDF.
 
     Args:
         db: Async DB session.
@@ -92,6 +261,12 @@ async def retrieve_relevant_chunks(
         List of chunk dicts sorted by relevance score (descending).
         Each dict contains: content, metadata, similarity_score, citations.
     """
+    # Detect intent and expand query
+    intent = detect_intent(query)
+    expanded_query = expand_query(query, intent)
+
+    logger.info(f"Retrieval: intent={intent}, query='{query[:80]}'")
+
     # Build DB query with filters
     stmt = select(KnowledgeChunk)
 
@@ -114,11 +289,14 @@ async def retrieve_relevant_chunks(
     chunks = result.scalars().all()
 
     if not chunks:
-        logger.info(f"No knowledge chunks found for query filters: scheme_id={scheme_id}, state={state}")
+        logger.info(f"No knowledge chunks found for filters: scheme_id={scheme_id}, state={state}")
         return []
 
-    # Embed the query
-    query_embedding, is_semantic = await embed_text(query)
+    # Embed the expanded query
+    query_embedding, is_semantic = await embed_text(expanded_query)
+
+    # Section boost map for this intent
+    section_boosts = INTENT_SECTION_BOOST.get(intent, {})
 
     scored = []
     for chunk in chunks:
@@ -135,14 +313,19 @@ async def retrieve_relevant_chunks(
             elif not query_is_dense and not chunk_is_dense:
                 score = cosine_similarity_tfidf(query_embedding, stored)
             else:
+                # Mismatch: compute TF-IDF on both sides
                 from app.services.embedding_service import _tfidf_vector
-                q_tfidf = _tfidf_vector(query) if query_is_dense else query_embedding
+                q_tfidf = _tfidf_vector(expanded_query) if query_is_dense else query_embedding
                 c_tfidf = _tfidf_vector(chunk.content)
                 score = cosine_similarity_tfidf(q_tfidf, c_tfidf)
 
-        # Keyword matching boost for offline/TF-IDF mode & term alignment
-        kw_boost = _compute_keyword_boost(query, chunk)
-        total_score = min(1.0, score + kw_boost)
+        # Intent-based section affinity boost
+        section_boost = section_boosts.get(chunk.section or "", 0.0)
+
+        # Keyword matching boost
+        kw_boost = _compute_keyword_boost(expanded_query, chunk)
+
+        total_score = min(1.0, score + section_boost + kw_boost)
 
         if total_score < MIN_SIMILARITY_THRESHOLD:
             continue
@@ -154,8 +337,9 @@ async def retrieve_relevant_chunks(
             "section": chunk.section or "general",
             "content": chunk.content,
             "similarity_score": round(total_score, 4),
+            "intent": intent,
 
-            # Citation fields — use real URLs only, never fall back to myscheme.gov.in
+            # Citation fields — use real URLs only
             "source_url": chunk.official_info_url or "",
             "source_title": f"{chunk.scheme_name or 'Official'} — {(chunk.section or 'Guideline').title()}",
             "source_id": chunk.source_id or "",
@@ -186,7 +370,8 @@ async def retrieve_relevant_chunks(
 
     logger.info(
         f"Retrieved {len(deduped)}/{len(chunks)} chunks for query "
-        f"(semantic={is_semantic}, top_score={deduped[0]['similarity_score'] if deduped else 0})"
+        f"(intent={intent}, semantic={is_semantic}, "
+        f"top_score={deduped[0]['similarity_score'] if deduped else 0})"
     )
     return deduped
 

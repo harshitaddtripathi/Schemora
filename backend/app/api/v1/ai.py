@@ -37,7 +37,7 @@ from app.schemas.ai import (
 )
 from app.schemas.common import APIResponse
 from app.services.eligibility_service import evaluate_scheme_eligibility
-from app.services.retrieval_service import retrieve_relevant_chunks
+from app.services.retrieval_service import retrieve_relevant_chunks, detect_intent, expand_query
 from app.services.knowledge_base_service import (
     index_all_schemes,
     index_scheme,
@@ -122,11 +122,17 @@ async def chat_assistant(
     """Main AI assistant — retrieves verified scheme knowledge and generates grounded answers.
 
     Flow:
-      1. Semantic retrieval from knowledge base
-      2. If profile_id provided: run deterministic eligibility engine
-      3. Send retrieved context + eligibility result to Gemini
-      4. Return grounded answer with citations
+      1. Intent detection from user query
+      2. Semantic retrieval from knowledge base (with intent-boosted ranking)
+      3. If profile_id provided: run deterministic eligibility engine
+      4. Send retrieved context + eligibility result to Gemini
+      5. Return grounded answer with citations
     """
+    # Detect intent for logging/debugging
+    from app.services.retrieval_service import detect_intent
+    intent = detect_intent(req.question)
+    logger.info(f"Chat request: intent={intent}, question='{req.question[:80]}'")
+
     # ── Step 1: Retrieve relevant knowledge ────────────────────────────────
     chunks = await retrieve_relevant_chunks(
         db,
@@ -134,7 +140,7 @@ async def chat_assistant(
         scheme_id=req.scheme_id,
         state=req.state_filter,
         category=req.category_filter,
-        top_k=5,
+        top_k=8,  # Increased from 5 for richer context
     )
 
     # ── Step 2: Fallback — query DB schemes directly if knowledge base empty ─
@@ -146,10 +152,31 @@ async def chat_assistant(
         schemes_res = await db.execute(scheme_stmt)
         schemes = schemes_res.scalars().all()
 
-        q_words = [w for w in req.question.lower().split() if len(w) > 2]
+        # Improved fallback: filter by keywords in scheme fields
+        # including social_categories for OBC/SC/ST queries
+        q_words = [w.lower() for w in req.question.lower().split() if len(w) > 2]
+
+        # Detect social category mentions for targeted fallback
+        social_filter = None
+        q_lower = req.question.lower()
+        if "obc" in q_lower or "other backward" in q_lower:
+            social_filter = "OBC"
+        elif "sc" in q_lower or "scheduled caste" in q_lower:
+            social_filter = "SC"
+        elif "st" in q_lower or "scheduled tribe" in q_lower:
+            social_filter = "ST"
+        elif "ews" in q_lower or "economically weaker" in q_lower:
+            social_filter = "EWS"
+
         matched = []
         for s in schemes:
-            s_text = f"{s.title} {s.short_description} {s.benefit_summary}".lower()
+            s_text = f"{s.title} {s.short_description} {s.benefit_summary} {s.social_categories}".lower()
+            # Match social category filter
+            if social_filter:
+                if social_filter.lower() in (s.social_categories or "").lower():
+                    matched.append(s)
+                    continue
+            # Match keyword filter
             if any(w in s_text for w in q_words):
                 matched.append(s)
         if not matched:

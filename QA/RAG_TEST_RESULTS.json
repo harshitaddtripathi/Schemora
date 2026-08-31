@@ -1,0 +1,443 @@
+{
+  "timestamp": "2026-08-29T13:25:42.089953",
+  "total": 14,
+  "passed": 14,
+  "failed": 0,
+  "pass_rate": "100%",
+  "results": [
+    {
+      "id": "T01_OBC_DISCOVERY",
+      "description": "OBC scheme discovery",
+      "query": "Tell me schemes related to OBC students",
+      "status": "PASS",
+      "intent_detected": "SCHEME_DISCOVERY",
+      "intent_expected": "SCHEME_DISCOVERY",
+      "chunks_retrieved": 5,
+      "top_score": 0.903,
+      "top_scheme": "Post Matric Scholarship to OBC Students",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 214.9,
+      "top_chunks": [
+        {
+          "scheme": "Post Matric Scholarship to OBC Students",
+          "section": "overview",
+          "score": 0.903
+        },
+        {
+          "scheme": "Assam State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8092
+        },
+        {
+          "scheme": "Bihar State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8092
+        }
+      ]
+    },
+    {
+      "id": "T02_SCHOLARSHIP_DISCOVERY",
+      "description": "General scholarship discovery",
+      "query": "Which scholarships can I apply for?",
+      "status": "PASS",
+      "intent_detected": "SCHEME_DISCOVERY",
+      "intent_expected": "SCHEME_DISCOVERY",
+      "chunks_retrieved": 5,
+      "top_score": 0.8324,
+      "top_scheme": "Central Sector Scheme of Scholarship for College and University Students",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 163.0,
+      "top_chunks": [
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "overview",
+          "score": 0.8324
+        },
+        {
+          "scheme": "Assam State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.7166
+        },
+        {
+          "scheme": "Bihar State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.7166
+        }
+      ]
+    },
+    {
+      "id": "T03_APPLICATION_PROCESS",
+      "description": "Scholarship application steps",
+      "query": "Give me the steps to fill a scholarship application",
+      "status": "PASS",
+      "intent_detected": "APPLICATION_PROCESS",
+      "intent_expected": "APPLICATION_PROCESS",
+      "chunks_retrieved": 5,
+      "top_score": 0.9816,
+      "top_scheme": "Central Sector Scheme of Scholarship for College and University Students",
+      "keyword_hit": false,
+      "section_hit": true,
+      "elapsed_ms": 209.0,
+      "top_chunks": [
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "application",
+          "score": 0.9816
+        },
+        {
+          "scheme": "Post Matric Scholarship to OBC Students",
+          "section": "application",
+          "score": 0.8925
+        },
+        {
+          "scheme": "Andhra Pradesh State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "application",
+          "score": 0.8797
+        }
+      ]
+    },
+    {
+      "id": "T04_DOCUMENTS",
+      "description": "Required documents query",
+      "query": "What documents are required for this scholarship?",
+      "status": "PASS",
+      "intent_detected": "REQUIRED_DOCUMENTS",
+      "intent_expected": "REQUIRED_DOCUMENTS",
+      "chunks_retrieved": 5,
+      "top_score": 1.0,
+      "top_scheme": "Central Sector Scheme of Scholarship for College and University Students",
+      "keyword_hit": false,
+      "section_hit": true,
+      "elapsed_ms": 160.5,
+      "top_chunks": [
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "documents",
+          "score": 1.0
+        },
+        {
+          "scheme": "Post Matric Scholarship to OBC Students",
+          "section": "documents",
+          "score": 1.0
+        },
+        {
+          "scheme": "Andhra Pradesh State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "documents",
+          "score": 1.0
+        }
+      ]
+    },
+    {
+      "id": "T05_CSSS_APPLY",
+      "description": "CSSS application process",
+      "query": "How do I apply for CSSS?",
+      "status": "PASS",
+      "intent_detected": "APPLICATION_PROCESS",
+      "intent_expected": "APPLICATION_PROCESS",
+      "chunks_retrieved": 5,
+      "top_score": 0.8407,
+      "top_scheme": "Mukhyamantri Majhi Ladki Bahin Yojana",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 151.3,
+      "top_chunks": [
+        {
+          "scheme": "Mukhyamantri Majhi Ladki Bahin Yojana",
+          "section": "application",
+          "score": 0.8407
+        },
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "application",
+          "score": 0.834
+        },
+        {
+          "scheme": "Mukhya Mantri Kanya Sumangala Yojana",
+          "section": "application",
+          "score": 0.8034
+        }
+      ]
+    },
+    {
+      "id": "T06_CSSS_BENEFITS",
+      "description": "CSSS benefits query",
+      "query": "What benefits does CSSS provide?",
+      "status": "PASS",
+      "intent_detected": "GENERAL",
+      "intent_expected": "BENEFITS",
+      "chunks_retrieved": 5,
+      "top_score": 0.1805,
+      "top_scheme": "Central Sector Scheme of Scholarship for College and University Students",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 104.8,
+      "top_chunks": [
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "notes",
+          "score": 0.1805
+        },
+        {
+          "scheme": "Sukanya Samriddhi Yojana (SSY)",
+          "section": "overview",
+          "score": 0.1706
+        },
+        {
+          "scheme": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+          "section": "benefits",
+          "score": 0.1376
+        }
+      ]
+    },
+    {
+      "id": "T07_MAHARASHTRA",
+      "description": "Maharashtra scholarship filter",
+      "query": "scholarships in Maharashtra",
+      "status": "PASS",
+      "intent_detected": "SCHEME_DISCOVERY",
+      "intent_expected": "SCHEME_DISCOVERY",
+      "chunks_retrieved": 5,
+      "top_score": 0.9082,
+      "top_scheme": "Maharashtra State Post-Matric Scholarship for SC/ST/OBC Students",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 142.9,
+      "top_chunks": [
+        {
+          "scheme": "Maharashtra State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.9082
+        },
+        {
+          "scheme": "Post Matric Scholarship to OBC Students",
+          "section": "overview",
+          "score": 0.8869
+        },
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "overview",
+          "score": 0.8309
+        }
+      ]
+    },
+    {
+      "id": "T08_FINANCIAL_HELP",
+      "description": "Financial assistance query",
+      "query": "Can I get financial help for studying?",
+      "status": "PASS",
+      "intent_detected": "BENEFITS",
+      "intent_expected": "BENEFITS",
+      "chunks_retrieved": 5,
+      "top_score": 0.9443,
+      "top_scheme": "Central Sector Scheme of Scholarship for College and University Students",
+      "keyword_hit": false,
+      "section_hit": true,
+      "elapsed_ms": 182.8,
+      "top_chunks": [
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "benefits",
+          "score": 0.9443
+        },
+        {
+          "scheme": "Assam State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "benefits",
+          "score": 0.7883
+        },
+        {
+          "scheme": "Bihar State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "benefits",
+          "score": 0.7883
+        }
+      ]
+    },
+    {
+      "id": "T09_PAPERS",
+      "description": "Papers/documents alternate phrasing",
+      "query": "What papers do I need for scholarship?",
+      "status": "PASS",
+      "intent_detected": "REQUIRED_DOCUMENTS",
+      "intent_expected": "REQUIRED_DOCUMENTS",
+      "chunks_retrieved": 5,
+      "top_score": 1.0,
+      "top_scheme": "Post Matric Scholarship to OBC Students",
+      "keyword_hit": false,
+      "section_hit": true,
+      "elapsed_ms": 164.9,
+      "top_chunks": [
+        {
+          "scheme": "Post Matric Scholarship to OBC Students",
+          "section": "documents",
+          "score": 1.0
+        },
+        {
+          "scheme": "Andhra Pradesh State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "documents",
+          "score": 1.0
+        },
+        {
+          "scheme": "Arunachal Pradesh State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "documents",
+          "score": 1.0
+        }
+      ]
+    },
+    {
+      "id": "T10_ELIGIBILITY",
+      "description": "PM Internship eligibility",
+      "query": "Am I eligible for PM Internship?",
+      "status": "PASS",
+      "intent_detected": "ELIGIBILITY",
+      "intent_expected": "ELIGIBILITY",
+      "chunks_retrieved": 5,
+      "top_score": 0.6719,
+      "top_scheme": "PM Internship Scheme",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 148.0,
+      "top_chunks": [
+        {
+          "scheme": "PM Internship Scheme",
+          "section": "eligibility",
+          "score": 0.6719
+        },
+        {
+          "scheme": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+          "section": "eligibility",
+          "score": 0.6462
+        },
+        {
+          "scheme": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+          "section": "eligibility",
+          "score": 0.5219
+        }
+      ]
+    },
+    {
+      "id": "T11_OBC_DETAILED",
+      "description": "OBC detailed query",
+      "query": "Who are OBC students and what schemes exist for them?",
+      "status": "PASS",
+      "intent_detected": "SCHEME_DISCOVERY",
+      "intent_expected": "SCHEME_DISCOVERY",
+      "chunks_retrieved": 5,
+      "top_score": 0.9086,
+      "top_scheme": "Post Matric Scholarship to OBC Students",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 238.4,
+      "top_chunks": [
+        {
+          "scheme": "Post Matric Scholarship to OBC Students",
+          "section": "overview",
+          "score": 0.9086
+        },
+        {
+          "scheme": "Jammu and Kashmir State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8711
+        },
+        {
+          "scheme": "Assam State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8632
+        }
+      ]
+    },
+    {
+      "id": "T12_NO_RESULT",
+      "description": "No relevant result case",
+      "query": "xyzfakequerythisshouldfindnothing12345",
+      "status": "PASS",
+      "intent_detected": "GENERAL",
+      "intent_expected": "GENERAL",
+      "chunks_retrieved": 5,
+      "top_score": 0.1,
+      "top_scheme": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+      "keyword_hit": false,
+      "section_hit": false,
+      "elapsed_ms": 70.0,
+      "top_chunks": [
+        {
+          "scheme": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+          "section": "overview",
+          "score": 0.1
+        },
+        {
+          "scheme": "Sukanya Samriddhi Yojana (SSY)",
+          "section": "overview",
+          "score": 0.1
+        },
+        {
+          "scheme": "Central Sector Scheme of Scholarship for College and University Students",
+          "section": "overview",
+          "score": 0.1
+        }
+      ]
+    },
+    {
+      "id": "T13_UNDERGRADUATE",
+      "description": "Undergraduate scholarship query",
+      "query": "Which scholarships are available for undergraduate students?",
+      "status": "PASS",
+      "intent_detected": "SCHEME_DISCOVERY",
+      "intent_expected": "SCHEME_DISCOVERY",
+      "chunks_retrieved": 5,
+      "top_score": 0.8438,
+      "top_scheme": "Assam State Post-Matric Scholarship for SC/ST/OBC Students",
+      "keyword_hit": false,
+      "section_hit": true,
+      "elapsed_ms": 183.6,
+      "top_chunks": [
+        {
+          "scheme": "Assam State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8438
+        },
+        {
+          "scheme": "Bihar State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8438
+        },
+        {
+          "scheme": "Chhattisgarh State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8438
+        }
+      ]
+    },
+    {
+      "id": "T14_PERSONALIZED_OBC",
+      "description": "Personalized OBC Maharashtra query",
+      "query": "I am an OBC student from Maharashtra. What schemes may match my profile?",
+      "status": "PASS",
+      "intent_detected": "SCHEME_DISCOVERY",
+      "intent_expected": "SCHEME_DISCOVERY",
+      "chunks_retrieved": 5,
+      "top_score": 0.8619,
+      "top_scheme": "Post Matric Scholarship to OBC Students",
+      "keyword_hit": true,
+      "section_hit": true,
+      "elapsed_ms": 237.7,
+      "top_chunks": [
+        {
+          "scheme": "Post Matric Scholarship to OBC Students",
+          "section": "overview",
+          "score": 0.8619
+        },
+        {
+          "scheme": "Maharashtra State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.8411
+        },
+        {
+          "scheme": "Assam State Post-Matric Scholarship for SC/ST/OBC Students",
+          "section": "overview",
+          "score": 0.7688
+        }
+      ]
+    }
+  ]
+}

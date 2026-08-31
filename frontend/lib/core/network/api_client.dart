@@ -44,9 +44,9 @@ final dioProvider = Provider<Dio>((ref) {
         if (error.type == DioExceptionType.connectionTimeout ||
             error.type == DioExceptionType.connectionError) {
           final candidates = [
-            EnvConfig.devHostIp,
-            '10.0.2.2',
-            '127.0.0.1',
+            '127.0.0.1',           // USB ADB reverse port forwarding (Instant)
+            EnvConfig.devHostIp,   // Active Wi-Fi IP (10.59.33.142)
+            '10.0.2.2',            // Android Emulator
           ];
 
           for (final candidateHost in candidates) {

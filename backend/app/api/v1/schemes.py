@@ -67,6 +67,8 @@ async def list_schemes(
     result = await db.execute(paginated_query)
     paginated_items = result.scalars().all()
 
+    total_pages = max(1, -(-total_items // page_size))  # ceiling division
+
     meta = PaginationMeta(
         page=page,
         page_size=page_size,

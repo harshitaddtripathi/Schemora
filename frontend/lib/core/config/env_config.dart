@@ -7,9 +7,10 @@ class EnvConfig {
   // ---------------------------------------------------------------------------
   // DEVELOPMENT API CONFIGURATION FOR PHYSICAL ANDROID PHONE / LOCAL PC
   // ---------------------------------------------------------------------------
-  // ⚠️ PHYSICAL DEVICE: Use PC's LAN IP so the phone can reach the backend over WiFi.
-  // For emulator use: 10.0.2.2  |  For web/desktop use: 127.0.0.1
-  static const String devHostIp = '192.168.3.160'; // PC's LAN IP
+  // USB Mode (ADB Reverse): 127.0.0.1 (Fastest & immune to IP changes)
+  // Wi-Fi Mode: 10.59.33.142 (Active PC Wi-Fi IP)
+  // Emulator: 10.0.2.2
+  static const String devHostIp = '10.59.33.142'; // Active PC Wi-Fi IP
   static const String devPort = '8000';
 
   static String? _resolvedHost;
@@ -26,7 +27,7 @@ class EnvConfig {
   /// Dynamically computes the local development base URL.
   static String get _localBaseUrl {
     final host = _resolvedHost ??
-        (kIsWeb ? '127.0.0.1' : (devHostIp.trim().isNotEmpty ? devHostIp.trim() : '127.0.0.1'));
+        (kIsWeb ? '127.0.0.1' : '127.0.0.1'); // 127.0.0.1 works via ADB reverse over USB
     return 'http://$host:$devPort/api/v1/';
   }
 
@@ -37,8 +38,8 @@ class EnvConfig {
     return rawUrl.endsWith('/') ? rawUrl : '$rawUrl/';
   }
 
-  // Optimized timeouts: 8s connect timeout with fallback retry, 60s receive timeout for AI RAG
-  static const int connectTimeoutMs = 8000;
+  // Fast 2.5s connect timeout with automatic multi-host fallback retry
+  static const int connectTimeoutMs = 2500;
   static const int receiveTimeoutMs = 60000;
 }
 
