@@ -26,8 +26,7 @@ class EnvConfig {
 
   /// Dynamically computes the local development base URL.
   static String get _localBaseUrl {
-    final host = _resolvedHost ??
-        (kIsWeb ? '127.0.0.1' : devHostIp);
+    final host = _resolvedHost ?? '127.0.0.1'; // ADB reverse USB port forwarding (Instant, bypasses Wi-Fi firewall)
     return 'http://$host:$devPort/api/v1/';
   }
 
