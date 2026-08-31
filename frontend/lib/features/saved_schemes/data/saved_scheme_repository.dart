@@ -62,3 +62,51 @@ final savedSchemeRepositoryProvider = Provider<SavedSchemeRepository>((ref) {
   final dio = ref.watch(dioProvider);
   return SavedSchemeRepositoryImpl(dio);
 });
+
+final savedSchemeIdsProvider =
+    StateNotifierProvider<SavedSchemeIdsNotifier, AsyncValue<Set<String>>>((ref) {
+  final repo = ref.watch(savedSchemeRepositoryProvider);
+  return SavedSchemeIdsNotifier(repo);
+});
+
+class SavedSchemeIdsNotifier extends StateNotifier<AsyncValue<Set<String>>> {
+  final SavedSchemeRepository _repo;
+
+  SavedSchemeIdsNotifier(this._repo) : super(const AsyncValue.loading()) {
+    loadSavedSchemes();
+  }
+
+  Future<void> loadSavedSchemes() async {
+    try {
+      final list = await _repo.listSavedSchemes();
+      final ids = list.map((item) => item.schemeId).toSet();
+      state = AsyncValue.data(ids);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<bool> toggleSave(String schemeId) async {
+    final currentIds = state.value ?? {};
+    final isSaved = currentIds.contains(schemeId);
+
+    // Optimistic UI update
+    final newSet = Set<String>.from(currentIds);
+    if (isSaved) {
+      newSet.remove(schemeId);
+    } else {
+      newSet.add(schemeId);
+    }
+    state = AsyncValue.data(newSet);
+
+    try {
+      await _repo.toggleSave(schemeId);
+      await loadSavedSchemes(); // Re-sync with server
+      return !isSaved;
+    } catch (e) {
+      // Rollback state on error
+      state = AsyncValue.data(currentIds);
+      rethrow;
+    }
+  }
+}

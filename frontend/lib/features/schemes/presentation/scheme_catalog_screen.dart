@@ -7,6 +7,8 @@ import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
 
+import 'package:schemora_frontend/features/saved_schemes/data/saved_scheme_repository.dart';
+
 class SchemeCatalogScreen extends ConsumerStatefulWidget {
   const SchemeCatalogScreen({super.key});
 
@@ -27,6 +29,7 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
   @override
   Widget build(BuildContext context) {
     final repo = ref.watch(schemeRepositoryProvider);
+    final savedIds = ref.watch(savedSchemeIdsProvider).value ?? {};
 
     return Scaffold(
       appBar: AppBar(
@@ -37,6 +40,11 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
         ),
         title: const Text('Schemora Catalog'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.bookmark_rounded, color: AppTheme.primaryBlue),
+            tooltip: 'Saved Schemes',
+            onPressed: () => context.push('/saved-schemes'),
+          ),
           const DashboardButton(),
           IconButton(
             icon: const Icon(Icons.star_rounded, color: AppTheme.warningOrange),
@@ -122,6 +130,8 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final scheme = schemes[index];
+                      final isSaved = savedIds.contains(scheme.id);
+
                       return Card(
                         elevation: 2,
                         child: ListTile(
@@ -150,15 +160,59 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    scheme.provider,
-                                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                  Expanded(
+                                    child: Text(
+                                      scheme.provider,
+                                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                          trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                                  color: isSaved ? AppTheme.warningOrange : Colors.grey,
+                                ),
+                                tooltip: isSaved ? 'Remove from Saved' : 'Save Scheme',
+                                onPressed: () async {
+                                  try {
+                                    final nowSaved = await ref
+                                        .read(savedSchemeIdsProvider.notifier)
+                                        .toggleSave(scheme.id);
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            nowSaved
+                                                ? 'Scheme saved to My Saved Schemes!'
+                                                : 'Scheme removed from Saved Schemes.',
+                                          ),
+                                          action: SnackBarAction(
+                                            label: 'View All',
+                                            onPressed: () => context.push('/saved-schemes'),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Failed to update bookmark: $e')),
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
+                              const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                            ],
+                          ),
                           onTap: () => context.push('/catalog/${scheme.id}'),
                         ),
                       );

@@ -14,6 +14,7 @@ import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
 import 'package:schemora_frontend/core/providers/app_language_provider.dart';
 import 'package:schemora_frontend/features/ai_assistant/data/voice_assistant_service.dart';
 import 'package:schemora_frontend/features/news/data/news_repository.dart';
+import 'package:schemora_frontend/features/saved_schemes/data/saved_scheme_repository.dart';
 
 // ── Main shell with bottom navigation ─────────────────────────────────────────
 
@@ -1213,18 +1214,50 @@ class _SchemesTabState extends ConsumerState<_SchemesTab> {
                     ),
                   );
                 }
+                final savedIds = ref.watch(savedSchemeIdsProvider).value ?? {};
                 return ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   itemCount: filtered.length,
-                  itemBuilder: (context, i) => _SchemeCard(
-                    scheme: filtered[i],
-                    isSaved: false,
-                    selectedSector: _activeCategory ?? 'All',
-                    selectedState: '',
-                    onSave: () {},
-                    onTap: () => context.push('/catalog/${filtered[i].id}'),
-                    onChecklist: () => context.push('/checklist/${filtered[i].id}'),
-                  ),
+                  itemBuilder: (context, i) {
+                    final item = filtered[i];
+                    final isSaved = savedIds.contains(item.id);
+                    return _SchemeCard(
+                      scheme: item,
+                      isSaved: isSaved,
+                      selectedSector: _activeCategory ?? 'All',
+                      selectedState: '',
+                      onSave: () async {
+                        try {
+                          final nowSaved = await ref
+                              .read(savedSchemeIdsProvider.notifier)
+                              .toggleSave(item.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  nowSaved
+                                      ? 'Scheme saved to My Saved Schemes!'
+                                      : 'Scheme removed from Saved Schemes.',
+                                ),
+                                action: SnackBarAction(
+                                  label: 'View All',
+                                  onPressed: () => context.push('/saved-schemes'),
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to update bookmark: $e')),
+                            );
+                          }
+                        }
+                      },
+                      onTap: () => context.push('/catalog/${item.id}'),
+                      onChecklist: () => context.push('/checklist/${item.id}'),
+                    );
+                  },
                 );
               },
             ),

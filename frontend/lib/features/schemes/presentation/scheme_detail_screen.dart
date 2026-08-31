@@ -8,6 +8,7 @@ import 'package:schemora_frontend/core/widgets/common_states.dart';
 import 'package:schemora_frontend/core/widgets/dashboard_button.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type.dart';
 import 'package:schemora_frontend/features/profile/domain/profile_type_provider.dart';
+import 'package:schemora_frontend/features/saved_schemes/data/saved_scheme_repository.dart';
 import 'package:schemora_frontend/features/schemes/data/scheme_repository.dart';
 import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
 
@@ -177,6 +178,8 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final repo = ref.watch(schemeRepositoryProvider);
+    final savedIds = ref.watch(savedSchemeIdsProvider).value ?? {};
+    final isSaved = savedIds.contains(widget.schemeId);
 
     return Scaffold(
       appBar: AppBar(
@@ -187,6 +190,41 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
         ),
         title: const Text('Scheme Details & Application'),
         actions: [
+          IconButton(
+            icon: Icon(
+              isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+              color: isSaved ? AppTheme.warningOrange : null,
+            ),
+            tooltip: isSaved ? 'Remove from Saved' : 'Save Scheme',
+            onPressed: () async {
+              try {
+                final nowSaved = await ref
+                    .read(savedSchemeIdsProvider.notifier)
+                    .toggleSave(widget.schemeId);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        nowSaved
+                            ? 'Scheme saved to My Saved Schemes!'
+                            : 'Scheme removed from Saved Schemes.',
+                      ),
+                      action: SnackBarAction(
+                        label: 'View All',
+                        onPressed: () => context.push('/saved-schemes'),
+                      ),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to update bookmark: $e')),
+                  );
+                }
+              }
+            },
+          ),
           const DashboardButton(),
           IconButton(
             icon: const Icon(Icons.share_rounded),
@@ -759,6 +797,56 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
                     ),
                     icon: const Icon(Icons.open_in_browser_rounded),
                     label: const Text('Proceed to Official Government Portal', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      try {
+                        final nowSaved = await ref
+                            .read(savedSchemeIdsProvider.notifier)
+                            .toggleSave(widget.schemeId);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                nowSaved
+                                    ? 'Scheme saved to My Saved Schemes!'
+                                    : 'Scheme removed from Saved Schemes.',
+                              ),
+                              action: SnackBarAction(
+                                label: 'View All',
+                                onPressed: () => context.push('/saved-schemes'),
+                              ),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to update bookmark: $e')),
+                          );
+                        }
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: BorderSide(
+                        color: isSaved ? AppTheme.warningOrange : AppTheme.primaryBlue,
+                        width: 1.5,
+                      ),
+                    ),
+                    icon: Icon(
+                      isSaved ? Icons.bookmark_remove_rounded : Icons.bookmark_add_rounded,
+                      color: isSaved ? AppTheme.warningOrange : AppTheme.primaryBlue,
+                    ),
+                    label: Text(
+                      isSaved ? 'Saved in My Schemes (Tap to Remove)' : 'Save / Bookmark Scheme',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: isSaved ? AppTheme.warningOrange : AppTheme.primaryBlue,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(

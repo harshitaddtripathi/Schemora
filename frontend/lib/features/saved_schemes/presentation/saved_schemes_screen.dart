@@ -131,12 +131,45 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        item.schemeTitle,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.primaryNavy),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.schemeTitle,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.primaryNavy),
+                                ),
+                                const SizedBox(height: 4),
+                                Text('${item.provider} • ${item.jurisdiction}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.bookmark_remove_rounded, color: AppTheme.warningOrange),
+                            tooltip: 'Remove from Saved',
+                            onPressed: () async {
+                              try {
+                                await ref.read(savedSchemeIdsProvider.notifier).toggleSave(item.schemeId);
+                                _refreshList();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Scheme removed from My Saved Schemes')),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Failed to remove scheme: $e')),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text('${item.provider} • ${item.jurisdiction}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -159,12 +192,18 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
                       ),
                       const SizedBox(height: 12),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           OutlinedButton.icon(
+                            onPressed: () => context.push('/catalog/${item.schemeId}'),
+                            icon: const Icon(Icons.info_outline_rounded, size: 16),
+                            label: const Text('View Details'),
+                          ),
+                          ElevatedButton.icon(
                             onPressed: () => _showOfficialPortalDialog(item.schemeTitle, item.schemeId),
-                            icon: const Icon(Icons.open_in_new_rounded, size: 16),
-                            label: const Text('Official Portal'),
+                            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
+                            icon: const Icon(Icons.open_in_new_rounded, size: 16, color: Colors.white),
+                            label: const Text('Official Portal', style: TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),
