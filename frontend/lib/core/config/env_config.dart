@@ -24,7 +24,7 @@ class EnvConfig {
   /// LAN IP of the dev machine — injected at build time by run_dev.ps1.
   /// Falls back to empty string (→ localhost) if not provided.
   static const String devHostIp =
-      String.fromEnvironment('DEV_HOST_IP', defaultValue: '');
+      String.fromEnvironment('DEV_HOST_IP', defaultValue: '192.168.3.174');
 
   // Set to 'true' only when running on Android Emulator
   static const bool _useEmulator =
@@ -53,20 +53,8 @@ class EnvConfig {
         case TargetPlatform.android:
           if (_useEmulator) {
             host = '10.0.2.2';
-          } else if (devHostIp.isNotEmpty) {
-            host = devHostIp;
           } else {
-            // No IP provided — show a clear error in debug log and fall back to localhost
-            // (won't work on a real device, but prevents a silent failure)
-            assert(false,
-                '\n\n'
-                '════════════════════════════════════════════\n'
-                '  DEV_HOST_IP not set!\n'
-                '  Run the app using:\n'
-                '    .\\run_dev.ps1\n'
-                '  instead of plain "flutter run".\n'
-                '════════════════════════════════════════════\n');
-            host = '127.0.0.1';
+            host = devHostIp.isNotEmpty ? devHostIp : '192.168.3.174';
           }
           break;
         default:
