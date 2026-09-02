@@ -432,27 +432,55 @@ FOLLOW_UP_PROMPTS = {
 }
 
 
-def _clean_chunk_content(content: str) -> str:
-    """Extract clean readable text from chunk content, stripping raw metadata lines."""
-    clean_lines = []
-    for line in content.split("\n"):
-        l = line.strip()
-        if not l:
-            continue
-        if l.startswith("Scheme:") or l.startswith("Category:") or l.startswith("Jurisdiction:") or l.startswith("Status:") or l.startswith("Cycle:"):
-            continue
-        if l.startswith("Department:"):
-            dept_name = l.replace("Department:", "").strip()
-            if dept_name:
-                clean_lines.append(f"• **Department**: {dept_name}")
-            continue
-        if l.startswith("Description:"):
-            desc_text = l.replace("Description:", "").strip()
-            if desc_text:
-                clean_lines.append(f"• **Overview**: {desc_text}")
-            continue
-        clean_lines.append(l)
-    return "\n".join(clean_lines)
+HEADER_INTRO = {
+    "en": "Here are the top verified government schemes matching your request:",
+    "hi": "यहाँ आपके अनुरोध से संबंधित शीर्ष सत्यापित सरकारी योजनाएं हैं:",
+    "mr": "तुमच्या विनंतीशी संबंधित शीर्ष अधिकृत सरकारी योजना खालीलप्रमाणे आहेत:",
+    "bn": "এখানে আপনার অনুরোধের সাথে সম্পর্কিত শীর্ষ সরকারি প্রকল্পগুলি রয়েছে:",
+    "te": "మీ అభ్యర్థనకు సంబంధించిన అగ్ర ప్రభుత్వ పథకాలు ఇక్కడ ఉన్నాయి:",
+    "ta": "உங்கள் கோரிக்கைக்கு இணையான சிறந்த அரசு திட்டங்கள் இதோ:",
+    "gu": "તમારી વિનંતી સંબંધિત મુખ્ય સરકારી યોજનાઓ અહીં છે:",
+    "kn": "ನಿಮ್ಮ ವಿನಂತಿಗೆ ಸಂಬಂಧಿಸಿದ ಉನ್ನತ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು ಇಲ್ಲಿವೆ:",
+    "ml": "നിങ്ങളുടെ ആവശ്യത്തിന് അനുയോജ്യമായ പ്രധാന സർക്കാർ പദ്ധതികൾ താഴെ നൽകുന്നു:",
+    "pa": "ਤੁਹਾਡੀ ਬੇਨਤੀ ਨਾਲ ਸਬੰਧਤ ਮੁੱਖ ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ ਹੇਠਾਂ ਦਿੱਤੀਆਂ ਗਈਆਂ ਹਨ:",
+}
+
+
+def _extract_scheme_summary(chunks: List[Dict[str, Any]], scheme_name: str) -> Dict[str, str]:
+    """Extract clean human-readable summary fields (overview, benefits, eligibility) from scheme chunks."""
+    summary = {
+        "overview": "",
+        "benefits": "",
+        "eligibility": "",
+        "documents": "",
+        "application": "",
+    }
+    for c in chunks:
+        sec = c.get("section", "overview")
+        cnt = c.get("content", "").strip()
+        lines = []
+        for line in cnt.split("\n"):
+            line_str = line.strip()
+            if not line_str:
+                continue
+            if line_str.startswith("Description:"):
+                desc = line_str.replace("Description:", "").strip()
+                if desc and not summary["overview"]:
+                    summary["overview"] = desc
+                continue
+            if any(line_str.startswith(k) for k in ["Scheme:", "Category:", "Jurisdiction:", "State:", "Department:", "Status:", "Cycle:"]):
+                continue
+            lines.append(line_str)
+
+        text = " ".join(lines).strip()
+        if sec == "overview" and not summary["overview"] and text:
+            summary["overview"] = text
+        elif sec == "benefits" and not summary["benefits"] and text:
+            summary["benefits"] = text
+        elif sec == "eligibility" and not summary["eligibility"] and text:
+            summary["eligibility"] = text
+
+    return summary
 
 
 def _build_fallback_response(
@@ -460,7 +488,7 @@ def _build_fallback_response(
     language: str,
     lang_name: str,
 ) -> str:
-    """Build a language-aware, polished response from verified knowledge chunks."""
+    """Build a language-aware, warm, human-friendly response from verified knowledge chunks."""
     if not chunks:
         return NOT_FOUND_MESSAGES.get(
             language,
@@ -468,10 +496,10 @@ def _build_fallback_response(
             "knowledge base. Please check the official government source."
         )
 
-    header = RESULT_HEADER.get(language, "Here is verified information about relevant government schemes:")
+    intro = HEADER_INTRO.get(language, HEADER_INTRO["en"])
     apply_label = APPLY_LABEL.get(language, "Apply Online")
 
-    parts = [header]
+    parts = [intro]
 
     # Group chunks by scheme name
     schemes_dict: Dict[str, Dict[str, Any]] = {}
@@ -489,38 +517,31 @@ def _build_fallback_response(
         schemes_dict[s_name]["chunks"].append(c)
 
     for i, (s_name, data) in enumerate(list(schemes_dict.items())[:3], 1):
-        lines = [f"\n### 📌 {i}. {s_name}"]
+        location = f"({data['state']})" if data["state"] else f"({data['jurisdiction'].title()} Scheme)" if data["jurisdiction"] else ""
+        card = [f"\n📌 **{i}. {s_name}** {location}".strip()]
 
-        # Metadata badges
-        tags = []
-        if data["state"]:
-            tags.append(f"State: {data['state']}")
-        elif data["jurisdiction"]:
-            tags.append(f"Jurisdiction: {data['jurisdiction'].title()}")
-        if data["category"]:
-            tags.append(f"Category: {data['category']}")
-        if tags:
-            lines.append(f"_{' | '.join(tags)}_")
+        summary = _extract_scheme_summary(data["chunks"], s_name)
 
-        # Collect overview, benefits, eligibility, application sections
-        sec_order = ["overview", "benefits", "eligibility", "documents", "application"]
-        sorted_chunks = sorted(
-            data["chunks"],
-            key=lambda x: sec_order.index(x.get("section", "overview")) if x.get("section", "overview") in sec_order else 99
-        )
+        if summary["overview"]:
+            card.append(summary["overview"])
 
-        for c in sorted_chunks[:3]:
-            cnt_cleaned = _clean_chunk_content(c.get("content", ""))
-            if cnt_cleaned:
-                lines.append(cnt_cleaned)
+        if summary["benefits"]:
+            ben_clean = summary["benefits"].replace(f"Benefits provided by {s_name}:", "").replace("Benefits:", "").strip()
+            if ben_clean:
+                card.append(f"• 💰 **Benefits**: {ben_clean}")
 
-        # Official links
-        if data["app_url"]:
-            lines.append(f"🔗 **{apply_label}**: [{data['app_url']}]({data['app_url']})")
-        elif data["info_url"]:
-            lines.append(f"🔗 **Official Portal**: [{data['info_url']}]({data['info_url']})")
+        if summary["eligibility"]:
+            el_clean = summary["eligibility"].replace(f"Eligibility criteria for {s_name}:", "").replace("Eligibility:", "").strip()
+            if el_clean and "Detailed eligibility criteria require verification" not in el_clean:
+                card.append(f"• 📋 **Eligibility**: {el_clean}")
 
-        parts.append("\n".join(lines))
+        # Official link
+        link_url = data["app_url"] or data["info_url"]
+        if link_url:
+            label = apply_label if data["app_url"] else "Official Portal"
+            card.append(f"• 🔗 **{label}**: [{link_url}]({link_url})")
+
+        parts.append("\n".join(card))
 
     follow_up = FOLLOW_UP_PROMPTS.get(language, FOLLOW_UP_PROMPTS["en"])
     parts.append(f"\n\n{follow_up}")
