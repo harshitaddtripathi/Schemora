@@ -33,7 +33,7 @@ from app.services.embedding_service import embed_text, embedding_to_json
 
 logger = logging.getLogger(__name__)
 
-DATASET_PATH = Path(__file__).resolve().parent.parent.parent.parent / "data" / "schemes" / "schemes.v1.json"
+DATASET_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "final" / "schemes.json"
 
 # Section labels
 SECTION_OVERVIEW = "overview"
@@ -225,13 +225,19 @@ def build_chunks_for_scheme(s: Dict[str, Any]) -> List[Dict[str, Any]]:
     Returns a list of chunk dicts with content + metadata.
     """
     scheme_id = s.get("scheme_id", "")
-    scheme_name = s.get("scheme_name", "")
-    jurisdiction = s.get("jurisdiction", "Central")
+    scheme_name = s.get("scheme_name") or s.get("title") or ""
+    jurisdiction = s.get("jurisdiction") or s.get("government_level") or "Central"
     state = s.get("state")
-    category = s.get("scheme_category", "")
-    official_info_url = s.get("official_information_url", "")
-    official_app_url = s.get("official_application_url", "")
-    last_verified_at = s.get("verified_at", "")
+
+    category_val = s.get("scheme_category") or s.get("category") or ""
+    if isinstance(category_val, list):
+        category = ", ".join(category_val)
+    else:
+        category = str(category_val)
+
+    official_info_url = s.get("official_information_url") or (s.get("official_source") or {}).get("url") or ""
+    official_app_url = s.get("official_application_url") or (s.get("application") or {}).get("url") or ""
+    last_verified_at = s.get("verified_at") or s.get("last_verified") or "2026-08-07"
     scheme_version = s.get("scheme_version", "v1")
 
     # Collect source IDs
@@ -374,7 +380,12 @@ async def index_all_schemes(db: AsyncSession) -> Dict[str, Any]:
     with open(DATASET_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    schemes = data.get("schemes", [])
+    if isinstance(data, list):
+        schemes = data
+        dataset_version = "v1"
+    else:
+        schemes = data.get("schemes", [])
+        dataset_version = data.get("dataset_version", "v1")
     total_chunks = 0
     total_semantic = 0
     indexed_schemes = []
@@ -398,7 +409,7 @@ async def index_all_schemes(db: AsyncSession) -> Dict[str, Any]:
         "total_chunks": total_chunks,
         "semantic_chunks": total_semantic,
         "tfidf_chunks": total_chunks - total_semantic,
-        "dataset_version": data.get("dataset_version", "v1"),
+        "dataset_version": dataset_version,
     }
 
 

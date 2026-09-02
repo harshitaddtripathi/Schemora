@@ -186,22 +186,42 @@ def detect_intent(query: str) -> str:
     return "GENERAL"
 
 
+DEMOGRAPHIC_EXPANSIONS = {
+    "women": " women female girl mahila kanya lady daughter empowerment maternity matru ladki bahin tread ",
+    "female": " women female girl mahila kanya lady daughter empowerment maternity matru ladki bahin tread ",
+    "girl": " women female girl mahila kanya lady daughter empowerment sukanya ",
+    "mahila": " women female girl mahila kanya lady daughter empowerment maternity matru ladki bahin ",
+    "farmer": " farmer kisan agriculture crop farming landholding agriculture livestock sinchayee ",
+    "kisan": " farmer kisan agriculture crop farming landholding agriculture livestock sinchayee ",
+    "health": " health medical hospital ayushman doctor clinic treatment janaushadhi ",
+    "business": " business entrepreneur mudra loan credit msme startup vendor tread vishwakarma pmegp ",
+    "senior": " senior citizen pension elderly aging old age vayoshri atal ",
+}
+
+
 def expand_query(query: str, intent: str) -> str:
-    """Expand query with relevant terms based on intent and social category mentions."""
+    """Expand query with relevant terms based on intent and social/demographic category mentions."""
     q_lower = query.lower()
 
-    # Social category expansion
+    # Demographic category expansion (e.g. women, farmer, health, etc.)
+    demo_expansion = ""
+    for kw, exp in DEMOGRAPHIC_EXPANSIONS.items():
+        if kw in q_lower:
+            demo_expansion += exp
+
+    # Social category expansion (OBC, SC, ST, EWS)
+    social_expansion = ""
     for category, synonyms in SOCIAL_CATEGORY_SYNONYMS.items():
         if category in q_lower:
-            query = f"{query} {synonyms}"
+            social_expansion += f" {synonyms}"
             break
 
-    # Intent-based expansion
-    expansion = INTENT_QUERY_EXPANSIONS.get(intent, "")
-    if expansion:
-        query = f"{query}{expansion}"
+    # Intent-based expansion (avoid appending 'scholarship' if user didn't ask for scholarship)
+    intent_expansion = INTENT_QUERY_EXPANSIONS.get(intent, "")
+    if "scholarship" in intent_expansion and "scholarship" not in q_lower:
+        intent_expansion = intent_expansion.replace("scholarship", "")
 
-    return query
+    return f"{query} {demo_expansion} {social_expansion} {intent_expansion}".strip()
 
 
 # ── Keyword Boost ─────────────────────────────────────────────────────────────
@@ -212,15 +232,16 @@ def _compute_keyword_boost(query: str, chunk: KnowledgeChunk) -> float:
     Works for both TF-IDF and dense embedding modes.
     Intent-aware section boosts are applied separately.
     """
+    q_lower = query.lower()
     q_words = [w.lower() for w in re.findall(r"\w+", query) if len(w) > 2]
     if not q_words:
         return 0.0
 
-    # Exclude common stop words from boosting
     stop_words = {
         "the", "and", "for", "are", "that", "with", "from", "this",
         "can", "have", "about", "what", "how", "tell", "show", "give",
         "please", "need", "want", "like", "does", "should", "which",
+        "scheme", "schemes", "program", "programs", "yojana", "related",
     }
     q_words = [w for w in q_words if w not in stop_words]
 
@@ -231,19 +252,48 @@ def _compute_keyword_boost(query: str, chunk: KnowledgeChunk) -> float:
     content = (chunk.content or "").lower()
     state = (chunk.state or "").lower()
 
+    full_chunk_text = f"{scheme_name} {category} {content}"
+
+    # High-precision demographic domain boosts
+    if any(w in q_lower for w in ["women", "female", "girl", "mahila", "kanya", "lady", "daughter"]):
+        women_keywords = ["women", "female", "mahila", "ladki", "girl", "kanya", "matru", "maternity", "pudhumai", "gruha", "sukanya", "tread", "womenempowerment"]
+        if any(kw in full_chunk_text for kw in women_keywords):
+            boost += 0.35
+
+    if any(w in q_lower for w in ["farmer", "kisan", "agri", "crop", "farm"]):
+        farmer_keywords = ["kisan", "farmer", "agri", "crop", "irrigation", "livestock", "matsya", "raitha", "sinchayee", "mechanization"]
+        if any(kw in full_chunk_text for kw in farmer_keywords):
+            boost += 0.35
+
+    if any(w in q_lower for w in ["health", "medical", "hospital", "doctor"]):
+        health_keywords = ["health", "ayushman", "medical", "doctor", "janani", "clinic", "janaushadhi", "pmssy", "nhm"]
+        if any(kw in full_chunk_text for kw in health_keywords):
+            boost += 0.35
+
+    if any(w in q_lower for w in ["business", "mudra", "loan", "entrepreneur", "startup", "msme"]):
+        biz_keywords = ["mudra", "business", "msme", "entrepreneur", "startup", "vendor", "tread", "vishwakarma", "pmegp", "credit", "microfinance"]
+        if any(kw in full_chunk_text for kw in biz_keywords):
+            boost += 0.35
+
+    if any(w in q_lower for w in ["senior", "pension", "elderly"]):
+        senior_keywords = ["pension", "senior", "elderly", "vayoshri", "atal", "apy", "scss"]
+        if any(kw in full_chunk_text for kw in senior_keywords):
+            boost += 0.35
+
+    # Standard word matches
     for w in q_words:
         if w in scheme_name:
-            boost += 0.12
+            boost += 0.15
         if w in category:
-            boost += 0.10
+            boost += 0.12
         if w in section:
             boost += 0.05
         if state and w in state:
             boost += 0.10
         if w in content:
-            boost += 0.02
+            boost += 0.03
 
-    return min(0.40, boost)
+    return min(0.60, boost)
 
 
 # ── Main Retrieval ────────────────────────────────────────────────────────────

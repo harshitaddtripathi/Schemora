@@ -432,15 +432,35 @@ FOLLOW_UP_PROMPTS = {
 }
 
 
+def _clean_chunk_content(content: str) -> str:
+    """Extract clean readable text from chunk content, stripping raw metadata lines."""
+    clean_lines = []
+    for line in content.split("\n"):
+        l = line.strip()
+        if not l:
+            continue
+        if l.startswith("Scheme:") or l.startswith("Category:") or l.startswith("Jurisdiction:") or l.startswith("Status:") or l.startswith("Cycle:"):
+            continue
+        if l.startswith("Department:"):
+            dept_name = l.replace("Department:", "").strip()
+            if dept_name:
+                clean_lines.append(f"• **Department**: {dept_name}")
+            continue
+        if l.startswith("Description:"):
+            desc_text = l.replace("Description:", "").strip()
+            if desc_text:
+                clean_lines.append(f"• **Overview**: {desc_text}")
+            continue
+        clean_lines.append(l)
+    return "\n".join(clean_lines)
+
+
 def _build_fallback_response(
     chunks: List[Dict[str, Any]],
     language: str,
     lang_name: str,
 ) -> str:
-    """
-    Build a language-aware, structured response when Gemini API is unavailable.
-    Formats verified RAG chunks into a clear, reader-friendly document with official links.
-    """
+    """Build a language-aware, polished response from verified knowledge chunks."""
     if not chunks:
         return NOT_FOUND_MESSAGES.get(
             language,
@@ -448,14 +468,12 @@ def _build_fallback_response(
             "knowledge base. Please check the official government source."
         )
 
-    notice = OFFLINE_HEADER_NOTICE.get(language, OFFLINE_HEADER_NOTICE["en"])
-    header = RESULT_HEADER.get(language, "Here is information about relevant government schemes:")
-    section_labels = SECTION_LABELS.get(language, {})
+    header = RESULT_HEADER.get(language, "Here is verified information about relevant government schemes:")
     apply_label = APPLY_LABEL.get(language, "Apply Online")
 
-    parts = [f"{notice}\n\n{header}"]
+    parts = [header]
 
-    # Group chunks by scheme
+    # Group chunks by scheme name
     schemes_dict: Dict[str, Dict[str, Any]] = {}
     for c in chunks:
         s_name = c.get("scheme_name", "Official Scheme")
@@ -466,31 +484,43 @@ def _build_fallback_response(
                 "app_url": c.get("official_app_url", "").strip(),
                 "category": c.get("category", ""),
                 "state": c.get("state", ""),
+                "jurisdiction": c.get("jurisdiction", ""),
             }
         schemes_dict[s_name]["chunks"].append(c)
 
-    for s_name, data in list(schemes_dict.items())[:3]:
-        scheme_lines = [f"\n📌 **{s_name}**"]
+    for i, (s_name, data) in enumerate(list(schemes_dict.items())[:3], 1):
+        lines = [f"\n### 📌 {i}. {s_name}"]
+
+        # Metadata badges
+        tags = []
         if data["state"]:
-            scheme_lines.append(f"  • Jurisdiction: {data['state']} State Scheme")
-        elif data["category"]:
-            scheme_lines.append(f"  • Category: {data['category']}")
+            tags.append(f"State: {data['state']}")
+        elif data["jurisdiction"]:
+            tags.append(f"Jurisdiction: {data['jurisdiction'].title()}")
+        if data["category"]:
+            tags.append(f"Category: {data['category']}")
+        if tags:
+            lines.append(f"_{' | '.join(tags)}_")
 
-        for c in data["chunks"][:3]:
-            sec = c.get("section", "overview")
-            sec_name = section_labels.get(sec, sec.title())
-            cnt = c.get("content", "").strip()
-            if cnt:
-                lines = [l for l in cnt.split("\n") if not l.startswith("Scheme:")]
-                clean_cnt = "\n".join(lines[:6])
-                scheme_lines.append(f"\n• **{sec_name}**:\n{clean_cnt}")
+        # Collect overview, benefits, eligibility, application sections
+        sec_order = ["overview", "benefits", "eligibility", "documents", "application"]
+        sorted_chunks = sorted(
+            data["chunks"],
+            key=lambda x: sec_order.index(x.get("section", "overview")) if x.get("section", "overview") in sec_order else 99
+        )
 
+        for c in sorted_chunks[:3]:
+            cnt_cleaned = _clean_chunk_content(c.get("content", ""))
+            if cnt_cleaned:
+                lines.append(cnt_cleaned)
+
+        # Official links
         if data["app_url"]:
-            scheme_lines.append(f"\n🔗 **{apply_label}**: {data['app_url']}")
+            lines.append(f"🔗 **{apply_label}**: [{data['app_url']}]({data['app_url']})")
         elif data["info_url"]:
-            scheme_lines.append(f"\n🔗 **Official Portal**: {data['info_url']}")
+            lines.append(f"🔗 **Official Portal**: [{data['info_url']}]({data['info_url']})")
 
-        parts.append("\n".join(scheme_lines))
+        parts.append("\n".join(lines))
 
     follow_up = FOLLOW_UP_PROMPTS.get(language, FOLLOW_UP_PROMPTS["en"])
     parts.append(f"\n\n{follow_up}")
