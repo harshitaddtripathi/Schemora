@@ -475,6 +475,36 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
     );
   }
 
+  (String, List<String>) _parseSupportQueries(String fullText) {
+    if (!fullText.contains('💡') &&
+        !fullText.contains('Support Questions') &&
+        !fullText.contains('संबंधित प्रश्न') &&
+        !fullText.contains('विचारण्यासाठी')) {
+      return (fullText, <String>[]);
+    }
+
+    int idx = fullText.indexOf('💡');
+    if (idx == -1) idx = fullText.indexOf('Support Questions');
+    if (idx == -1) idx = fullText.indexOf('संबंधित प्रश्न');
+    if (idx == -1) idx = fullText.indexOf('विचारण्यासाठी');
+    if (idx == -1) return (fullText, <String>[]);
+
+    final mainText = fullText.substring(0, idx).trim();
+    final supportSection = fullText.substring(idx);
+
+    final List<String> queries = [];
+    for (final line in supportSection.split('\n')) {
+      final l = line.trim();
+      if (l.startsWith('•')) {
+        final q = l.substring(1).trim();
+        if (q.isNotEmpty) {
+          queries.add(q);
+        }
+      }
+    }
+    return (mainText, queries);
+  }
+
   Widget _buildMessageBubble(ChatMessageModel msg) {
     final isSpeaking = _currentlySpeakingId == msg.id;
     final msgLang = msg.language ?? _selectedLang;
@@ -512,7 +542,7 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    msg.text,
+                    msg.isUser ? msg.text : _parseSupportQueries(msg.text).$1,
                     style: TextStyle(
                       color: msg.isUser ? Colors.white : AppTheme.primaryNavy,
                       fontSize: 15,
@@ -547,6 +577,73 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
                 ],
               ],
             ),
+
+            // Interactive Support Cross-Questions (Tap to Ask)
+            if (!msg.isUser && _parseSupportQueries(msg.text).$2.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Divider(height: 1, thickness: 1),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Icon(Icons.lightbulb_rounded, size: 15, color: AppTheme.amberOrange),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      msgLang == 'hi'
+                          ? 'संबंधित प्रश्न (पूछने के लिए टैप करें):'
+                          : msgLang == 'mr'
+                              ? 'संबंधित प्रश्न (विचारण्यासाठी टॅप करा):'
+                              : 'Related Support Questions (tap to ask):',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryNavy,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ..._parseSupportQueries(msg.text).$2.map(
+                (q) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: InkWell(
+                    onTap: () {
+                      _controller.text = q;
+                      _sendMessage();
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue.withAlpha(12),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.primaryBlue.withAlpha(40)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.chat_bubble_outline_rounded, size: 14, color: AppTheme.primaryBlue),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              q,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.primaryBlue,
+                              ),
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppTheme.primaryBlue),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+
             // Citations
             if (msg.citations.isNotEmpty) ...[
               const SizedBox(height: 10),

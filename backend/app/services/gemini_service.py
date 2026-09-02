@@ -483,6 +483,58 @@ def _extract_scheme_summary(chunks: List[Dict[str, Any]], scheme_name: str) -> D
     return summary
 
 
+SUPPORT_TITLE = {
+    "en": "💡 **Related Support Questions (tap to ask)**:",
+    "hi": "💡 **संबंधित प्रश्न (पूछने के लिए टैप करें)**:",
+    "mr": "💡 **संबंधित प्रश्न (विचारण्यासाठी टॅप करा)**:",
+    "bn": "💡 **সম্পর্কিত প্রশ্ন (জিজ্ঞাসা করতে ট্যাপ করুন)**:",
+    "te": "💡 **సంబంధిత ప్రశ్నలు (అడగడానికి నొక్కండి)**:",
+    "ta": "💡 **தொடர்புடைய கேள்விகள் (கேட்க தட்டவும்)**:",
+    "gu": "💡 **સંબંધિત પ્રશ્નો (પૂછવા માટે ટેપ કરો)**:",
+    "kn": "💡 **ಸಂಬಂಧಿತ ಪ್ರಶ್ನೆಗಳು (ಕೇಳಲು ಟ್ಯಾಪ್ ಮಾಡಿ)**:",
+    "ml": "💡 **ബന്ധപ്പെട്ട ചോദ്യങ്ങൾ (ചോദിക്കാൻ ടാപ്പ് ചെയ്യുക)**:",
+    "pa": "💡 **ਸਬੰਧਤ ਸਵਾਲ (ਪੁੱਛਣ ਲਈ ਟੈਪ ਕਰੋ)**:",
+}
+
+
+def _build_support_queries(scheme_names: List[str], language: str) -> str:
+    """Build top 3 contextual support cross-questions using retrieved scheme names."""
+    if not scheme_names:
+        return ""
+
+    title = SUPPORT_TITLE.get(language, SUPPORT_TITLE["en"])
+    s1 = scheme_names[0]
+    s2 = scheme_names[1] if len(scheme_names) > 1 else s1
+    s3 = scheme_names[2] if len(scheme_names) > 2 else s1
+
+    if language == "hi":
+        q1 = f"• {s1} के लिए कौन से दस्तावेज़ आवश्यक हैं?"
+        q2 = f"• {s2} के लिए ऑनलाइन आवेदन कैसे करें step-by-step?"
+        q3 = f"• {s3} की पात्रता और लाभ विवरण क्या हैं?"
+    elif language == "mr":
+        q1 = f"• {s1} साठी कोणती कागदपत्रे आवश्यक आहेत?"
+        q2 = f"• {s2} साठी ऑनलाईन अर्ज कसा करावा step-by-step?"
+        q3 = f"• {s3} ची पात्रता आणि लाभ काय आहेत?"
+    elif language == "bn":
+        q1 = f"• {s1}-এর জন্য কী কী নথি প্রয়োজন?"
+        q2 = f"• {s2}-এর জন্য কীভাবে অনলাইনে আবেদন করবেন?"
+        q3 = f"• {s3}-এর যোগ্যতা ও সুবিধার বিবরণ কী?"
+    elif language == "te":
+        q1 = f"• {s1} కి ఏ పత్రాలు అవసరం?"
+        q2 = f"• {s2} కి ఆన్‌లైన్‌లో ఎలా దరఖాస్తు చేయాలి?"
+        q3 = f"• {s3} అర్హత మరియు ప్రయోజనాల వివరాలు ఏమిటి?"
+    elif language == "ta":
+        q1 = f"• {s1}-க்கு என்ன ஆவணங்கள் தேவை?"
+        q2 = f"• {s2}-க்கு ஆன்லைனில் விண்ணப்பிப்பது எப்படி?"
+        q3 = f"• {s3}-ன் தகுதி மற்றும் பயன்கள் என்ன?"
+    else:
+        q1 = f"• What documents are required to apply for {s1}?"
+        q2 = f"• How do I apply online step-by-step for {s2}?"
+        q3 = f"• What are the eligibility criteria and benefit details for {s3}?"
+
+    return f"{title}\n{q1}\n{q2}\n{q3}"
+
+
 def _build_fallback_response(
     chunks: List[Dict[str, Any]],
     language: str,
@@ -516,6 +568,8 @@ def _build_fallback_response(
             }
         schemes_dict[s_name]["chunks"].append(c)
 
+    retrieved_scheme_names = list(schemes_dict.keys())
+
     for i, (s_name, data) in enumerate(list(schemes_dict.items())[:3], 1):
         location = f"({data['state']})" if data["state"] else f"({data['jurisdiction'].title()} Scheme)" if data["jurisdiction"] else ""
         card = [f"\n📌 **{i}. {s_name}** {location}".strip()]
@@ -543,8 +597,9 @@ def _build_fallback_response(
 
         parts.append("\n".join(card))
 
-    follow_up = FOLLOW_UP_PROMPTS.get(language, FOLLOW_UP_PROMPTS["en"])
-    parts.append(f"\n\n{follow_up}")
+    support_section = _build_support_queries(retrieved_scheme_names, language)
+    if support_section:
+        parts.append(f"\n\n{support_section}")
 
     return "\n".join(parts)
 
