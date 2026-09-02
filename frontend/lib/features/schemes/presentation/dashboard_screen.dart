@@ -28,13 +28,14 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _currentIndex = 0;
   String? _categoryFilter;
+  String _searchQuery = '';
 
-  void _navigateTo(int index, {String? category}) {
+  void _navigateTo(int index, {String? category, String? query}) {
     setState(() {
       _currentIndex = index;
       if (index == 1) {
-        // Only update filter when navigating to Schemes tab
         _categoryFilter = category;
+        _searchQuery = query ?? '';
       }
     });
   }
@@ -56,7 +57,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         index: _currentIndex,
         children: [
           _HomeTab(onNavigate: _navigateTo),
-          _SchemesTab(initialCategory: _categoryFilter),
+          _SchemesTab(initialCategory: _categoryFilter, initialQuery: _searchQuery),
           _AiChatTab(),
           _SavedTab(),
           _ProfileTab(),
@@ -71,19 +72,30 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withAlpha(18), blurRadius: 20, offset: const Offset(0, -4)),
+          BoxShadow(
+            color: const Color(0xFF0F172A).withAlpha(20),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
+          ),
         ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(navItems.length, (index) {
               final item = navItems[index];
               final isActive = _currentIndex == index;
-              return _NavButton(item: item, isActive: isActive, onTap: () => setState(() => _currentIndex = index));
+              return Expanded(
+                child: _NavButton(
+                  item: item,
+                  isActive: isActive,
+                  onTap: () => setState(() => _currentIndex = index),
+                ),
+              );
             }),
           ),
         ),
@@ -110,23 +122,37 @@ class _NavButton extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.primaryBlue.withAlpha(15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          color: isActive ? AppTheme.primaryBlue.withAlpha(22) : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+          border: isActive
+              ? Border.all(color: AppTheme.primaryBlue.withAlpha(40), width: 1.2)
+              : Border.all(color: Colors.transparent),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(item.icon, size: 22, color: isActive ? AppTheme.primaryBlue : const Color(0xFF94A3B8)),
+            Icon(
+              item.icon,
+              size: 20,
+              color: isActive ? AppTheme.primaryBlue : const Color(0xFF94A3B8),
+            ),
             const SizedBox(height: 3),
-            Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w800 : FontWeight.w500,
-                color: isActive ? AppTheme.primaryBlue : const Color(0xFF94A3B8),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                item.label,
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                  color: isActive ? AppTheme.primaryBlue : const Color(0xFF94A3B8),
+                  letterSpacing: -0.2,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -286,7 +312,7 @@ void _showLanguageSelectorModal(BuildContext context, WidgetRef ref) {
 // ── HOME LANDING TAB (ACCESSIBLE & ILLITERATE FRIENDLY) ─────────────────────
 
 class _HomeTab extends ConsumerStatefulWidget {
-  final void Function(int, {String? category}) onNavigate;
+  final void Function(int, {String? category, String? query}) onNavigate;
   const _HomeTab({required this.onNavigate});
 
   @override
@@ -442,19 +468,19 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
   Widget _buildVoiceHeroBanner(LanguageInfo activeLang) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF0F172A), Color(0xFF1E3A8A), Color(0xFF2563EB)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2563EB).withAlpha(80),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: const Color(0xFF2563EB).withAlpha(90),
+            blurRadius: 22,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -465,17 +491,29 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
             child: Stack(
               alignment: Alignment.center,
               children: [
+                // Outer ambient glow ring
                 Container(
-                  width: 88,
-                  height: 88,
+                  width: 104,
+                  height: 104,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withAlpha(30),
+                    color: Colors.white.withAlpha(15),
+                    border: Border.all(color: Colors.white.withAlpha(35), width: 1.5),
                   ),
                 ),
+                // Inner pulse ring
                 Container(
-                  width: 74,
-                  height: 74,
+                  width: 86,
+                  height: 86,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withAlpha(25),
+                  ),
+                ),
+                // Center gradient mic button
+                Container(
+                  width: 72,
+                  height: 72,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
@@ -485,24 +523,25 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF10B981).withAlpha(120),
-                        blurRadius: 16,
-                        spreadRadius: 2,
+                        color: const Color(0xFF10B981).withAlpha(150),
+                        blurRadius: 18,
+                        spreadRadius: 3,
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.mic_rounded, size: 38, color: Colors.white),
+                  child: const Icon(Icons.mic_rounded, size: 36, color: Colors.white),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Text(
             AppTranslations.tr('voice_hero_title', activeLang.code),
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: 21,
               fontWeight: FontWeight.w900,
               color: Colors.white,
+              letterSpacing: -0.4,
               height: 1.25,
             ),
             textAlign: TextAlign.center,
@@ -512,12 +551,12 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
             AppTranslations.tr('voice_hero_sub', activeLang.code),
             style: TextStyle(
               fontSize: 13,
-              color: Colors.white.withAlpha(230),
+              color: Colors.white.withAlpha(220),
               height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -525,14 +564,14 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
               icon: const Icon(Icons.graphic_eq_rounded, size: 20),
               label: Text(
                 AppTranslations.tr('tap_to_speak', activeLang.code),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: -0.2),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: const Color(0xFF1E3A8A),
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
             ),
           ),
@@ -622,12 +661,16 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
       child: TextField(
         controller: _searchController,
         style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+        textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: 'Search schemes... / योजना खोजें...',
           hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
           prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primaryBlue, size: 20),
           suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF94A3B8)), onPressed: () => setState(() => _searchController.clear()))
+              ? IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF94A3B8)),
+                  onPressed: () => setState(() => _searchController.clear()),
+                )
               : null,
           contentPadding: const EdgeInsets.symmetric(vertical: 13, horizontal: 14),
           filled: true,
@@ -636,6 +679,12 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
         ),
         onChanged: (_) => setState(() {}),
+        onSubmitted: (value) {
+          final query = value.trim();
+          if (query.isNotEmpty) {
+            widget.onNavigate(1, query: query);
+          }
+        },
       ),
     );
   }
@@ -1011,7 +1060,8 @@ class _AnnouncementModalSheet extends StatelessWidget {
 
 class _SchemesTab extends ConsumerStatefulWidget {
   final String? initialCategory;
-  const _SchemesTab({this.initialCategory});
+  final String initialQuery;
+  const _SchemesTab({this.initialCategory, this.initialQuery = ''});
 
   @override
   ConsumerState<_SchemesTab> createState() => _SchemesTabState();
@@ -1019,11 +1069,19 @@ class _SchemesTab extends ConsumerStatefulWidget {
 
 class _SchemesTabState extends ConsumerState<_SchemesTab> {
   String? _activeCategory;
+  late final TextEditingController _queryController;
 
   @override
   void initState() {
     super.initState();
     _activeCategory = widget.initialCategory;
+    _queryController = TextEditingController(text: widget.initialQuery);
+  }
+
+  @override
+  void dispose() {
+    _queryController.dispose();
+    super.dispose();
   }
 
   @override
@@ -1031,6 +1089,9 @@ class _SchemesTabState extends ConsumerState<_SchemesTab> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialCategory != widget.initialCategory) {
       setState(() => _activeCategory = widget.initialCategory);
+    }
+    if (oldWidget.initialQuery != widget.initialQuery) {
+      _queryController.text = widget.initialQuery;
     }
   }
 
@@ -1061,44 +1122,62 @@ class _SchemesTabState extends ConsumerState<_SchemesTab> {
   }
 
   List<SchemeModel> _applyFilter(List<SchemeModel> all) {
-    if (_activeCategory == null || _activeCategory!.isEmpty) return all;
+    var results = all;
+
+    // 1. Text search filter (title, description, provider)
+    final rawQuery = _queryController.text.trim().toLowerCase();
+    if (rawQuery.isNotEmpty) {
+      results = results.where((s) {
+        return s.title.toLowerCase().contains(rawQuery) ||
+            s.shortDescription.toLowerCase().contains(rawQuery) ||
+            s.provider.toLowerCase().contains(rawQuery) ||
+            s.benefitSummary.toLowerCase().contains(rawQuery);
+      }).toList();
+    }
+
+    // 2. Category filter
+    if (_activeCategory == null || _activeCategory!.isEmpty) return results;
     final kw = _categoryKeyword(_activeCategory!);
-    return all.where((s) {
+    return results.where((s) {
       final title = s.title.toLowerCase();
       final desc = s.shortDescription.toLowerCase();
       final benefit = s.benefitSummary.toLowerCase();
       final provider = s.provider.toLowerCase();
-      // Extra category-specific keywords
       switch (_activeCategory) {
         case 'Agriculture':
           return title.contains('kisan') || title.contains('farm') || title.contains('agri') ||
-              title.contains('crop') || desc.contains('farmer') || desc.contains('agri') ||
-              provider.contains('agriculture');
+              title.contains('crop') || title.contains('irrigation') || title.contains('livestock') ||
+              title.contains('matsya') || title.contains('raitha') || desc.contains('farmer') ||
+              desc.contains('agri') || desc.contains('crop') || provider.contains('agriculture') ||
+              provider.contains('fisheries') || provider.contains('dairying');
         case 'Education':
-          return title.contains('scholar') || title.contains('student') ||
-              title.contains('education') || title.contains('internship') ||
-              desc.contains('scholar') || desc.contains('student') ||
-              provider.contains('education');
+          return title.contains('scholar') || title.contains('student') || title.contains('education') ||
+              title.contains('internship') || title.contains('fellowship') || title.contains('phd') ||
+              title.contains('degree') || title.contains('diploma') || title.contains('overseas') ||
+              desc.contains('scholar') || desc.contains('student') || desc.contains('tuition') ||
+              provider.contains('education') || provider.contains('aicte');
         case 'Women':
-          return title.contains('women') || title.contains('mahila') ||
-              title.contains('ladki') || title.contains('beti') ||
-              desc.contains('women') || desc.contains('mahila');
+          return title.contains('women') || title.contains('mahila') || title.contains('ladki') ||
+              title.contains('beti') || title.contains('female') || title.contains('kanya') ||
+              title.contains('samriddhi') || title.contains('matru') || title.contains('maternity') ||
+              desc.contains('women') || desc.contains('mahila') || desc.contains('girl');
         case 'Entrepreneurship':
-          return title.contains('entrepreneur') || title.contains('mudra') ||
-              title.contains('msme') || title.contains('startup') ||
-              title.contains('business') || title.contains('skill') ||
-              desc.contains('entrepreneur') || desc.contains('business') ||
-              provider.contains('msme');
+          return title.contains('entrepreneur') || title.contains('mudra') || title.contains('msme') ||
+              title.contains('startup') || title.contains('business') || title.contains('skill') ||
+              title.contains('loan') || title.contains('credit') || title.contains('vendor') ||
+              title.contains('vishwakarma') || title.contains('artisan') || title.contains('seed') ||
+              desc.contains('entrepreneur') || desc.contains('business') || provider.contains('msme');
         case 'Health':
-          return title.contains('health') || title.contains('ayushman') ||
-              title.contains('janani') || title.contains('matri') ||
-              title.contains('medical') || desc.contains('health') ||
+          return title.contains('health') || title.contains('ayushman') || title.contains('janani') ||
+              title.contains('matri') || title.contains('medical') || title.contains('doctor') ||
+              title.contains('clinic') || title.contains('hospital') || title.contains('dnb') ||
+              title.contains('pharma') || desc.contains('health') || desc.contains('doctor') ||
               benefit.contains('health') || provider.contains('health');
         case 'General':
-          return title.contains('housing') || title.contains('awas') ||
-              title.contains('pension') || title.contains('ration') ||
-              title.contains('ujjwala') || title.contains('svamitva') ||
-              desc.contains('housing') || desc.contains('general');
+          return title.contains('housing') || title.contains('awas') || title.contains('pension') ||
+              title.contains('ration') || title.contains('ujjwala') || title.contains('svamitva') ||
+              title.contains('senior') || title.contains('elderly') || title.contains('vayoshri') ||
+              desc.contains('housing') || desc.contains('general') || desc.contains('senior');
         default:
           return title.contains(kw) || desc.contains(kw) || benefit.contains(kw);
       }
@@ -1108,6 +1187,7 @@ class _SchemesTabState extends ConsumerState<_SchemesTab> {
   @override
   Widget build(BuildContext context) {
     final hasFilter = _activeCategory != null && _activeCategory!.isNotEmpty;
+    final hasQuery = _queryController.text.trim().isNotEmpty;
 
     final activeProfileType = ref.watch(selectedProfileTypeProvider);
 
@@ -1125,6 +1205,34 @@ class _SchemesTabState extends ConsumerState<_SchemesTab> {
           IconButton(icon: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF475569)), tooltip: 'AI Recommendations', onPressed: () => context.push('/recommendations')),
           const SizedBox(width: 4),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            child: TextField(
+              controller: _queryController,
+              textInputAction: TextInputAction.search,
+              style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+              decoration: InputDecoration(
+                hintText: 'Search schemes...',
+                hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primaryBlue, size: 20),
+                suffixIcon: hasQuery
+                    ? IconButton(
+                        icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF94A3B8)),
+                        onPressed: () => setState(() => _queryController.clear()),
+                      )
+                    : null,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [

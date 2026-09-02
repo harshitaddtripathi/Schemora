@@ -111,7 +111,7 @@ SECTION_LABELS = {
     "kn": {
         "overview": "ಅವಲೋಕನ", "benefits": "ಪ್ರಯೋಜನಗಳು", "eligibility": "ಅರ್ಹತೆ",
         "documents": "ದಾಖಲೆಗಳು", "application": "ಅರ್ಜಿ ಪ್ರಕ್ರಿಯೆ",
-        "deadlines": "ಕೊನೆಯ ದಿನಾಂಕ", "notes": "ಮುಖ್ಯ ಟಿಪ್ಪಣಿಗಳು",
+        "deadlines": "ಕೊನೆಯ ದಿನಾಂಕ", "ಮುಖ್ಯ ಟಿಪ್ಪಣಿಗಳು": "ಮುಖ್ಯ ಟಿಪ್ಪಣಿಗಳು",
     },
     "ml": {
         "overview": "അവലോകനം", "benefits": "ആനുകൂല്യങ്ങൾ", "eligibility": "അർഹത",
@@ -131,7 +131,7 @@ APPLY_LABEL = {
     "bn": "আবেদন করুন",
     "te": "దరఖాస్తు చేయండి",
     "ta": "விண்ணப்பிக்கவும்",
-    "gu": "અরજી કરો",
+    "gu": "અરજી કરો",
     "kn": "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ",
     "ml": "അപേക്ഷിക്കൂ",
     "pa": "ਅਰਜ਼ੀ ਕਰੋ",
@@ -139,7 +139,10 @@ APPLY_LABEL = {
 
 
 def _get_api_key() -> str:
-    return os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY or ""
+    key = os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY or ""
+    if not key or key.startswith("AQ.") or len(key) < 20:
+        return ""
+    return key
 
 
 def _get_generation_model() -> str:
@@ -149,10 +152,7 @@ def _get_generation_model() -> str:
 def _build_headers_and_url(api_key: str, model: str) -> Tuple[str, Dict[str, str]]:
     """Build the correct URL and headers based on key type."""
     base = f"{GEMINI_BASE_URL}/{model}:generateContent"
-    if api_key.startswith("AIzaSy") or api_key.startswith("AQ"):
-        return f"{base}?key={api_key}", {"Content-Type": "application/json"}
-    else:
-        return f"{base}?key={api_key}", {"Content-Type": "application/json"}
+    return f"{base}?key={api_key}", {"Content-Type": "application/json"}
 
 
 def is_out_of_scope(query: str) -> bool:
@@ -327,7 +327,9 @@ RESPONSE INSTRUCTIONS (respond entirely in {lang_name}):
 
 
 async def _call_gemini(prompt: str, api_key: str, model: str) -> Optional[str]:
-    """Call Gemini generate API. Returns text or None on failure."""
+    """Call Gemini generate API with a fast 3s timeout. Returns text or None on failure."""
+    if not api_key:
+        return None
     url, headers = _build_headers_and_url(api_key, model)
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
@@ -338,7 +340,7 @@ async def _call_gemini(prompt: str, api_key: str, model: str) -> Optional[str]:
         },
     }
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=25.0) as client:
             resp = await client.post(url, json=payload, headers=headers)
         if resp.status_code == 200:
             data = resp.json()

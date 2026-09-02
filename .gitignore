@@ -43,3 +43,8 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# SQLite dev databases
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal

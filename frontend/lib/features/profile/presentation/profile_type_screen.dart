@@ -251,13 +251,13 @@ class _ProfileCardState extends State<_ProfileCard>
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.grey.shade200),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha(8),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: c.withAlpha(15),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -265,13 +265,13 @@ class _ProfileCardState extends State<_ProfileCard>
               children: [
                 // ── Left accent column ──────────────────────────────────
                 Container(
-                  width: 5,
-                  height: 72,
+                  width: 6,
+                  height: 76,
                   decoration: BoxDecoration(
                     color: c,
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(14),
-                      bottomLeft: Radius.circular(14),
+                      topLeft: Radius.circular(18),
+                      bottomLeft: Radius.circular(18),
                     ),
                   ),
                 ),
@@ -280,18 +280,18 @@ class _ProfileCardState extends State<_ProfileCard>
 
                 // ── Icon box ────────────────────────────────────────────
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: c.withAlpha(22),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Center(
-                    child: Icon(widget.data.icon, color: c, size: 22),
+                    child: Icon(widget.data.icon, color: c, size: 24),
                   ),
                 ),
 
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
 
                 // ── Text block ──────────────────────────────────────────
                 Expanded(
@@ -303,24 +303,31 @@ class _ProfileCardState extends State<_ProfileCard>
                         Text(
                           widget.data.type.displayName,
                           style: const TextStyle(
-                            fontSize: 14.5,
+                            fontSize: 15,
                             fontWeight: FontWeight.w800,
                             color: AppTheme.primaryNavy,
-                            letterSpacing: -0.2,
+                            letterSpacing: -0.3,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 3),
-                        Text(
-                          widget.data.badge,
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            color: c,
-                            fontWeight: FontWeight.w600,
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: c.withAlpha(16),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          child: Text(
+                            widget.data.badge,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: c,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
@@ -330,10 +337,17 @@ class _ProfileCardState extends State<_ProfileCard>
                 // ── Arrow ───────────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.only(right: 14),
-                  child: Icon(
-                    Icons.chevron_right_rounded,
-                    color: Colors.grey.shade400,
-                    size: 22,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: AppTheme.primaryNavy,
+                      size: 16,
+                    ),
                   ),
                 ),
               ],

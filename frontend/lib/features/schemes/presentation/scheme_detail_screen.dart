@@ -23,6 +23,13 @@ class SchemeDetailScreen extends ConsumerStatefulWidget {
 
 class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
   bool _isAutoFilledApplied = true;
+  late Future<SchemeModel> _schemeDetailsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _schemeDetailsFuture = ref.read(schemeRepositoryProvider).getSchemeDetails(widget.schemeId);
+  }
 
   ProfileType _detectSchemeProfileType(SchemeModel scheme) {
     final text = '${scheme.title} ${scheme.shortDescription} ${scheme.benefitSummary}'.toLowerCase();
@@ -42,7 +49,9 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
         text.contains('business') ||
         text.contains('enterprise') ||
         text.contains('msme') ||
-        text.contains('loan')) {
+        text.contains('loan') ||
+        text.contains('doctor') ||
+        text.contains('clinic')) {
       return ProfileType.entrepreneur;
     }
     if (text.contains('scholarship') ||
@@ -51,7 +60,9 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
         text.contains('student') ||
         text.contains('college') ||
         text.contains('post matric') ||
-        text.contains('internship')) {
+        text.contains('internship') ||
+        text.contains('phd') ||
+        text.contains('fellowship')) {
       return ProfileType.student;
     }
     if (text.contains('pudhumai') ||
@@ -92,110 +103,107 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
       case ProfileType.student:
         return {
           'Full Name': 'Aarav Sharma',
-          'Date of Birth': '2004-06-15 (Age: 20)',
+          'Age & DOB': '20 Years (2004-06-15)',
           'Gender': 'Male',
-          'Home State': scheme.state ?? 'Maharashtra',
-          'Social Category': 'OBC',
-          'Annual Family Income': '₹2,50,000',
+          'State': scheme.state ?? 'Maharashtra',
+          'Category': 'OBC',
+          'Family Income': '₹2,50,000 / Year',
           'Education Stage': 'Undergraduate',
-          'Course / Programme': 'B.Tech Computer Science',
+          'Course': 'B.Tech Computer Science',
           'Institution': 'COEP Technological University',
-          'Class 12 Marks': '88.5%',
-          'Enrolment Status': 'Full-Time Regular Student',
         };
       case ProfileType.farmer:
         return {
           'Full Name': 'Ramesh Chandra Patil',
-          'Date of Birth': '1978-04-12 (Age: 46)',
+          'Age & DOB': '46 Years (1978-04-12)',
           'Gender': 'Male',
-          'Home State': scheme.state ?? 'Maharashtra',
-          'Social Category': 'General',
-          'Annual Family Income': '₹1,80,000',
+          'State': scheme.state ?? 'Maharashtra',
+          'Category': 'General',
+          'Family Income': '₹1,80,000 / Year',
           'Farming Type': 'Sugarcane & Rice Cultivation',
-          'Farm Location': 'Kolhapur Agricultural District',
-          'Landholding Status': 'Small & Marginal Farmer (Own Land)',
+          'Landholding': 'Small & Marginal Farmer (Own Land)',
         };
       case ProfileType.entrepreneur:
         return {
           'Full Name': 'Vikramaditya Joshi',
-          'Date of Birth': '1992-11-05 (Age: 32)',
+          'Age & DOB': '32 Years (1992-11-05)',
           'Gender': 'Male',
-          'Home State': scheme.state ?? 'Gujarat',
-          'Social Category': 'General',
-          'Annual Family Income': '₹4,50,000',
-          'Enterprise Category': 'Micro Non-Farm Enterprise',
-          'Business Sector': 'Retail Tech & Agri-Trading',
-          'Employment Type': 'Self-Employed Entrepreneur',
+          'State': scheme.state ?? 'Gujarat',
+          'Category': 'General',
+          'Family Income': '₹4,50,000 / Year',
+          'Enterprise': 'Micro Non-Farm Enterprise',
+          'Sector': 'Retail Tech & Agri-Trading',
         };
       case ProfileType.womanFamily:
         return {
           'Full Name': 'Sunita Devi',
-          'Date of Birth': '1986-08-25 (Age: 38)',
+          'Age & DOB': '38 Years (1986-08-25)',
           'Gender': 'Female',
-          'Home State': scheme.state ?? 'Maharashtra',
-          'Social Category': 'OBC',
-          'Annual Family Income': '₹1,20,000',
+          'State': scheme.state ?? 'Maharashtra',
+          'Category': 'OBC',
+          'Family Income': '₹1,20,000 / Year',
           'Marital Status': 'Married',
-          'Primary Bank Linked': 'Aadhaar Direct Bank Transfer Active',
+          'Bank Direct Transfer': 'Active Aadhaar Linked Account',
         };
       case ProfileType.seniorCitizen:
         return {
           'Full Name': 'Harishchandra Kulkarni',
-          'Date of Birth': '1958-03-10 (Age: 66)',
+          'Age & DOB': '66 Years (1958-03-10)',
           'Gender': 'Male',
-          'Home State': scheme.state ?? 'Karnataka',
-          'Social Category': 'General',
-          'Annual Family Income': '₹1,60,000',
-          'Employment Status': 'Retired Unorganized Sector',
-          'Pension Status': 'First Time Applicant',
+          'State': scheme.state ?? 'Karnataka',
+          'Category': 'General',
+          'Family Income': '₹1,60,000 / Year',
+          'Employment': 'Retired Unorganized Sector',
         };
       case ProfileType.jobSeeker:
         return {
           'Full Name': 'Priya Verma',
-          'Date of Birth': '2001-09-20 (Age: 23)',
+          'Age & DOB': '23 Years (2001-09-20)',
           'Gender': 'Female',
-          'Home State': scheme.state ?? 'Uttar Pradesh',
-          'Social Category': 'SC',
-          'Annual Family Income': '₹1,50,000',
-          'Education Level': 'Undergraduate / ITI',
-          'Key Skill Track': 'Data Entry & Digital Operations',
-          'Employment Status': 'Unemployed (Actively Job Seeking)',
+          'State': scheme.state ?? 'Uttar Pradesh',
+          'Category': 'SC',
+          'Family Income': '₹1,50,000 / Year',
+          'Education': 'Undergraduate / ITI Graduate',
         };
       case ProfileType.generalCitizen:
         return {
           'Full Name': 'Rajesh Kumar Singh',
-          'Date of Birth': '1985-01-18 (Age: 39)',
+          'Age & DOB': '39 Years (1985-01-18)',
           'Gender': 'Male',
-          'Home State': scheme.state ?? 'Delhi',
-          'Social Category': 'General',
-          'Annual Family Income': '₹3,00,000',
-          'Housing Status': 'Kutcha / Rented Accommodation',
-          'Ration Card Type': 'BPL / Priority Household',
+          'State': scheme.state ?? 'Central',
+          'Category': 'General',
+          'Family Income': '₹3,00,000 / Year',
         };
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final repo = ref.watch(schemeRepositoryProvider);
     final savedIds = ref.watch(savedSchemeIdsProvider).value ?? {};
     final isSaved = savedIds.contains(widget.schemeId);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           tooltip: 'Go Back',
           onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
         ),
-        title: const Text('Scheme Details & Application'),
+        title: const Text(
+          'Scheme Guidelines',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+        ),
         actions: [
           IconButton(
             icon: Icon(
               isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-              color: isSaved ? AppTheme.warningOrange : null,
+              color: isSaved ? AppTheme.saffronGold : Colors.white,
             ),
-            tooltip: isSaved ? 'Remove from Saved' : 'Save Scheme',
+            tooltip: isSaved ? 'Remove Bookmark' : 'Save Scheme',
             onPressed: () async {
               try {
                 final nowSaved = await ref
@@ -205,9 +213,7 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        nowSaved
-                            ? 'Scheme saved to My Saved Schemes!'
-                            : 'Scheme removed from Saved Schemes.',
+                        nowSaved ? 'Scheme saved to My Saved Schemes!' : 'Scheme removed from Saved Schemes.',
                       ),
                       action: SnackBarAction(
                         label: 'View All',
@@ -226,23 +232,15 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
             },
           ),
           const DashboardButton(),
-          IconButton(
-            icon: const Icon(Icons.share_rounded),
-            tooltip: 'Share Scheme',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Scheme details link copied to clipboard!')),
-              );
-            },
-          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(
         child: FutureBuilder<SchemeModel>(
-          future: repo.getSchemeDetails(widget.schemeId),
+          future: _schemeDetailsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const LoadingStateWidget(message: 'Loading scheme details & application guidelines...');
+              return const LoadingStateWidget(message: 'Loading scheme details...');
             }
             if (snapshot.hasError) {
               return ErrorStateWidget(
@@ -254,611 +252,82 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
             final scheme = snapshot.data!;
             final userProfileType = ref.watch(selectedProfileTypeProvider);
             final schemeProfileType = _detectSchemeProfileType(scheme);
-            final isProfileMismatch = (userProfileType != schemeProfileType && schemeProfileType != ProfileType.generalCitizen);
-            final mismatchReason = isProfileMismatch ? userProfileType.getIneligibilityReason(schemeProfileType) : '';
+            final isProfileMismatch =
+                (userProfileType != schemeProfileType && schemeProfileType != ProfileType.generalCitizen);
+            final mismatchReason =
+                isProfileMismatch ? userProfileType.getIneligibilityReason(schemeProfileType) : '';
             final activeProfileForForm = isProfileMismatch ? userProfileType : schemeProfileType;
             final mockData = _getMockDataForSchemeType(activeProfileForForm, scheme);
             final directPortal = SchemeUrlResolver.getDirectPortal(scheme);
             final officialUrl = directPortal.url;
             final sourceName = directPortal.sourceName;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Top Title Card ──────────────────────────────────────────
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          scheme.title,
-                          style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 22, color: AppTheme.primaryNavy),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue.withAlpha(20),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          scheme.jurisdiction,
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryBlue),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text('Source Authority: ${scheme.provider}', style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
-                  const SizedBox(height: 16),
-
-                  // ── Prominent Scheme Original Link Section ─────────────────
-                  Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: const BorderSide(color: AppTheme.primaryBlue, width: 1.5),
-                    ),
-                    color: const Color(0xFFEFF6FF),
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: const BoxDecoration(
-                                  color: AppTheme.primaryBlue,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.language_rounded, color: Colors.white, size: 22),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Row(
-                                      children: [
-                                        Text(
-                                          'Official Scheme Portal',
-                                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppTheme.primaryNavy),
-                                        ),
-                                        SizedBox(width: 6),
-                                        Icon(Icons.verified_rounded, color: AppTheme.successGreen, size: 16),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      sourceName,
-                                      style: TextStyle(fontSize: 12, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.primaryBlue.withAlpha(50)),
-                            ),
-                            child: Text(
-                              officialUrl,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppTheme.primaryBlue,
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          ElevatedButton.icon(
-                            onPressed: () => UrlLauncherHelper.openUrl(context, officialUrl),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryBlue,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            ),
-                            icon: const Icon(Icons.open_in_browser_rounded, size: 20),
-                            label: const Text(
-                              'Open Official Scheme Link & Apply',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ── Step-by-Step Application Guidelines (Directly Below Link)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFCBD5E1)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withAlpha(6),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.all(18),
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF0284C7).withAlpha(20),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.assignment_rounded, color: Color(0xFF0284C7), size: 22),
-                            ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Step-by-Step Application Guidelines',
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.primaryNavy),
-                                  ),
-                                  Text(
-                                    'Follow these guidelines to successfully achieve and claim the scheme',
-                                    style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(height: 24),
+                        // ── 1. Premium Hero Header Banner ────────────────────────
+                        _buildHeroHeader(scheme),
 
-                        _buildGuidelineStep(
-                          stepNumber: '1',
-                          title: isProfileMismatch ? 'Verify Scheme Eligibility — Failed' : 'Verify Scheme Eligibility',
-                          description: isProfileMismatch
-                              ? 'Ineligible: $mismatchReason'
-                              : 'Check your age, domicile state (${scheme.state ?? "Central"}), and income requirements.',
-                          statusIcon: isProfileMismatch ? Icons.cancel_rounded : Icons.check_circle_rounded,
-                          statusColor: isProfileMismatch ? const Color(0xFFDC2626) : AppTheme.successGreen,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildGuidelineStep(
-                          stepNumber: '2',
-                          title: 'Review Auto-Filled Citizen Application Data',
-                          description: 'Use the pre-populated form below to ensure all personal & institution details match official records.',
-                          statusIcon: Icons.auto_awesome_rounded,
-                          statusColor: Colors.amber.shade800,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildGuidelineStep(
-                          stepNumber: '3',
-                          title: 'Gather Required Verification Documents',
-                          description: 'Ensure Aadhaar card, income proof, bank passbook, and educational marksheets are ready in Digital Vault.',
-                          statusIcon: Icons.file_present_rounded,
-                          statusColor: AppTheme.primaryBlue,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildGuidelineStep(
-                          stepNumber: '4',
-                          title: 'Submit Application on Official Government Portal',
-                          description: 'Click the official link above to enter the portal, paste auto-filled details, and complete submission.',
-                          statusIcon: Icons.send_rounded,
-                          statusColor: const Color(0xFF7C3AED),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // ── 2. Key Metrics Card Grid ─────────────────────
+                              _buildMetricsGrid(scheme),
+
+                              const SizedBox(height: 20),
+
+                              // ── 3. Official Government Portal Banner ──────────
+                              _buildPortalBanner(context, sourceName, officialUrl),
+
+                              const SizedBox(height: 20),
+
+                              // ── 4. Eligibility & Profile Evaluation Card ─────
+                              _buildEligibilityCard(
+                                userProfileType: userProfileType,
+                                isProfileMismatch: isProfileMismatch,
+                                mismatchReason: mismatchReason,
+                                activeProfile: activeProfileForForm,
+                                mockData: mockData,
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // ── 5. Financial Benefits & DBT Card ─────────────
+                              _buildBenefitsCard(scheme),
+
+                              const SizedBox(height: 20),
+
+                              // ── 6. Step-by-Step Application Roadmap ──────────
+                              _buildApplicationRoadmap(scheme, isProfileMismatch, mismatchReason),
+
+                              const SizedBox(height: 20),
+
+                              // ── 7. Detailed Scheme Overview ──────────────────
+                              _buildOverviewCard(scheme),
+
+                              const SizedBox(height: 20),
+
+                              // ── 8. Scheme Rules & Conditions ─────────────────
+                              _buildRulesCard(scheme, mockData),
+
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 24),
-
-                  // ── Auto-Filled Mock Data Application Section ───────────
-                  Container(
-                    decoration: BoxDecoration(
-                      color: isProfileMismatch ? const Color(0xFFFEF2F2) : Colors.amber.shade50,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isProfileMismatch ? const Color(0xFFFCA5A5) : Colors.amber.shade400,
-                        width: 1.5,
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: isProfileMismatch ? const Color(0xFFDC2626) : Colors.amber.shade700,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isProfileMismatch ? Icons.gavel_rounded : Icons.auto_awesome_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    isProfileMismatch
-                                        ? 'Auto-Filled Profile & Eligibility Evaluation'
-                                        : 'Auto-Filled Scheme Application Data',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: isProfileMismatch ? const Color(0xFF991B1B) : const Color(0xFF78350F),
-                                    ),
-                                  ),
-                                  Text(
-                                    isProfileMismatch
-                                        ? 'Evaluated against active profile: ${userProfileType.displayName}'
-                                        : 'Pre-populated with mock data tailored for ${activeProfileForForm.displayName}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: isProfileMismatch ? const Color(0xFFB91C1C) : Colors.amber.shade900,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Switch(
-                              value: _isAutoFilledApplied,
-                              activeColor: isProfileMismatch ? const Color(0xFFDC2626) : Colors.amber.shade800,
-                              onChanged: (val) => setState(() => _isAutoFilledApplied = val),
-                            ),
-                          ],
-                        ),
-                        if (_isAutoFilledApplied) ...[
-                          const Divider(height: 24),
-                          Text(
-                            isProfileMismatch
-                                ? 'Your active registered profile details evaluated against this scheme:'
-                                : 'The following form fields have been automatically populated for instant eligibility verification:',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontStyle: FontStyle.italic,
-                              color: isProfileMismatch ? const Color(0xFF991B1B) : const Color(0xFF92400E),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          ...mockData.entries.map((entry) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      entry.key,
-                                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF451A03)),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(
-                                            color: isProfileMismatch ? const Color(0xFFFCA5A5) : Colors.amber.shade300,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          entry.value,
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppTheme.primaryNavy),
-                                          textAlign: TextAlign.end,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )),
-                          const SizedBox(height: 14),
-                          if (isProfileMismatch)
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFEF2F2),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: const Color(0xFFFCA5A5)),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.cancel_rounded, color: Color(0xFFDC2626), size: 22),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Eligibility Status: Ineligible (Profile Mismatch)',
-                                          style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF991B1B), fontSize: 13),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Valid Reason: $mismatchReason',
-                                          style: const TextStyle(fontSize: 12, color: Color(0xFF7F1D1D), height: 1.4),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          else
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: AppTheme.successGreen.withAlpha(25),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppTheme.successGreen.withAlpha(80)),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.check_circle_rounded, color: AppTheme.successGreen, size: 20),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'Eligibility Status: 100% Matched with Auto-Filled Profile!',
-                                      style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.successGreen, fontSize: 13),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ── Comprehensive Benefits Breakdown Section ────────────────
-                  Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    color: const Color(0xFFF0FDF4),
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: const BoxDecoration(
-                                  color: AppTheme.successGreen,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.card_giftcard_rounded, color: Colors.white, size: 22),
-                              ),
-                              const SizedBox(width: 12),
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Scheme Benefits & Financial Coverage',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF14532D)),
-                                    ),
-                                    Text(
-                                      'Verified government financial assistance breakdown',
-                                      style: TextStyle(fontSize: 12, color: Color(0xFF166534)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(height: 24),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.green.shade200),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Benefit Summary',
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  scheme.benefitSummary,
-                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.primaryNavy),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.green.shade200),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text('Benefit Type', style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 4),
-                                      Text(scheme.benefitType, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.green.shade200),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text('Transfer Mode', style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 4),
-                                      const Text('Direct Bank Transfer (DBT)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.successGreen)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ── Detailed Overview ──────────────────────────────────────
-                  Text('Scheme Overview', style: Theme.of(context).textTheme.headlineMedium),
-                  const SizedBox(height: 8),
-                  Text(
-                    scheme.detailedDescription ?? scheme.shortDescription,
-                    style: const TextStyle(fontSize: 14, height: 1.5, color: Color(0xFF334155)),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ── Eligibility Rules Section ──────────────────────────────
-                  Text('Rule Conditions & Criteria (${scheme.rules.isNotEmpty ? scheme.rules.length : "Evaluated"})', style: Theme.of(context).textTheme.headlineMedium),
-                  const SizedBox(height: 12),
-                  if (scheme.rules.isEmpty) ...[
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.verified_rounded, color: AppTheme.successGreen),
-                        title: const Text('Mandatory Age & Domicile Eligibility'),
-                        subtitle: Text('Verified against auto-filled profile state: ${mockData['Home State']}'),
-                      ),
-                    ),
-                  ] else ...[
-                    ...scheme.rules.map((rule) => Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: ListTile(
-                            leading: Icon(
-                              rule.ruleType == 'mandatory' ? Icons.check_circle_rounded : Icons.info_rounded,
-                              color: rule.ruleType == 'mandatory' ? AppTheme.successGreen : AppTheme.warningOrange,
-                            ),
-                            title: Text('${rule.fieldName} ${rule.operator} ${rule.expectedValue}'),
-                            subtitle: Text(rule.failureReason ?? 'Mandatory rule condition — Passed'),
-                          ),
-                        )),
-                  ],
-
-                  const SizedBox(height: 28),
-
-                  // ── Action Buttons ─────────────────────────────────────────
-                  ElevatedButton.icon(
-                    onPressed: () => UrlLauncherHelper.openUrl(context, officialUrl),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: AppTheme.primaryBlue,
-                    ),
-                    icon: const Icon(Icons.open_in_browser_rounded),
-                    label: const Text('Proceed to Official Government Portal', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      try {
-                        final nowSaved = await ref
-                            .read(savedSchemeIdsProvider.notifier)
-                            .toggleSave(widget.schemeId);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                nowSaved
-                                    ? 'Scheme saved to My Saved Schemes!'
-                                    : 'Scheme removed from Saved Schemes.',
-                              ),
-                              action: SnackBarAction(
-                                label: 'View All',
-                                onPressed: () => context.push('/saved-schemes'),
-                              ),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to update bookmark: $e')),
-                          );
-                        }
-                      }
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: BorderSide(
-                        color: isSaved ? AppTheme.warningOrange : AppTheme.primaryBlue,
-                        width: 1.5,
-                      ),
-                    ),
-                    icon: Icon(
-                      isSaved ? Icons.bookmark_remove_rounded : Icons.bookmark_add_rounded,
-                      color: isSaved ? AppTheme.warningOrange : AppTheme.primaryBlue,
-                    ),
-                    label: Text(
-                      isSaved ? 'Saved in My Schemes (Tap to Remove)' : 'Save / Bookmark Scheme',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: isSaved ? AppTheme.warningOrange : AppTheme.primaryBlue,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: () => context.push('/documents/upload'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    icon: const Icon(Icons.upload_file_rounded),
-                    label: const Text('Upload Supporting Verification Documents'),
-                  ),
-                ],
-              ),
+                // ── 9. Sticky Action Bar Dock ──────────────────────────────────
+                _buildStickyBottomDock(context, scheme, officialUrl, isSaved),
+              ],
             );
           },
         ),
@@ -866,57 +335,637 @@ class _SchemeDetailScreenState extends ConsumerState<SchemeDetailScreen> {
     );
   }
 
-  Widget _buildGuidelineStep({
-    required String stepNumber,
-    required String title,
-    required String description,
-    required IconData statusIcon,
-    required Color statusColor,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: statusColor,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              stepNumber,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-          ),
+  // ── Hero Header ────────────────────────────────────────────────────────────
+  Widget _buildHeroHeader(SchemeModel scheme) {
+    final isState = scheme.jurisdiction.toLowerCase() == 'state' || scheme.state != null;
+    final tagColor = isState ? AppTheme.saffronGold : AppTheme.royalAzure;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppTheme.primaryNavy, Color(0xFF1E293B)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryNavy),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: tagColor.withAlpha(50),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: tagColor.withAlpha(140)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(isState ? Icons.location_city_rounded : Icons.account_balance_rounded,
+                        size: 13, color: tagColor),
+                    const SizedBox(width: 5),
+                    Text(
+                      isState ? '${scheme.state ?? "State"} Scheme' : 'Central Scheme',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: tagColor),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                  Icon(statusIcon, size: 16, color: statusColor),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                description,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF475569), height: 1.3),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.vibrantEmerald.withAlpha(40),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.vibrantEmerald.withAlpha(120)),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.verified_rounded, size: 13, color: AppTheme.vibrantEmerald),
+                    SizedBox(width: 4),
+                    Text(
+                      'Verified Government Portal',
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.vibrantEmerald),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          Text(
+            scheme.title,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.account_balance_outlined, size: 14, color: Color(0xFF94A3B8)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  scheme.provider,
+                  style: const TextStyle(fontSize: 13, color: Color(0xFFCBD5E1), fontWeight: FontWeight.w500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Metrics Grid ───────────────────────────────────────────────────────────
+  Widget _buildMetricsGrid(SchemeModel scheme) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildMetricTile(
+            icon: Icons.currency_rupee_rounded,
+            iconColor: AppTheme.vibrantEmerald,
+            label: 'Benefit Type',
+            value: scheme.benefitType,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildMetricTile(
+            icon: Icons.people_alt_rounded,
+            iconColor: AppTheme.royalAzure,
+            label: 'Jurisdiction',
+            value: scheme.jurisdiction,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildMetricTile(
+            icon: Icons.event_available_rounded,
+            iconColor: AppTheme.saffronGold,
+            label: 'Status',
+            value: 'Active 2026',
+          ),
         ),
       ],
+    );
+  }
+
+  Widget _buildMetricTile({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withAlpha(6), blurRadius: 6, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: iconColor),
+          const SizedBox(height: 6),
+          Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Official Portal Banner ──────────────────────────────────────────────────
+  Widget _buildPortalBanner(BuildContext context, String sourceName, String officialUrl) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.royalAzure.withAlpha(15),
+            AppTheme.royalAzure.withAlpha(30),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.royalAzure.withAlpha(80)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(color: AppTheme.royalAzure, shape: BoxShape.circle),
+                child: const Icon(Icons.language_rounded, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Text(
+                          'Official Application Portal',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryNavy),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(Icons.verified_rounded, color: AppTheme.vibrantEmerald, size: 15),
+                      ],
+                    ),
+                    Text(
+                      sourceName,
+                      style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFCBD5E1)),
+            ),
+            child: Text(
+              officialUrl,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppTheme.royalAzure,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => UrlLauncherHelper.openUrl(context, officialUrl),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.royalAzure,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                elevation: 0,
+              ),
+              icon: const Icon(Icons.open_in_new_rounded, size: 16),
+              label: const Text(
+                'Open Official Government Website',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Eligibility Card ───────────────────────────────────────────────────────
+  Widget _buildEligibilityCard({
+    required ProfileType userProfileType,
+    required bool isProfileMismatch,
+    required String mismatchReason,
+    required ProfileType activeProfile,
+    required Map<String, String> mockData,
+  }) {
+    final statusColor = isProfileMismatch ? const Color(0xFFDC2626) : AppTheme.vibrantEmerald;
+    final statusBg = isProfileMismatch ? const Color(0xFFFEF2F2) : const Color(0xFFF0FDF4);
+    final statusBorder = isProfileMismatch ? const Color(0xFFFCA5A5) : const Color(0xFFBBF7D0);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: statusBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: statusBorder, width: 1.5),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
+                child: Icon(
+                  isProfileMismatch ? Icons.cancel_rounded : Icons.check_circle_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isProfileMismatch ? 'Eligibility Status: Ineligible' : 'Eligibility Status: 100% Eligible',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: statusColor),
+                    ),
+                    Text(
+                      isProfileMismatch
+                          ? 'Evaluated against profile: ${userProfileType.displayName}'
+                          : 'Profile matches all mandatory eligibility rules',
+                      style: const TextStyle(fontSize: 11, color: Color(0xFF475569)),
+                    ),
+                  ],
+                ),
+              ),
+              Switch(
+                value: _isAutoFilledApplied,
+                activeColor: statusColor,
+                onChanged: (val) => setState(() => _isAutoFilledApplied = val),
+              ),
+            ],
+          ),
+          if (isProfileMismatch) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFFCA5A5)),
+              ),
+              child: Text(
+                'Reason: $mismatchReason',
+                style: const TextStyle(fontSize: 12, color: Color(0xFF991B1B), height: 1.3),
+              ),
+            ),
+          ],
+          if (_isAutoFilledApplied) ...[
+            const Divider(height: 20),
+            const Text(
+              'Verified Applicant Profile Data:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+            ),
+            const SizedBox(height: 10),
+            ...mockData.entries.map((entry) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(entry.key, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                      Text(
+                        entry.value,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+                      ),
+                    ],
+                  ),
+                )),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ── Benefits Card ──────────────────────────────────────────────────────────
+  Widget _buildBenefitsCard(SchemeModel scheme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withAlpha(6), blurRadius: 6, offset: const Offset(0, 2)),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.card_giftcard_rounded, color: AppTheme.vibrantEmerald, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Scheme Benefits & Financial Support',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+              ),
+            ],
+          ),
+          const Divider(height: 20),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0FDF4),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFBBF7D0)),
+            ),
+            child: Text(
+              scheme.benefitSummary,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF14532D), height: 1.4),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Row(
+            children: [
+              Icon(Icons.verified_user_rounded, size: 14, color: AppTheme.vibrantEmerald),
+              SizedBox(width: 6),
+              Text(
+                'Disbursement Mode: Direct Bank Transfer (DBT) via Aadhaar Link',
+                style: TextStyle(fontSize: 11, color: Color(0xFF15803D), fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Application Roadmap ────────────────────────────────────────────────────
+  Widget _buildApplicationRoadmap(SchemeModel scheme, bool isMismatch, String mismatchReason) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withAlpha(6), blurRadius: 6, offset: const Offset(0, 2)),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.alt_route_rounded, color: AppTheme.royalAzure, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Step-by-Step Application Workflow',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+              ),
+            ],
+          ),
+          const Divider(height: 20),
+          _buildRoadmapStep(
+            stepNum: '1',
+            title: 'Verify Eligibility',
+            desc: isMismatch ? 'Ineligible: $mismatchReason' : 'Check age, state domicile, and income criteria.',
+            isDone: !isMismatch,
+          ),
+          _buildRoadmapStep(
+            stepNum: '2',
+            title: 'Gather Key Documents',
+            desc: 'Aadhaar Card, Income Certificate, Bank Passbook & Educational Marksheets.',
+            isDone: true,
+          ),
+          _buildRoadmapStep(
+            stepNum: '3',
+            title: 'Register on Official Portal',
+            desc: 'Visit official website link and create applicant profile.',
+            isDone: false,
+          ),
+          _buildRoadmapStep(
+            stepNum: '4',
+            title: 'Submit & Track Status',
+            desc: 'Upload documents, submit form, and receive application tracking ID.',
+            isDone: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoadmapStep({
+    required String stepNum,
+    required String title,
+    required String desc,
+    required bool isDone,
+  }) {
+    final color = isDone ? AppTheme.vibrantEmerald : AppTheme.royalAzure;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Center(
+              child: Text(
+                stepNum,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.primaryNavy)),
+                const SizedBox(height: 2),
+                Text(desc, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), height: 1.3)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Overview Card ──────────────────────────────────────────────────────────
+  Widget _buildOverviewCard(SchemeModel scheme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Detailed Overview',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            scheme.detailedDescription ?? scheme.shortDescription,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF334155), height: 1.5),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Rules Card ─────────────────────────────────────────────────────────────
+  Widget _buildRulesCard(SchemeModel scheme, Map<String, String> mockData) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Eligibility Rule Criteria (${scheme.rules.isNotEmpty ? scheme.rules.length : "Verified"})',
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.primaryNavy),
+          ),
+          const SizedBox(height: 10),
+          if (scheme.rules.isEmpty) ...[
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.check_circle_rounded, color: AppTheme.vibrantEmerald),
+              title: const Text('Mandatory Domicile & Income Eligibility', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              subtitle: Text('Evaluated against: ${mockData["State"] ?? "All India"}', style: const TextStyle(fontSize: 11)),
+            ),
+          ] else ...[
+            ...scheme.rules.map(
+              (r) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  r.ruleType == 'mandatory' ? Icons.check_circle_rounded : Icons.info_rounded,
+                  color: r.ruleType == 'mandatory' ? AppTheme.vibrantEmerald : AppTheme.saffronGold,
+                  size: 20,
+                ),
+                title: Text('${r.fieldName} ${r.operator} ${r.expectedValue}',
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                subtitle: Text(r.failureReason ?? 'Condition verified', style: const TextStyle(fontSize: 11)),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ── Sticky Bottom Bar Dock ─────────────────────────────────────────────────
+  Widget _buildStickyBottomDock(BuildContext context, SchemeModel scheme, String officialUrl, bool isSaved) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.black.withAlpha(15), blurRadius: 10, offset: const Offset(0, -3)),
+        ],
+      ),
+      child: Row(
+        children: [
+          IconButton.outlined(
+            onPressed: () async {
+              try {
+                final nowSaved =
+                    await ref.read(savedSchemeIdsProvider.notifier).toggleSave(widget.schemeId);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        nowSaved ? 'Scheme saved!' : 'Scheme removed.',
+                      ),
+                    ),
+                  );
+                }
+              } catch (_) {}
+            },
+            icon: Icon(
+              isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+              color: isSaved ? AppTheme.saffronGold : AppTheme.primaryNavy,
+            ),
+            tooltip: 'Bookmark Scheme',
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: () => UrlLauncherHelper.openUrl(context, officialUrl),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.royalAzure,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
+              ),
+              icon: const Icon(Icons.open_in_browser_rounded, size: 18),
+              label: const Text(
+                'Apply on Official Portal',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

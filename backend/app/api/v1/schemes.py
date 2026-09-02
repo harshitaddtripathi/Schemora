@@ -1,3 +1,4 @@
+import time
 from typing import Optional, List, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -34,6 +35,20 @@ class DirectEligibilityResponse(BaseModel):
     not_eligible: List[Dict[str, Any]] = Field(default_factory=list)
 
 
+import json
+from fastapi import Response
+
+_SCHEMES_CACHE_JSON = None
+_SCHEMES_CACHE_TIME = 0.0
+_CACHE_TTL_SECONDS = 60.0
+
+
+def invalidate_schemes_cache():
+    global _SCHEMES_CACHE_JSON, _SCHEMES_CACHE_TIME
+    _SCHEMES_CACHE_JSON = None
+    _SCHEMES_CACHE_TIME = 0.0
+
+
 @router.get("", response_model=APIResponse[List[SchemeResponse]], summary="List & Search Scheme Catalog")
 @router.get("/search", response_model=APIResponse[List[SchemeResponse]], summary="Search Scheme Catalog")
 async def list_schemes(
@@ -41,33 +56,63 @@ async def list_schemes(
     jurisdiction: Optional[str] = Query(None, description="Filter by jurisdiction: Central or State"),
     state: Optional[str] = Query(None, description="Filter by domicile state"),
     page: int = Query(1, ge=1),
-    page_size: int = Query(10, ge=1, le=50),
+    page_size: int = Query(200, ge=1, le=500),
     db: AsyncSession = Depends(get_db),
 ):
     """Retrieve paginated catalog of published schemes with filtering."""
-    query = select(Scheme).where(Scheme.is_published == True)
+    global _SCHEMES_CACHE_JSON, _SCHEMES_CACHE_TIME
+
+    now = time.time()
+    is_unfiltered_catalog = not q and not jurisdiction and not state and page == 1 and page_size >= 150
+
+    if is_unfiltered_catalog and _SCHEMES_CACHE_JSON is not None and (now - _SCHEMES_CACHE_TIME) < _CACHE_TTL_SECONDS:
+        return Response(content=_SCHEMES_CACHE_JSON, media_type="application/json")
+
+    stmt = select(
+        Scheme.id, Scheme.slug, Scheme.title, Scheme.short_description,
+        Scheme.provider, Scheme.jurisdiction, Scheme.state,
+        Scheme.benefit_type, Scheme.benefit_summary,
+        Scheme.implementation_status, Scheme.is_published,
+        Scheme.application_deadline
+    ).where(Scheme.is_published == True)
 
     if jurisdiction:
-        query = query.where(Scheme.jurisdiction == jurisdiction)
+        stmt = stmt.where(Scheme.jurisdiction == jurisdiction)
     if state:
-        query = query.where((Scheme.state == state) | (Scheme.state == None))
+        stmt = stmt.where((Scheme.state == state) | (Scheme.state == None))
     if q:
         q_lower = q.lower()
-        query = query.where(
+        stmt = stmt.where(
             (func.lower(Scheme.title).contains(q_lower))
             | (func.lower(Scheme.short_description).contains(q_lower))
         )
 
-    count_query = select(func.count()).select_from(query.subquery())
-    count_res = await db.execute(count_query)
-    total_items = count_res.scalar() or 0
+    res = await db.execute(stmt)
+    rows = res.all()
+    total_items = len(rows)
 
     start_idx = (page - 1) * page_size
-    paginated_query = query.offset(start_idx).limit(page_size)
-    result = await db.execute(paginated_query)
-    paginated_items = result.scalars().all()
+    paginated_rows = rows[start_idx : start_idx + page_size]
 
-    total_pages = max(1, -(-total_items // page_size))  # ceiling division
+    items_data = [
+        SchemeResponse(
+            id=r[0],
+            slug=r[1] or '',
+            title=r[2],
+            short_description=r[3] or '',
+            provider=r[4] or 'Government',
+            jurisdiction=r[5] or 'Central',
+            state=r[6],
+            benefit_type=r[7] or 'Financial',
+            benefit_summary=r[8] or '',
+            implementation_status=r[9] or 'Implemented',
+            is_published=r[10],
+            application_deadline=r[11],
+        )
+        for r in paginated_rows
+    ]
+
+    total_pages = max(1, -(-total_items // page_size))
 
     meta = PaginationMeta(
         page=page,
@@ -78,12 +123,18 @@ async def list_schemes(
         has_prev=page > 1,
     )
 
-    return APIResponse(
+    resp_obj = APIResponse(
         success=True,
         message="Schemes catalog retrieved successfully",
-        data=[SchemeResponse.model_validate(s) for s in paginated_items],
+        data=items_data,
         meta=meta,
     )
+
+    if is_unfiltered_catalog:
+        _SCHEMES_CACHE_JSON = resp_obj.model_dump_json()
+        _SCHEMES_CACHE_TIME = now
+
+    return resp_obj
 
 
 @router.get("/categories", response_model=APIResponse[List[str]], summary="Get Scheme Categories")

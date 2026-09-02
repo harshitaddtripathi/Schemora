@@ -401,39 +401,41 @@ class _BrandHeader extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 60,
-          height: 60,
+          width: 68,
+          height: 68,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
+              colors: [Color(0xFF0F172A), Color(0xFF1E3A8A), Color(0xFF2563EB)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF2563EB).withAlpha(60),
-                blurRadius: 14,
-                offset: const Offset(0, 5),
+                color: const Color(0xFF2563EB).withAlpha(80),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-          child: const Icon(Icons.account_balance_rounded, color: Colors.white, size: 30),
+          child: const Center(
+            child: Icon(Icons.account_balance_rounded, color: Colors.white, size: 34),
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
         const Text(
           'Schemora',
           style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
             color: Color(0xFF0F172A),
-            letterSpacing: -0.5,
+            letterSpacing: -0.6,
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          'Government Scheme Discovery Portal',
-          style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+        const Text(
+          'Government Welfare Scheme Portal',
+          style: TextStyle(fontSize: 13.5, color: Color(0xFF64748B), fontWeight: FontWeight.w600),
         ),
       ],
     );

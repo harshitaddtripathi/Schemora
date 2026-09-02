@@ -425,11 +425,14 @@ class SchemeRepositoryImpl implements SchemeRepository {
       allSchemes = List<SchemeModel>.from(_cachedAllSchemes!);
     } else {
       try {
-        final response = await _dio.get('/schemes');
+        final response = await _dio.get('/schemes', queryParameters: {'page_size': 200});
         final data = response.data['data'] as List<dynamic>;
         allSchemes = data.map((e) => SchemeModel.fromJson(e as Map<String, dynamic>)).toList();
-        _cachedAllSchemes = allSchemes;
-      } catch (_) {
+        if (allSchemes.isNotEmpty) {
+          _cachedAllSchemes = allSchemes;
+        }
+      } catch (e) {
+        // Fallback to offline cached / default schemes if network is unavailable
         var list = List<SchemeModel>.from(_fallbackSchemes);
         list.addAll([
           SchemeModel(

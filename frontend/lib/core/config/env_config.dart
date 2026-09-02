@@ -4,46 +4,82 @@ class EnvConfig {
   static const String appName = 'Schemora';
   static const String appVersion = '1.0.0';
 
-  // ---------------------------------------------------------------------------
-  // DEVELOPMENT API CONFIGURATION FOR PHYSICAL ANDROID PHONE / LOCAL PC
-  // ---------------------------------------------------------------------------
-  // USB Mode (ADB Reverse): 127.0.0.1 (Fastest & immune to IP changes)
-  // Wi-Fi Mode: 192.168.3.148 (Active PC Wi-Fi IP)
-  // Emulator: 10.0.2.2
-  static const String devHostIp = '192.168.3.148'; // Active PC Wi-Fi IP
+  // Development Port
   static const String devPort = '8000';
 
-  static String? _resolvedHost;
+  // ─────────────────────────────────────────────────────────────────────────
+  // ANDROID TARGET HOST SELECTION
+  //
+  // ✅ ALWAYS use the dev runner script — it auto-detects your current IP:
+  //      .\run_dev.ps1                  (physical phone, auto IP)
+  //      .\run_dev.ps1 -Emulator        (Android emulator)
+  //      .\run_dev.ps1 -d <device-id>   (specific device)
+  //
+  // Or pass manually:
+  //      flutter run --dart-define=DEV_HOST_IP=<YOUR_PC_LAN_IP>
+  //
+  // ⚠️  NEVER hardcode the IP here — it changes every time you switch networks.
+  // ─────────────────────────────────────────────────────────────────────────
 
-  /// Remembers a verified working host IP across requests.
-  static void setResolvedHost(String host) {
-    _resolvedHost = host;
-  }
+  /// LAN IP of the dev machine — injected at build time by run_dev.ps1.
+  /// Falls back to empty string (→ localhost) if not provided.
+  static const String devHostIp =
+      String.fromEnvironment('DEV_HOST_IP', defaultValue: '');
 
-  /// Resets remembered host back to 127.0.0.1 default.
-  static void resetResolvedHost() {
-    _resolvedHost = null;
-  }
+  // Set to 'true' only when running on Android Emulator
+  static const bool _useEmulator =
+      String.fromEnvironment('USE_EMULATOR', defaultValue: 'false') == 'true';
 
-  // Production or runtime override injected via --dart-define=API_BASE_URL=...
+  // Production or custom URL override via --dart-define=API_BASE_URL=https://...
   static const String _overrideBaseUrl =
       String.fromEnvironment('API_BASE_URL', defaultValue: '');
 
-  /// Dynamically computes the local development base URL.
-  static String get _localBaseUrl {
-    final host = _resolvedHost ?? '127.0.0.1'; // ADB reverse USB port forwarding (Instant, bypasses Wi-Fi firewall)
+  /// Deterministic API base URL:
+  /// - Production:      --dart-define=API_BASE_URL=https://...
+  /// - Android Emulator: .\run_dev.ps1 -Emulator  →  http://10.0.2.2:8000/api/v1/
+  /// - Physical Phone:   .\run_dev.ps1            →  http://<auto-detected-ip>:8000/api/v1/
+  /// - Web / Desktop:    http://127.0.0.1:8000/api/v1/
+  static String get baseUrl {
+    if (_overrideBaseUrl.isNotEmpty) {
+      final raw = _overrideBaseUrl;
+      return raw.endsWith('/') ? raw : '$raw/';
+    }
+
+    String host;
+    if (kIsWeb) {
+      host = '127.0.0.1';
+    } else {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          if (_useEmulator) {
+            host = '10.0.2.2';
+          } else if (devHostIp.isNotEmpty) {
+            host = devHostIp;
+          } else {
+            // No IP provided — show a clear error in debug log and fall back to localhost
+            // (won't work on a real device, but prevents a silent failure)
+            assert(false,
+                '\n\n'
+                '════════════════════════════════════════════\n'
+                '  DEV_HOST_IP not set!\n'
+                '  Run the app using:\n'
+                '    .\\run_dev.ps1\n'
+                '  instead of plain "flutter run".\n'
+                '════════════════════════════════════════════\n');
+            host = '127.0.0.1';
+          }
+          break;
+        default:
+          host = '127.0.0.1';
+          break;
+      }
+    }
+
     return 'http://$host:$devPort/api/v1/';
   }
 
-  /// The active API Base URL used by Dio.
-  static String get baseUrl {
-    final rawUrl =
-        _overrideBaseUrl.isNotEmpty ? _overrideBaseUrl : _localBaseUrl;
-    return rawUrl.endsWith('/') ? rawUrl : '$rawUrl/';
-  }
-
-  // Timeout settings (15s connect, 60s receive)
-  static const int connectTimeoutMs = 15000;
+  // Timeout settings (10s connect, 60s receive for AI responses, 30s send)
+  static const int connectTimeoutMs = 10000;
   static const int receiveTimeoutMs = 60000;
+  static const int sendTimeoutMs = 30000;
 }
-

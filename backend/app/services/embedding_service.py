@@ -46,7 +46,10 @@ _COOLDOWN_SECONDS: float = 30.0
 
 
 def _get_api_key() -> str:
-    return os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY or ""
+    key = os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY or ""
+    if not key or key.startswith("AQ.") or len(key) < 20:
+        return ""
+    return key
 
 
 def _get_embedding_model() -> str:
@@ -125,7 +128,7 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
         return _embedding_cache[cache_key]
 
     api_key = _get_api_key()
-    if not api_key or len(api_key) < 10:
+    if not api_key:
         logger.debug("No valid Gemini API key — using TF-IDF fallback for embeddings")
         return None
 
@@ -141,8 +144,8 @@ async def generate_embedding(text: str) -> Optional[List[float]]:
         url = f"{url_template}?key={api_key}"
         headers = {"Content-Type": "application/json"}
 
-        # Increased timeout: 12s to handle slower API responses during bulk indexing
-        async with httpx.AsyncClient(timeout=12.0) as client:
+        # Fast 2.0s timeout to ensure high-speed fallback and prevent mobile timeouts
+        async with httpx.AsyncClient(timeout=2.0) as client:
             resp = await client.post(url, json=payload, headers=headers)
 
         if resp.status_code == 200:

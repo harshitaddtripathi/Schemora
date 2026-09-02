@@ -488,16 +488,19 @@ class _AssistantChatScreenState extends ConsumerState<AssistantChatScreen> {
         decoration: BoxDecoration(
           color: msg.isUser ? AppTheme.primaryBlue : Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(18),
-            topRight: const Radius.circular(18),
-            bottomLeft: Radius.circular(msg.isUser ? 18 : 4),
-            bottomRight: Radius.circular(msg.isUser ? 4 : 18),
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: Radius.circular(msg.isUser ? 20 : 4),
+            bottomRight: Radius.circular(msg.isUser ? 4 : 20),
           ),
+          border: msg.isUser
+              ? null
+              : Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(12),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              color: msg.isUser ? AppTheme.primaryBlue.withAlpha(50) : Colors.black.withAlpha(8),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
             ),
           ],
         ),

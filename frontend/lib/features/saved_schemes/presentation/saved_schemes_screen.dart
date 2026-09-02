@@ -124,10 +124,22 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
             itemCount: list.length,
             itemBuilder: (context, index) {
               final item = list[index];
-              return Card(
+              return Container(
                 margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(8),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(18),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -140,10 +152,10 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
                               children: [
                                 Text(
                                   item.schemeTitle,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.primaryNavy),
+                                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppTheme.primaryNavy, letterSpacing: -0.3),
                                 ),
                                 const SizedBox(height: 4),
-                                Text('${item.provider} • ${item.jurisdiction}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                Text('${item.provider} • ${item.jurisdiction}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
                               ],
                             ),
                           ),
@@ -170,18 +182,24 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       Row(
                         children: [
-                          const Text('Application Status: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          const Text('Status: ', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppTheme.primaryNavy)),
                           const SizedBox(width: 8),
                           Expanded(
                             child: DropdownButtonFormField<String>(
                               value: item.status,
                               isDense: true,
-                              decoration: const InputDecoration(border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: const Color(0xFFF8FAFC),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              ),
                               items: allStatuses
-                                  .map((st) => DropdownMenuItem(value: st, child: Text(st, style: const TextStyle(fontSize: 13))))
+                                  .map((st) => DropdownMenuItem(value: st, child: Text(st, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primaryNavy))))
                                   .toList(),
                               onChanged: (val) {
                                 if (val != null) _updateStatus(item.schemeId, val);
@@ -190,20 +208,25 @@ class _SavedSchemesScreenState extends ConsumerState<SavedSchemesScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           OutlinedButton.icon(
                             onPressed: () => context.push('/catalog/${item.schemeId}'),
                             icon: const Icon(Icons.info_outline_rounded, size: 16),
-                            label: const Text('View Details'),
+                            label: const Text('View Details', style: TextStyle(fontWeight: FontWeight.w700)),
                           ),
                           ElevatedButton.icon(
                             onPressed: () => _showOfficialPortalDialog(item.schemeTitle, item.schemeId),
-                            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryBlue,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
                             icon: const Icon(Icons.open_in_new_rounded, size: 16, color: Colors.white),
-                            label: const Text('Official Portal', style: TextStyle(color: Colors.white)),
+                            label: const Text('Official Portal', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
                           ),
                         ],
                       ),

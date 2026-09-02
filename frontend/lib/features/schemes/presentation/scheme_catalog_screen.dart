@@ -9,6 +9,8 @@ import 'package:schemora_frontend/features/schemes/domain/scheme_model.dart';
 
 import 'package:schemora_frontend/features/saved_schemes/data/saved_scheme_repository.dart';
 
+import 'package:schemora_frontend/core/widgets/scheme_card.dart';
+
 class SchemeCatalogScreen extends ConsumerStatefulWidget {
   const SchemeCatalogScreen({super.key});
 
@@ -38,7 +40,7 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
           tooltip: 'Go Back',
           onPressed: () => context.canPop() ? context.pop() : context.go('/dashboard'),
         ),
-        title: const Text('Schemora Catalog'),
+        title: const Text('All Government Schemes'),
         actions: [
           IconButton(
             icon: const Icon(Icons.bookmark_rounded, color: AppTheme.primaryBlue),
@@ -62,17 +64,30 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
                 children: [
                   TextField(
                     controller: _searchController,
+                    style: const TextStyle(fontSize: 14, color: AppTheme.primaryNavy),
                     decoration: InputDecoration(
-                      hintText: 'Search schemes (e.g. scholarship, internship)...',
-                      prefixIcon: const Icon(Icons.search_rounded),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear_rounded),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {});
-                        },
+                      hintText: 'Search schemes by keyword, ministry or benefit...',
+                      prefixIcon: const Icon(Icons.search_rounded, color: AppTheme.primaryBlue),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 18, color: Color(0xFF94A3B8)),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {});
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                       ),
-                      border: const OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5),
+                      ),
                     ),
                     onChanged: (val) => setState(() {}),
                   ),
@@ -80,7 +95,7 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
                   Row(
                     children: [
                       FilterChip(
-                        label: const Text('All'),
+                        label: const Text('All Schemes'),
                         selected: _selectedJurisdiction == '',
                         onSelected: (_) => setState(() => _selectedJurisdiction = ''),
                       ),
@@ -109,7 +124,7 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
                 ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const LoadingStateWidget(message: 'Searching scheme catalog...');
+                    return const LoadingStateWidget(message: 'Loading schemes catalog...');
                   }
                   if (snapshot.hasError) {
                     return ErrorStateWidget(
@@ -121,100 +136,49 @@ class _SchemeCatalogScreenState extends ConsumerState<SchemeCatalogScreen> {
                   if (schemes.isEmpty) {
                     return const EmptyStateWidget(
                       title: 'No Schemes Found',
-                      description: 'No schemes match your search criteria.',
+                      description: 'No schemes match your current search parameters.',
+                      icon: Icons.search_off_rounded,
                     );
                   }
-                  return ListView.separated(
+                  return ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     itemCount: schemes.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final scheme = schemes[index];
                       final isSaved = savedIds.contains(scheme.id);
 
-                      return Card(
-                        elevation: 2,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
-                          title: Text(
-                            scheme.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 6),
-                              Text(scheme.shortDescription, maxLines: 2, overflow: TextOverflow.ellipsis),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.primaryBlue.withAlpha(20),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      scheme.jurisdiction,
-                                      style: const TextStyle(fontSize: 12, color: AppTheme.primaryNavy, fontWeight: FontWeight.w600),
-                                    ),
+                      return SchemeCard(
+                        scheme: scheme,
+                        isSaved: isSaved,
+                        onTap: () => context.push('/catalog/${scheme.id}'),
+                        onBookmarkTap: () async {
+                          try {
+                            final nowSaved = await ref
+                                .read(savedSchemeIdsProvider.notifier)
+                                .toggleSave(scheme.id);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    nowSaved
+                                        ? 'Scheme saved to My Saved Schemes!'
+                                        : 'Scheme removed from Saved Schemes.',
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      scheme.provider,
-                                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                  action: SnackBarAction(
+                                    label: 'View All',
+                                    onPressed: () => context.push('/saved-schemes'),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                                  color: isSaved ? AppTheme.warningOrange : Colors.grey,
                                 ),
-                                tooltip: isSaved ? 'Remove from Saved' : 'Save Scheme',
-                                onPressed: () async {
-                                  try {
-                                    final nowSaved = await ref
-                                        .read(savedSchemeIdsProvider.notifier)
-                                        .toggleSave(scheme.id);
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            nowSaved
-                                                ? 'Scheme saved to My Saved Schemes!'
-                                                : 'Scheme removed from Saved Schemes.',
-                                          ),
-                                          action: SnackBarAction(
-                                            label: 'View All',
-                                            onPressed: () => context.push('/saved-schemes'),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Failed to update bookmark: $e')),
-                                      );
-                                    }
-                                  }
-                                },
-                              ),
-                              const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-                            ],
-                          ),
-                          onTap: () => context.push('/catalog/${scheme.id}'),
-                        ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to update bookmark: $e')),
+                              );
+                            }
+                          }
+                        },
                       );
                     },
                   );
