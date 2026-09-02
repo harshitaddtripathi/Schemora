@@ -13,6 +13,7 @@ Safety Rules enforced in every prompt:
 """
 
 import os
+import re
 import logging
 import httpx
 from typing import Any, Dict, List, Optional, Tuple
@@ -48,6 +49,32 @@ LANG_FALLBACK_MESSAGES = {
     "kn": "ನಾನು ಸರ್ಕಾರಿ ಯೋಜನೆಗಳ ಬಗ್ಗೆ ಮಾತ್ರ ಮಾಹಿತಿ ನೀಡಬಲ್ಲೆ.",
     "ml": "ഞാൻ സർക്കാർ പദ്ധതികളെ കുറിച്ചുള്ള ചോദ്യങ്ങൾക്ക് മാത്രം ഉത്തരം നൽകുന്നു.",
     "pa": "ਮੈਂ ਸਿਰਫ਼ ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ ਬਾਰੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦਿੰਦਾ ਹਾਂ।",
+}
+
+GREETING_MESSAGES = {
+    "en": "Hello! 👋 I am your Schemora AI Assistant. Ask me any question regarding central or state government schemes, scholarships, eligibility, or application guidelines!",
+    "hi": "नमस्ते! 🙏 मैं स्केमोरा AI सहायक हूँ। आप मुझसे केंद्र या राज्य सरकार की योजनाओं, छात्रवृत्ति, पात्रता नियमों या आवेदन प्रक्रिया के बारे में कोई भी प्रश्न पूछ सकते हैं!",
+    "mr": "नमस्कार! 🙏 मी स्केमोरा AI सहाय्यक आहे. तुम्ही मला केंद्र किंवा राज्य सरकारच्या योजना, शिष्यवृत्ती, पात्रता किंवा अर्ज प्रक्रियेबद्दल कोणताही प्रश्न विचारू शकता!",
+    "bn": "নমস্কার! 🙏 আমি স্কেমোরা AI সহকারী। আপনি আমাকে সরকারি প্রকল্প, স্কলারশিপ, যোগ্যতা বা আবেদন প্রক্রিয়া সম্পর্কে যেকোনো প্রশ্ন জিজ্ঞাসা করতে পারেন!",
+    "te": "నమస్కారం! 🙏 నేను స్కీమోరా AI సహాయకుడిని. ప్రభుత్వ పథకాలు, స్కాలర్‌షిప్‌లు, అర్హత లేదా దరఖాస్తు గురించి నన్ను ఏమైనా అడగండి!",
+    "ta": "வணக்கம்! 🙏 நான் ஸ்கீமோரா AI உதவியாளர். மத்திய அல்லது மாநில அரசு திட்டங்கள், உதவித்தொகை, தகுதி பற்றி என்னிடம் கேளுங்கள்!",
+    "gu": "નમસ્તે! 🙏 હું સ્કીમોરા AI સહાયક છું. કેન્દ્ર અથવા રાજ્ય સરકારની યોજનાઓ, શિષ્યવૃત્તિ, પાત્રતા વિશે મને પૂછો!",
+    "kn": "ನಮಸ್ಕಾರ! 🙏 ನಾನು ಸ್ಕೀಮೋರಾ AI ಸಹಾಯಕ. ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು, ವಿದ್ಯಾರ್ಥಿವೇತನ, ಅರ್ಹತೆ ಕುರಿತು ನನ್ನನ್ನು ಕೇಳಿ!",
+    "ml": "നമസ്കാരം! 🙏 ഞാൻ സ്കീമോറ AI സഹായകനാണ്. സർക്കാർ പദ്ധതികൾ, സ്കോളർഷിപ്പ്, അർഹത എന്നിവയെക്കുറിച്ച് എന്നോട് ചോദിക്കൂ!",
+    "pa": "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! 🙏 ਮੈਂ ਸਕੀਮੋਰਾ AI ਸਹਾਇਕ ਹਾਂ। ਕੇਂਦਰ ਜਾਂ ਰਾਜ ਸਰਕਾਰ ਦੀਆਂ ਯੋਜਨਾਵਾਂ, ਸਕਾਲਰਸ਼ਿਪ, ਯੋਗਤਾ ਬਾਰੇ ਮੈਨੂੰ ਪੁੱਛੋ!",
+}
+
+THANKS_MESSAGES = {
+    "en": "You're welcome! 😊 Feel free to ask if you have any more questions about government schemes or scholarships.",
+    "hi": "आपका स्वागत है! 😊 यदि आपके पास सरकारी योजनाओं या छात्रवृत्ति के बारे में कोई और प्रश्न हैं, तो निसंकोच पूछें।",
+    "mr": "तुमचे स्वागत आहे! 😊 जर तुम्हाला सरकारी योजनांबद्दल आणखी काही प्रश्न असतील तर नक्की विचारारा.",
+    "bn": "আপনাকে স্বাগতম! 😊 সরকারি প্রকল্প বা স্কলারশিপ সম্পর্কে আরও কোনো প্রশ্ন থাকলে নির্দ্বিধায় জিজ্ঞাসা করুন।",
+    "te": "మీకు స్వాగతం! 😊 ప్రభుత్వ పథకాలు లేదా స్కాలర్‌షిప్‌ల గురించి మరిన్ని ప్రశ్నలు ఉంటే నిరభ్యంతరంగా అడగండి.",
+    "ta": "உங்களை வரவேற்கிறோம்! 😊 அரசு திட்டங்கள் அல்லது உதவித்தொகை பற்றி ஏதேனும் கேள்விகள் இருந்தால் தாராளமாகக் கேட்கலாம்.",
+    "gu": "તમારું સ્વાગત છે! 😊 જો તમારી પાસે સરકારી યોજનાઓ અથવા શિષ્યવૃત્તિ વિશે વધુ પ્રશ્નો હોય, તો નિઃસંકોચ પૂછો.",
+    "kn": "ನಿಮಗೆ ಸ್ವಾಗತ! 😊 ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು ಅಥವಾ ವಿದ್ಯಾರ್ಥಿವೇತನದ ಕುರಿತು ಯಾವುದೇ ಹೆಚ್ಚಿನ ಪ್ರಶ್ನೆಗಳಿದ್ದರೆ ಉಚಿತವಾಗಿ ಕೇಳಿ.",
+    "ml": "തീർച്ചയായും സ്വാഗതം! 😊 സർക്കാർ പദ്ധതികളെക്കുറിച്ചോ സ്കോളർഷിപ്പുകളെക്കുറിച്ചോ കൂടുതൽ ചോദ്യങ്ങളുണ്ടെങ്കിൽ ചോദിക്കാവുന്നതാണ്.",
+    "pa": "ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ! 😊 ਜੇਕਰ ਤੁਹਾਡੇ ਕੋਲ ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ ਜਾਂ ਸਕਾਲਰਸ਼ਿਪ ਬਾਰੇ ਹੋਰ ਸਵਾਲ ਹਨ, ਤਾਂ ਬੇਝਿਜਕ ਪੁੱਛੋ।",
 }
 
 NOT_FOUND_MESSAGES = {
@@ -489,6 +516,20 @@ async def generate_grounded_chat_response(
         (answer_text, citations, is_grounded)
     """
     lang_name = LANG_NAMES.get(language, "English")
+    q_clean = query.strip().lower()
+
+    # 1. Greeting check — return friendly localized welcome message
+    if (
+        re.match(r"^(?:hi|hello|hey|greetings|namaste|namaskar|good\s*(?:morning|afternoon|evening)|hallo|hola|ssa|satsriakal|hi+|hello+)\s*[\!\?\,\.]*$", q_clean)
+        or q_clean in ["who are you", "what can you do", "how are you", "help"]
+    ):
+        greeting = GREETING_MESSAGES.get(language, GREETING_MESSAGES["en"])
+        return greeting, [], True
+
+    # 2. Thanks / Gratitude check
+    if re.match(r"^(?:thanks|thank\s*you|shukriya|dhanyawad|thx|dhanbad)\s*[\!\?\,\.]*$", q_clean):
+        thanks = THANKS_MESSAGES.get(language, THANKS_MESSAGES["en"])
+        return thanks, [], True
 
     # Out-of-scope check
     if is_out_of_scope(query):

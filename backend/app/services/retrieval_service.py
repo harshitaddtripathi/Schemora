@@ -53,6 +53,17 @@ MIN_SIMILARITY_THRESHOLD = 0.03  # Lowered: TF-IDF scores are naturally low
 # ── Intent Detection ──────────────────────────────────────────────────────────
 
 INTENT_PATTERNS = {
+    "GREETING": [
+        r"^(?:hi|hello|hey|greetings|namaste|namaskar|good\s*(?:morning|afternoon|evening)|hallo|hola|ssa|satsriakal|hi+|hello+)\b",
+        r"\bwho\s+are\s+you\b",
+        r"\bwhat\s+can\s+you\s+do\b",
+        r"\bhow\s+are\s+you\b",
+        r"\bhelp\b",
+    ],
+    "THANKS": [
+        r"^(?:thanks|thank\s*you|shukriya|dhanyawad|thx|dhanbad)\s*$",
+        r"\bthank\s*you\b",
+    ],
     # REQUIRED_DOCUMENTS checked FIRST — before APPLICATION_PROCESS
     # so "what documents are required" doesn't match 'required' → APPLICATION_PROCESS
     "REQUIRED_DOCUMENTS": [

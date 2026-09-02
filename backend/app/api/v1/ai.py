@@ -144,8 +144,8 @@ async def chat_assistant(
     )
 
     # ── Step 2: Fallback — query DB schemes directly if knowledge base empty ─
-    if not chunks:
-        logger.info("Knowledge base empty — using direct scheme DB fallback")
+    if not chunks and intent not in ["GREETING", "THANKS"]:
+        logger.info("Knowledge base empty — attempting direct scheme DB fallback")
         scheme_stmt = select(Scheme).where(Scheme.is_published == True)
         if req.scheme_id:
             scheme_stmt = scheme_stmt.where(Scheme.id == req.scheme_id)
@@ -179,36 +179,35 @@ async def chat_assistant(
             # Match keyword filter
             if any(w in s_text for w in q_words):
                 matched.append(s)
-        if not matched:
-            matched = list(schemes[:3])
 
-        for s in matched[:3]:
-            chunks.append({
-                "chunk_id": f"dyn-{s.id}",
-                "scheme_id": s.id,
-                "scheme_name": s.title,
-                "section": "overview",
-                "content": (
-                    f"Scheme: {s.title}\n"
-                    f"Description: {s.short_description}\n"
-                    f"Benefits: {s.benefit_summary}\n"
-                    f"Provider: {s.provider} ({s.jurisdiction})\n"
-                    f"Eligibility Gender: {s.gender_eligibility}, "
-                    f"Social Categories: {s.social_categories}\n"
-                    f"Deadline: {s.application_deadline or 'Open'}"
-                ),
-                "similarity_score": 0.8,
-                # Use real official URLs from the scheme record
-                "source_url": getattr(s, "official_information_url", "") or getattr(s, "source_url", "") or "",
-                "source_title": f"{s.title} Official Guideline",
-                "official_app_url": getattr(s, "official_application_url", "") or getattr(s, "application_url", "") or "",
-                "last_verified_at": "2026-08-07",
-                "scheme_version": "v1",
-                "jurisdiction": s.jurisdiction,
-                "state": s.state,
-                "category": s.benefit_type,
-                "is_semantic": False,
-            })
+        # Only add matched schemes if keywords or intent matched (don't force random schemes)
+        if matched:
+            for s in matched[:3]:
+                chunks.append({
+                    "chunk_id": f"dyn-{s.id}",
+                    "scheme_id": s.id,
+                    "scheme_name": s.title,
+                    "section": "overview",
+                    "content": (
+                        f"Scheme: {s.title}\n"
+                        f"Description: {s.short_description}\n"
+                        f"Benefits: {s.benefit_summary}\n"
+                        f"Provider: {s.provider} ({s.jurisdiction})\n"
+                        f"Eligibility Gender: {s.gender_eligibility}, "
+                        f"Social Categories: {s.social_categories}\n"
+                        f"Deadline: {s.application_deadline or 'Open'}"
+                    ),
+                    "similarity_score": 0.8,
+                    "source_url": getattr(s, "official_information_url", "") or getattr(s, "source_url", "") or "",
+                    "source_title": f"{s.title} Official Guideline",
+                    "official_app_url": getattr(s, "official_application_url", "") or getattr(s, "application_url", "") or "",
+                    "last_verified_at": "2026-08-07",
+                    "scheme_version": "v1",
+                    "jurisdiction": s.jurisdiction,
+                    "state": s.state,
+                    "category": s.benefit_type,
+                    "is_semantic": False,
+                })
 
     # ── Step 3: Personalized eligibility context (if profile provided) ─────
     eligibility_context: Optional[str] = None
